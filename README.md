@@ -12,7 +12,7 @@ The inertia tensor $\textbf{I}$ of a molecule with its center of mass at the ori
         -m_j z_j x_j                   & -m_j z_j y_j                   & m_j \left( x^2_j+y^2_j \right)
     \end{bmatrix}
 ```
-with the index $j$ running over all atoms and $m$ being their mass. For samples with standard isotopic distributions the masses are the average atomic masses and can be accessed by the function `get_atomic_mass()`. Due to the transposition symmetry of the inertia tensor ($\textbf{I}_{\alpha\beta} = \textbf{I}_{\beta\alpha}$), we need only calculate the upper right (or lower left) triangular portion of the tensor, simplifying our calculations to
+with the index $j$ running over all atoms and $m$ being their mass. For samples with standard isotopic distributions the masses are the average atomic masses and can be accessed by the function `get_atomic_mass()`. Due to the transposition symmetry of the inertia tensor ($`\textbf{I}_{\alpha\beta} = \textbf{I}_{\beta\alpha}`$), we need only calculate the upper right (or lower left) triangular portion of the tensor, simplifying our calculations to
 ```math
     \begin{align*}
         \textbf{I}_{xx} &= \sum_j^N m_j \left( y'^2_j+z'^2_j \right) \\
