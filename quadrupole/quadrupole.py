@@ -5,263 +5,387 @@ from os import PathLike
 
 
 # Helper functions for converting between atomic symbol and atomic number as well as getting atomic masses
-def get_atomic_id(atomic_id: str | int) -> int | str:
-    """Convert between atomic symbol and atomic number (case insensitive)."""
-    elements = {
-        "H" : 1,
-        "He": 2,
-        "Li": 3,
-        "Be": 4,
-        "B" : 5,
-        "C" : 6,
-        "N" : 7,
-        "O" : 8,
-        "F" : 9,
-        "Ne": 10,
-        "Na": 11,
-        "Mg": 12,
-        "Al": 13,
-        "Si": 14,
-        "P" : 15,
-        "S" : 16,
-        "Cl": 17,
-        "Ar": 18,
-        "K" : 19,
-        "Ca": 20,
-        "Sc": 21,
-        "Ti": 22,
-        "V" : 23,
-        "Cr": 24,
-        "Mn": 25,
-        "Fe": 26,
-        "Co": 27,
-        "Ni": 28,
-        "Cu": 29,
-        "Zn": 30,
-        "Ga": 31,
-        "Ge": 32,
-        "As": 33,
-        "Se": 34,
-        "Br": 35,
-        "Kr": 36,
-        "Rb": 37,
-        "Sr": 38,
-        "Y" : 39,
-        "Zr": 40,
-        "Nb": 41,
-        "Mo": 42,
-        "Tc": 43,
-        "Ru": 44,
-        "Rh": 45,
-        "Pd": 46,
-        "Ag": 47,
-        "Cd": 48,
-        "In": 49,
-        "Sn": 50,
-        "Sb": 51,
-        "Te": 52,
-        "I" : 53,
-        "Xe": 54,
-        "Cs": 55,
-        "Ba": 56,
-        "La": 57,
-        "Ce": 58,
-        "Pr": 59,
-        "Nd": 60,
-        "Pm": 61,
-        "Sm": 62,
-        "Eu": 63,
-        "Gd": 64,
-        "Tb": 65,
-        "Dy": 66,
-        "Ho": 67,
-        "Er": 68,
-        "Tm": 69,
-        "Yb": 70,
-        "Lu": 71,
-        "Hf": 72,
-        "Ta": 73,
-        "W" : 74,
-        "Re": 75,
-        "Os": 76,
-        "Ir": 77,
-        "Pt": 78,
-        "Au": 79,
-        "Hg": 80,
-        "Tl": 81,
-        "Pb": 82,
-        "Bi": 83,
-        "Po": 84,
-        "At": 85,
-        "Rn": 86,
-        "Fr": 87,
-        "Ra": 88,
-        "Ac": 89,
-        "Th": 90,
-        "Pa": 91,
-        "U" : 92,
-        "Np": 93,
-        "Pu": 94,
-        "Am": 95,
-        "Cm": 96,
-        "Bk": 97,
-        "Cf": 98,
-        "Es": 99,
-        "Fm": 100,
-        "Md": 101,
-        "No": 102,
-        "Lr": 103,
-        "Rf": 104,
-        "Db": 105,
-        "Sg": 106,
-        "Bh": 107,
-        "Hs": 108,
-        "Mt": 109,
-        "Ds": 110,
-        "Rg": 111,
-        "Cn": 112,
-        "Nh": 113,
-        "Fl": 114,
-        "Mc": 115,
-        "Lv": 116,
-        "Ts": 117,
-        "Og": 118,
-    }
 
-    if isinstance(atomic_id, str):
-        return elements[atomic_id.title()]
-    if isinstance(atomic_id, int):
-        return (list(elements.keys())[list(elements.values()).index(atomic_id)]).title()
-    
+def get_atomic_number(atomic_symbol: str) -> int:
+    """Convert between atomic symbol and atomic number (case insensitive)."""
+    elements = [
+        "H" ,
+        "He",
+        "Li",
+        "Be",
+        "B" ,
+        "C" ,
+        "N" ,
+        "O" ,
+        "F" ,
+        "Ne",
+        "Na",
+        "Mg",
+        "Al",
+        "Si",
+        "P" ,
+        "S" ,
+        "Cl",
+        "Ar",
+        "K" ,
+        "Ca",
+        "Sc",
+        "Ti",
+        "V" ,
+        "Cr",
+        "Mn",
+        "Fe",
+        "Co",
+        "Ni",
+        "Cu",
+        "Zn",
+        "Ga",
+        "Ge",
+        "As",
+        "Se",
+        "Br",
+        "Kr",
+        "Rb",
+        "Sr",
+        "Y" ,
+        "Zr",
+        "Nb",
+        "Mo",
+        "Tc",
+        "Ru",
+        "Rh",
+        "Pd",
+        "Ag",
+        "Cd",
+        "In",
+        "Sn",
+        "Sb",
+        "Te",
+        "I" ,
+        "Xe",
+        "Cs",
+        "Ba",
+        "La",
+        "Ce",
+        "Pr",
+        "Nd",
+        "Pm",
+        "Sm",
+        "Eu",
+        "Gd",
+        "Tb",
+        "Dy",
+        "Ho",
+        "Er",
+        "Tm",
+        "Yb",
+        "Lu",
+        "Hf",
+        "Ta",
+        "W" ,
+        "Re",
+        "Os",
+        "Ir",
+        "Pt",
+        "Au",
+        "Hg",
+        "Tl",
+        "Pb",
+        "Bi",
+        "Po",
+        "At",
+        "Rn",
+        "Fr",
+        "Ra",
+        "Ac",
+        "Th",
+        "Pa",
+        "U" ,
+        "Np",
+        "Pu",
+        "Am",
+        "Cm",
+        "Bk",
+        "Cf",
+        "Es",
+        "Fm",
+        "Md",
+        "No",
+        "Lr",
+        "Rf",
+        "Db",
+        "Sg",
+        "Bh",
+        "Hs",
+        "Mt",
+        "Ds",
+        "Rg",
+        "Cn",
+        "Nh",
+        "Fl",
+        "Mc",
+        "Lv",
+        "Ts",
+        "Og",
+    ]
+
+    return elements.index(atomic_symbol.title()) # str.title() returns string with the first letter capitalized
+
+
+def get_atomic_symbol(atomic_number: int) -> str:
+    """Convert between atomic symbol and atomic number (case insensitive)."""
+    elements = [
+        "H" ,
+        "He",
+        "Li",
+        "Be",
+        "B" ,
+        "C" ,
+        "N" ,
+        "O" ,
+        "F" ,
+        "Ne",
+        "Na",
+        "Mg",
+        "Al",
+        "Si",
+        "P" ,
+        "S" ,
+        "Cl",
+        "Ar",
+        "K" ,
+        "Ca",
+        "Sc",
+        "Ti",
+        "V" ,
+        "Cr",
+        "Mn",
+        "Fe",
+        "Co",
+        "Ni",
+        "Cu",
+        "Zn",
+        "Ga",
+        "Ge",
+        "As",
+        "Se",
+        "Br",
+        "Kr",
+        "Rb",
+        "Sr",
+        "Y" ,
+        "Zr",
+        "Nb",
+        "Mo",
+        "Tc",
+        "Ru",
+        "Rh",
+        "Pd",
+        "Ag",
+        "Cd",
+        "In",
+        "Sn",
+        "Sb",
+        "Te",
+        "I" ,
+        "Xe",
+        "Cs",
+        "Ba",
+        "La",
+        "Ce",
+        "Pr",
+        "Nd",
+        "Pm",
+        "Sm",
+        "Eu",
+        "Gd",
+        "Tb",
+        "Dy",
+        "Ho",
+        "Er",
+        "Tm",
+        "Yb",
+        "Lu",
+        "Hf",
+        "Ta",
+        "W" ,
+        "Re",
+        "Os",
+        "Ir",
+        "Pt",
+        "Au",
+        "Hg",
+        "Tl",
+        "Pb",
+        "Bi",
+        "Po",
+        "At",
+        "Rn",
+        "Fr",
+        "Ra",
+        "Ac",
+        "Th",
+        "Pa",
+        "U" ,
+        "Np",
+        "Pu",
+        "Am",
+        "Cm",
+        "Bk",
+        "Cf",
+        "Es",
+        "Fm",
+        "Md",
+        "No",
+        "Lr",
+        "Rf",
+        "Db",
+        "Sg",
+        "Bh",
+        "Hs",
+        "Mt",
+        "Ds",
+        "Rg",
+        "Cn",
+        "Nh",
+        "Fl",
+        "Mc",
+        "Lv",
+        "Ts",
+        "Og",
+    ]
+
+    return elements[atomic_number - 1]
+
 
 def get_atomic_mass(atomic_id: str | int):
     """Get atomic mass for an element, specified by either atomic symbol or atomic number (case insensitive)."""
 
-    if isinstance(atomic_id, int):
-        atomic_id = get_atomic_id(atomic_id)
+    if isinstance(atomic_id, str):
+        atomic_id = get_atomic_number(atomic_id)
 
-    elements = {
-        "H"  : 1.0080,
-        "He" : 4.002602,
-        "Li" : 6.94,
-        "Be" : 9.0121831,
-        "B"  : 10.81,
-        "C"  : 12.011,
-        "N"  : 14.007,
-        "O"  : 15.999,
-        "F"  : 18.998403162,
-        "Ne" : 20.1797,
-        "Na" : 22.98976928,
-        "Mg" : 24.305,
-        "Al" : 26.9815384,
-        "Si" : 28.085,
-        "P"  : 30.973761998,
-        "S"  : 32.06,
-        "Cl" : 35.45,
-        "Ar" : 39.95,
-        "K"  : 39.0983,
-        "Ca" : 40.078,
-        "Sc" : 44.955907,
-        "Ti" : 47.867,
-        "V"  : 50.9415,
-        "Cr" : 51.9961,
-        "Mn" : 54.938043,
-        "Fe" : 55.845,
-        "Co" : 58.933194,
-        "Ni" : 58.6934,
-        "Cu" : 63.546,
-        "Zn" : 65.38,
-        "Ga" : 69.723,
-        "Ge" : 72.630,
-        "As" : 74.921595,
-        "Se" : 78.971,
-        "Br" : 79.904,
-        "Kr" : 83.798,
-        "Rb" : 85.4678,
-        "Sr" : 87.62,
-        "Y"  : 88.905838,
-        "Zr" : 91.222,
-        "Nb" : 92.90637,
-        "Mo" : 95.95,
-        "Tc" : 97.,
-        "Ru" : 101.07,
-        "Rh" : 102.90549,
-        "Pd" : 106.42,
-        "Ag" : 107.8682,
-        "Cd" : 112.414,
-        "In" : 114.818,
-        "Sn" : 118.710,
-        "Sb" : 121.760,
-        "Te" : 127.60,
-        "I"  : 126.90447,
-        "Xe" : 131.293,
-        "Cs" : 132.90545196,
-        "Ba" : 137.327,
-        "La" : 138.90547,
-        "Ce" : 140.116,
-        "Pr" : 140.90766,
-        "Nd" : 144.242,
-        "Pm" : 145.,
-        "Sm" : 150.36,
-        "Eu" : 151.964,
-        "Gd" : 157.249,
-        "Tb" : 158.925354,
-        "Dy" : 162.500,
-        "Ho" : 164.930329,
-        "Er" : 167.259,
-        "Tm" : 168.934219,
-        "Yb" : 173.045,
-        "Lu" : 174.96669,
-        "Hf" : 178.486,
-        "Ta" : 180.94788,
-        "W"  : 183.84,
-        "Re" : 186.207,
-        "Os" : 190.23,
-        "Ir" : 192.217,
-        "Pt" : 195.084,
-        "Au" : 196.966570,
-        "Hg" : 200.592,
-        "Tl" : 204.38,
-        "Pb" : 207.2,
-        "Bi" : 208.98040,
-        "Po" : 209.,
-        "At" : 210.,
-        "Rn" : 222.,
-        "Fr" : 223.,
-        "Ra" : 226.,
-        "Ac" : 227.,
-        "Th" : 232.0377,
-        "Pa" : 231.03588,
-        "U"  : 238.02891,
-        "Np" : 237.,
-        "Pu" : 244.,
-        "Am" : 243.,
-        "Cm" : 247.,
-        "Bk" : 247.,
-        "Cf" : 251.,
-        "Es" : 252.,
-        "Fm" : 257.,
-        "Md" : 258.,
-        "No" : 259.,
-        "Lr" : 262.,
-        "Rf" : 267.,
-        "Db" : 270.,
-        "Sg" : 269.,
-        "Bh" : 270.,
-        "Hs" : 270.,
-        "Mt" : 278.,
-        "Ds" : 281.,
-        "Rg" : 281.,
-        "Cn" : 285.,
-        "Nh" : 286.,
-        "Fl" : 289.,
-        "Mc" : 289.,
-        "Lv" : 293.,
-        "Ts" : 293.,
-        "Og" : 294.,
-    }
+    masses = [
+        1.0080,
+        4.002602,
+        6.94,
+        9.0121831,
+        10.81,
+        12.011,
+        14.007,
+        15.999,
+        18.998403162,
+        20.1797,
+        22.98976928,
+        24.305,
+        26.9815384,
+        28.085,
+        30.973761998,
+        32.06,
+        35.45,
+        39.95,
+        39.0983,
+        40.078,
+        44.955907,
+        47.867,
+        50.9415,
+        51.9961,
+        54.938043,
+        55.845,
+        58.933194,
+        58.6934,
+        63.546,
+        65.38,
+        69.723,
+        72.630,
+        74.921595,
+        78.971,
+        79.904,
+        83.798,
+        85.4678,
+        87.62,
+        88.905838,
+        91.222,
+        92.90637,
+        95.95,
+        97.0,
+        101.07,
+        102.90549,
+        106.42,
+        107.8682,
+        112.414,
+        114.818,
+        118.710,
+        121.760,
+        127.60,
+        126.90447,
+        131.293,
+        132.90545196,
+        137.327,
+        138.90547,
+        140.116,
+        140.90766,
+        144.242,
+        145.0,
+        150.36,
+        151.964,
+        157.249,
+        158.925354,
+        162.500,
+        164.930329,
+        167.259,
+        168.934219,
+        173.045,
+        174.96669,
+        178.486,
+        180.94788,
+        183.84,
+        186.207,
+        190.23,
+        192.217,
+        195.084,
+        196.966570,
+        200.592,
+        204.38,
+        207.2,
+        208.98040,
+        209.0,
+        210.0,
+        222.0,
+        223.0,
+        226.0,
+        227.0,
+        232.0377,
+        231.03588,
+        238.02891,
+        237.0,
+        244.0,
+        243.0,
+        247.0,
+        247.0,
+        251.0,
+        252.0,
+        257.0,
+        258.0,
+        259.0,
+        262.0,
+        267.0,
+        270.0,
+        269.0,
+        270.0,
+        270.0,
+        278.0,
+        281.0,
+        281.0,
+        285.0,
+        286.0,
+        289.0,
+        289.0,
+        293.0,
+        293.0,
+        294.0,
+    ]
 
-    return elements[atomic_id.title()]
+    return masses[atomic_id - 1]
 
 
 class Atom:
@@ -285,8 +409,8 @@ class Atom:
 
     def __repr__(self):
         return (
-            f"{"Element":12}" f"{"X":11}" f"{"Y":11}" f"{"Z":11}\n"
-            f"{self.element:9}"f"{self.xyz[0]:11.6f}"f"{self.xyz[1]:11.6f}"f"{self.xyz[2]:11.6f}\n"
+            f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n"
+            f"{self.element:9}{self.xyz[0]:11.6f}{self.xyz[1]:11.6f}{self.xyz[2]:11.6f}\n"
         )
 
 
@@ -327,21 +451,6 @@ class Geometry:
         return [i.element for i in self.atoms]
 
 
-    def remove_atom(self, index: int):
-        del self.atoms[index]
-
-
-    def pop_atom(self, index: int) -> Atom:
-        return self.atoms.pop(index)
-
-
-    def add_atom(self, atom: Atom, index: int = None):
-        if index is not None:
-            self.atoms.insert(index, atom)
-        else:
-            self.atoms.append(atom)
-
-
     @classmethod
     def from_xsf(cls, file: PathLike) -> Geometry:
         """Read in only the crystallographic information from an XSF file."""
@@ -376,12 +485,20 @@ class Geometry:
 
         with open(file) as xyz:
             for line in xyz:
-                # Takes each line in the file minus the last character, which is just the \n
-                line = line[:-1].split()
+                line = line.strip().split()
                 molecule_xyz.append(line)
 
-        elements = [str(i[0]) for i in molecule_xyz[2:]]
-        xyzs = np.array([[float(j) for j in i[1:]] for i in molecule_xyz[2:]])
+        expected_num_atoms = int(molecule_xyz[0])
+
+        elements = []
+        xyzs = []
+        for index, line in enumerate(molecule_xyz[2:]):
+            if len(line) == 0:
+                break
+            if index > expected_num_atoms:
+                raise ValueError("File contains more atoms than expected!")
+            elements.append(line[0])
+            xyzs.append(np.array(line[1:4], dtype=float))
 
         atoms = []
 
@@ -538,60 +655,60 @@ class Quadrupole:
 
     #-----------------------------------------------------------#
     def au_to_cm2(self) -> Quadrupole:                          #
-        r"""Convert from Hartree atomic units to Coulomb\*m^2"""#
+        """Convert from Hartree atomic units to Coulomb•m²"""   #
         q = self.quadrupole * Quadrupole.au_cm2_conversion      #
         return Quadrupole(q, units="cm^2")                      #
                                                                 # https://physics.nist.gov/cgi-bin/cuu/Value?aueqm
     def cm2_to_au(self) -> Quadrupole:                          #
-        r"""Convert from Coulomb\*m^2 to Hartree atomic units"""#
+        """Convert from Coulomb•m² to Hartree atomic units"""   #
         q = self.quadrupole / Quadrupole.au_cm2_conversion      #
         return Quadrupole(q, units="au")                        #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
     def cm2_to_esu(self) -> Quadrupole:                         #
-        r"""Convert from Coulomb\*m^2 to e.s.u\*cm^2"""         #
+        """Convert from Coulomb•m² to e.s.u•cm²"""              #
         q = self.quadrupole * Quadrupole.esu_cm2_conversion     #
         return Quadrupole(q, units="esu")                       # CGS statCoulomb/cm^2 to Coulomb/m^2
                                                                 # Factor of c * (100cm)^2/m^2
     def esu_to_cm2(self) -> Quadrupole:                         # c taken from https://physics.nist.gov/cgi-bin/cuu/Value?c
-        r"""Convert from e.s.u\*cm^2 to Coulomb\*m^2"""         #
+        """Convert from e.s.u•cm² to Coulomb•m²"""              #
         q = self.quadrupole / Quadrupole.esu_cm2_conversion     #
         return Quadrupole(q, units="cm^2")                      #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
     def buck_to_esu(self) -> Quadrupole:                        #
-        r"""Convert from Buckingham to e.s.u\*cm^2"""           #
+        """Convert from Buckingham to e.s.u•cm²"""              #
         q = self.quadrupole * Quadrupole.esu_buck_conversion    #
         return Quadrupole(q, units="esu")                       # Suggested by Peter J. W. Debye in 1963
                                                                 # https://doi.org/10.1021/cen-v041n016.p040
     def esu_to_buck(self) -> Quadrupole:                        #
-        r"""Convert from e.s.u\*cm^2 to Buckingham"""           #
+        """Convert from e.s.u•cm² to Buckingham"""              #
         q = self.quadrupole / Quadrupole.esu_buck_conversion    #
         return Quadrupole(q, units="Buckingham")                #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
     def cm2_to_buck(self) -> Quadrupole:                        #
-        r"""Convert from Buckingham to Coulomb\*m^2"""          #
+        """Convert from Buckingham to Coulomb•m²"""             #
         q = self.cm2_to_esu()                                   #
         return q.esu_to_buck()                                  #
                                                                 #
     def buck_to_cm2(self) -> Quadrupole:                        #
-        r"""Convert from Coulomb\*m^2 to Buckingham"""          #
+        """Convert from Coulomb•m² to Buckingham"""             #
         q = self.buck_to_esu()                                  #
         return q.esu_to_cm2()                                   #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
     def au_to_esu(self) -> Quadrupole:                          #
-        r"""Convert from Hartree atomic units to e.s.u\*cm^2""" #
+        """Convert from Hartree atomic units to e.s.u•cm²"""    #
         q = self.au_to_cm2()                                    #
         return q.cm2_to_esu()                                   #
                                                                 #
     def esu_to_au(self) -> Quadrupole:                          #
-        r"""Convert from Hartree atomic units to e.s.u\*cm^2""" #
+        """Convert from Hartree atomic units to e.s.u•cm²"""    #
         q = self.esu_to_cm2()                                   #
         return q.cm2_to_au()                                    #
     #-----------------------------------------------------------#
@@ -616,37 +733,34 @@ class Quadrupole:
         new_units = units.lower()
         if new_units not in ["au", "buckingham", "cm^2", "esu"]:
             raise ValueError(f"Unit {units} not recognized, please select from ( 'au', 'buckingham', 'cm^2', 'esu' )")
-
+        
         if self_units == new_units:
             return self
 
-        if self_units == "buckingham":
-            if new_units == "au":
+        match (self_units, new_units):
+            case ("buckingham", "au"):
                 return self.buck_to_au()
-            elif new_units == "cm^2":
+            case ("buckingham", "cm^2"):
                 return self.buck_to_cm2()
-            elif new_units == "esu":
+            case ("buckingham", "esu"):
                 return self.buck_to_esu()
-        elif self_units == "au":
-            if new_units == "buck":
+            case ("au", "buckingham"):
                 return self.au_to_buck()
-            elif new_units == "cm^2":
+            case ("au", "cm^2"):
                 return self.au_to_cm2()
-            elif new_units == "esu":
+            case ("au", "esu"):
                 return self.au_to_esu()
-        elif self_units == "esu":
-            if new_units == "buck":
+            case ("esu", "buckingham"):
                 return self.esu_to_buck()
-            elif new_units == "cm^2":
+            case ("esu", "cm^2"):
                 return self.esu_to_cm2()
-            elif new_units == "au":
+            case ("esu", "au"):
                 return self.esu_to_au()
-        elif self_units == "cm^2":
-            if new_units == "buck":
+            case ("cm^2", "buck"):
                 return self.cm2_to_buck()
-            elif new_units == "au":
+            case ("cm^2", "au"):
                 return self.cm2_to_au()
-            elif new_units == "esu":
+            case ("cm^2", "esu"):
                 return self.cm2_to_esu()
 
 
@@ -657,7 +771,7 @@ class Quadrupole:
         Returns
         -------
         quad_matrices : tuple[Quadrupole]
-            List containing quadrupoles. See Notes for explanation of why
+            Tuple containing quadrupoles. See Notes for explanation of why
             this can return multiple matrices instead of just one.
 
         Note
@@ -735,20 +849,13 @@ class Quadrupole:
         if expt_signs.sum() != calc_signs.sum():
             calc_quad = calc_quad * np.array([-1., -1., -1.])
 
-        abc = np.array([calc_quad[0], calc_quad[1], calc_quad[2]])
-        acb = np.array([calc_quad[0], calc_quad[2], calc_quad[1]])
-        cba = np.array([calc_quad[2], calc_quad[1], calc_quad[0]])
-        cab = np.array([calc_quad[2], calc_quad[0], calc_quad[1]])
-        bac = np.array([calc_quad[1], calc_quad[0], calc_quad[2]])
-        bca = np.array([calc_quad[1], calc_quad[2], calc_quad[0]])
-
         permutations = [
-            abc,
-            acb,
-            cba,
-            cab,
-            bac,
-            bca,
+            np.array([calc_quad[0], calc_quad[1], calc_quad[2]]), # abc
+            np.array([calc_quad[0], calc_quad[2], calc_quad[1]]), # acb
+            np.array([calc_quad[2], calc_quad[1], calc_quad[0]]), # cba
+            np.array([calc_quad[2], calc_quad[0], calc_quad[1]]), # cab
+            np.array([calc_quad[1], calc_quad[0], calc_quad[2]]), # bac
+            np.array([calc_quad[1], calc_quad[2], calc_quad[0]]), # bca
         ]
 
         diffs = []
