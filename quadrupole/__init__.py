@@ -1,1 +1,1 @@
-from quadrupole import *
+from .quadrupole import *
