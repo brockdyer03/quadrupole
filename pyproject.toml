@@ -1,6 +1,6 @@
 [project]
 name = "quadrupole"
-version = "0.1.0"
+version = "0.1.1"
 description = "Classes for reading and manipulating molecular quadrupole moments."
 readme = "README.md"
 license = "BSD-3-Clause"
