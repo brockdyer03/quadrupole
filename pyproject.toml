@@ -1,13 +1,15 @@
 [project]
 name = "quadrupole"
 version = "0.1.0"
-description = "Classes for reading and manipulating molecular quadrupole moments"
+description = "Classes for reading and manipulating molecular quadrupole moments."
 readme = "README.md"
 authors = [
     { name = "Brock Dyer", email = "brockdyer03@gmail.com" }
 ]
-requires-python = ">=3.13"
-dependencies = []
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.0.0",
+]
 
 [build-system]
 requires = ["hatchling"]
