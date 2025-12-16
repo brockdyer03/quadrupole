@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Classes for reading and manipulating molecular quadrupole moments."
 readme = "README.md"
 license = "BSD 3-Clause"
-license-files = "LICENSE"
+license-files = ["LICENSE"]
 authors = [
     { name = "Brock Dyer", email = "brockdyer03@gmail.com" }
 ]
