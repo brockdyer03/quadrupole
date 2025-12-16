@@ -1,8 +1,8 @@
 [project]
 name = "quadrupole"
-version = "0.1.1"
+version = "0.1.2"
 description = "Classes for reading and manipulating molecular quadrupole moments."
-readme = "README.md"
+readme = "PyPI_README.md"
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 authors = [
