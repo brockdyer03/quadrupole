@@ -133,7 +133,7 @@ def get_atomic_number(atomic_symbol: str) -> int:
 
 
 def get_atomic_symbol(atomic_number: int) -> str:
-    """Convert between atomic symbol and atomic number (case insensitive)."""
+    """Convert between atomic number and atomic symbol (case insensitive)."""
     elements = [
         "H" ,
         "He",
