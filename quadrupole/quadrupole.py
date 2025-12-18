@@ -627,31 +627,51 @@ class Geometry:
 
 class Quadrupole:
     """Class containing data and functions required for analyzing a quadrupole moment.
-    
+
     Attributes
     ----------
     quadrupole : ndarray
-        Array containing the 3x3 quadrupole matrix or the diagonal components of the quadrupole (shape 3x1)
-    units : {"au", "Buckingham", "Cm^2", "esu"}, default="Buckingham"
-        Units of the quadrupole matrix.
+        Array containing the 3x3 quadrupole matrix, the diagonal components of the quadrupole (shape 3x1),
+        or the 6 independent elements of the quadrupole (shape 6x1, in order, [xx, yy, zz, xy, xz, yz])
+    units : {"au", "buckingham", "cm^2", "esu"}, default="buckingham"
+        Units of the quadrupole matrix (case insensitive).
+
+    Note
+    ----
+    The attributes specify that there are 6 independent elements of a quadrupole tensor. This is
+    because a molecular quadrupole, by definition, is symmetric. It is worth noting however that a
+    traceless quadrupole moment only has 5 independent elements as being traceless dictates that
+    one of the diagonal components must be equal to the negative sum of the remaining two, i.e. it
+    is required that :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore :math:`Q_{cc}` depends on 
+    :math:`Q_{aa}` and :math:`Q_{bb}`
     """
 
     au_cm2_conversion   = 4.4865515185e-40
     esu_cm2_conversion  = 2.99792458e13
     esu_buck_conversion = 1e-26
 
-    def __init__(self, quadrupole: npt.ArrayLike, units: str = "Buckingham"):
-        quadrupole = np.array(quadrupole)
+    def __init__(self, quadrupole: npt.ArrayLike, units: str = "buckingham"):
+        quadrupole = np.array(quadrupole, dtype=float)
         if quadrupole.shape == (3, 3):
-            self.quadrupole = np.array(quadrupole, dtype=float)
+            self.quadrupole = quadrupole
         elif quadrupole.shape == (3,):
-            self.quadrupole = np.diag(quadrupole).astype(float)
+            self.quadrupole = np.diag(quadrupole)
+        elif quadrupole.shape == (6,):
+            self.quadrupole = np.array(
+                [
+                    [quadrupole[0], quadrupole[3], quadrupole[4]],
+                    [quadrupole[3], quadrupole[1], quadrupole[5]],
+                    [quadrupole[4], quadrupole[5], quadrupole[2]],
+                ]
+            )
         else:
-            raise ValueError(f"Cannot cast array of shape {quadrupole.shape} to a quadrupole, supply either shape (3, 3) or (3,)!")
-        if units.lower() not in ["au", "buckingham", "cm^2", "esu"]:
+            raise ValueError(f"Cannot cast array of shape {quadrupole.shape} to a quadrupole, supply either shape (3, 3) or (3,) or (6,)!")
+
+        units = units.lower()
+        if units not in ["au", "buckingham", "cm^2", "esu"]:
             raise ValueError("Invalid units, please select from ( 'au', 'buckingham', 'cm^2', 'esu' )")
         else:
-            self.units = units.lower()
+            self.units = units
 
 
     #-----------------------------------------------------------#
