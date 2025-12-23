@@ -1,6 +1,6 @@
 [project]
 name = "quadrupole"
-version = "0.1.6"
+version = "0.1.7"
 description = "Classes for reading and manipulating molecular quadrupole moments."
 readme = "PyPI_README.md"
 license = "BSD-3-Clause"
