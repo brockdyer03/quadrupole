@@ -1,654 +1,146 @@
+mod elements;
+
 #[allow(unused_imports)]
 use std::str::FromStr;
 
-use std::io::{self, Read};
-use std::fs::File;
-use std::path::Path;
+use std::{
+    fmt::{Debug},
+    ops::{Add, AddAssign, Neg, Sub, SubAssign, Div, Mul, Rem},
+    cmp::PartialEq,
+    path::Path,
+    fs::File,
+    io::{self, Read},
+};
 
-use strum_macros;
+use crate::elements::Element;
 
 
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy, strum_macros::EnumString, strum_macros::Display, strum_macros::AsRefStr)]
-pub enum Element {
-    H,
-    He,
-    Li,
-    Be,
-    B,
-    C,
-    N,
-    O,
-    F,
-    Ne,
-    Na,
-    Mg,
-    Al,
-    Si,
-    P,
-    S,
-    Cl,
-    Ar,
-    K ,
-    Ca,
-    Sc,
-    Ti,
-    V,
-    Cr,
-    Mn,
-    Fe,
-    Co,
-    Ni,
-    Cu,
-    Zn,
-    Ga,
-    Ge,
-    As,
-    Se,
-    Br,
-    Kr,
-    Rb,
-    Sr,
-    Y,
-    Zr,
-    Nb,
-    Mo,
-    Tc,
-    Ru,
-    Rh,
-    Pd,
-    Ag,
-    Cd,
-    In,
-    Sn,
-    Sb,
-    Te,
-    I,
-    Xe,
-    Cs,
-    Ba,
-    La,
-    Ce,
-    Pr,
-    Nd,
-    Pm,
-    Sm,
-    Eu,
-    Gd,
-    Tb,
-    Dy,
-    Ho,
-    Er,
-    Tm,
-    Yb,
-    Lu,
-    Hf,
-    Ta,
-    W,
-    Re,
-    Os,
-    Ir,
-    Pt,
-    Au,
-    Hg,
-    Tl,
-    Pb,
-    Bi,
-    Po,
-    At,
-    Rn,
-    Fr,
-    Ra,
-    Ac,
-    Th,
-    Pa,
-    U,
-    Np,
-    Pu,
-    Am,
-    Cm,
-    Bk,
-    Cf,
-    Es,
-    Fm,
-    Md,
-    No,
-    Lr,
-    Rf,
-    Db,
-    Sg,
-    Bh,
-    Hs,
-    Mt,
-    Ds,
-    Rg,
-    Cn,
-    Nh,
-    Fl,
-    Mc,
-    Lv,
-    Ts,
-    Og,
+#[derive(Debug, Copy, Clone)]
+pub struct Coordinate {
+    x: f64,
+    y: f64,
+    z: f64,
 }
 
-impl Element {
-
-    pub fn symbol(&self) -> &str {
-        match *self {
-            Element::H  => "H",
-            Element::He => "He",
-            Element::Li => "Li",
-            Element::Be => "Be",
-            Element::B  => "B",
-            Element::C  => "C",
-            Element::N  => "N",
-            Element::O  => "O",
-            Element::F  => "F",
-            Element::Ne => "Ne",
-            Element::Na => "Na",
-            Element::Mg => "Mg",
-            Element::Al => "Al",
-            Element::Si => "Si",
-            Element::P  => "P",
-            Element::S  => "S",
-            Element::Cl => "Cl",
-            Element::Ar => "Ar",
-            Element::K  => "K" ,
-            Element::Ca => "Ca",
-            Element::Sc => "Sc",
-            Element::Ti => "Ti",
-            Element::V  => "V",
-            Element::Cr => "Cr",
-            Element::Mn => "Mn",
-            Element::Fe => "Fe",
-            Element::Co => "Co",
-            Element::Ni => "Ni",
-            Element::Cu => "Cu",
-            Element::Zn => "Zn",
-            Element::Ga => "Ga",
-            Element::Ge => "Ge",
-            Element::As => "As",
-            Element::Se => "Se",
-            Element::Br => "Br",
-            Element::Kr => "Kr",
-            Element::Rb => "Rb",
-            Element::Sr => "Sr",
-            Element::Y  => "Y",
-            Element::Zr => "Zr",
-            Element::Nb => "Nb",
-            Element::Mo => "Mo",
-            Element::Tc => "Tc",
-            Element::Ru => "Ru",
-            Element::Rh => "Rh",
-            Element::Pd => "Pd",
-            Element::Ag => "Ag",
-            Element::Cd => "Cd",
-            Element::In => "In",
-            Element::Sn => "Sn",
-            Element::Sb => "Sb",
-            Element::Te => "Te",
-            Element::I  => "I",
-            Element::Xe => "Xe",
-            Element::Cs => "Cs",
-            Element::Ba => "Ba",
-            Element::La => "La",
-            Element::Ce => "Ce",
-            Element::Pr => "Pr",
-            Element::Nd => "Nd",
-            Element::Pm => "Pm",
-            Element::Sm => "Sm",
-            Element::Eu => "Eu",
-            Element::Gd => "Gd",
-            Element::Tb => "Tb",
-            Element::Dy => "Dy",
-            Element::Ho => "Ho",
-            Element::Er => "Er",
-            Element::Tm => "Tm",
-            Element::Yb => "Yb",
-            Element::Lu => "Lu",
-            Element::Hf => "Hf",
-            Element::Ta => "Ta",
-            Element::W  => "W",
-            Element::Re => "Re",
-            Element::Os => "Os",
-            Element::Ir => "Ir",
-            Element::Pt => "Pt",
-            Element::Au => "Au",
-            Element::Hg => "Hg",
-            Element::Tl => "Tl",
-            Element::Pb => "Pb",
-            Element::Bi => "Bi",
-            Element::Po => "Po",
-            Element::At => "At",
-            Element::Rn => "Rn",
-            Element::Fr => "Fr",
-            Element::Ra => "Ra",
-            Element::Ac => "Ac",
-            Element::Th => "Th",
-            Element::Pa => "Pa",
-            Element::U  => "U",
-            Element::Np => "Np",
-            Element::Pu => "Pu",
-            Element::Am => "Am",
-            Element::Cm => "Cm",
-            Element::Bk => "Bk",
-            Element::Cf => "Cf",
-            Element::Es => "Es",
-            Element::Fm => "Fm",
-            Element::Md => "Md",
-            Element::No => "No",
-            Element::Lr => "Lr",
-            Element::Rf => "Rf",
-            Element::Db => "Db",
-            Element::Sg => "Sg",
-            Element::Bh => "Bh",
-            Element::Hs => "Hs",
-            Element::Mt => "Mt",
-            Element::Ds => "Ds",
-            Element::Rg => "Rg",
-            Element::Cn => "Cn",
-            Element::Nh => "Nh",
-            Element::Fl => "Fl",
-            Element::Mc => "Mc",
-            Element::Lv => "Lv",
-            Element::Ts => "Ts",
-            Element::Og => "Og",
-        }
-    }
-
-    pub fn name(&self) -> &str {
-        match *self {
-            Element::H  => "Hydrogen",
-            Element::He => "Helium",
-            Element::Li => "Lithium",
-            Element::Be => "Beryllium",
-            Element::B  => "Boron",
-            Element::C  => "Carbon",
-            Element::N  => "Nitrogen",
-            Element::O  => "Oxygen",
-            Element::F  => "Fluorine",
-            Element::Ne => "Neon",
-            Element::Na => "Sodium",
-            Element::Mg => "Magnesium",
-            Element::Al => "Aluminum",
-            Element::Si => "Silicon",
-            Element::P  => "Phosphorus",
-            Element::S  => "Sulfur",
-            Element::Cl => "Chlorine",
-            Element::Ar => "Argon",
-            Element::K  => "Potassium",
-            Element::Ca => "Calcium",
-            Element::Sc => "Scandium",
-            Element::Ti => "Titanium",
-            Element::V  => "Vanadium",
-            Element::Cr => "Chromium",
-            Element::Mn => "Manganese",
-            Element::Fe => "Iron",
-            Element::Co => "Cobalt",
-            Element::Ni => "Nickel",
-            Element::Cu => "Copper",
-            Element::Zn => "Zinc",
-            Element::Ga => "Gallium",
-            Element::Ge => "Germanium",
-            Element::As => "Arsenic",
-            Element::Se => "Selenium",
-            Element::Br => "Bromine",
-            Element::Kr => "Krypton",
-            Element::Rb => "Rubidium",
-            Element::Sr => "Strontium",
-            Element::Y  => "Yttrium",
-            Element::Zr => "Zirconium",
-            Element::Nb => "Niobium",
-            Element::Mo => "Molybdenum",
-            Element::Tc => "Technetium",
-            Element::Ru => "Ruthenium",
-            Element::Rh => "Rhodium",
-            Element::Pd => "Palladium",
-            Element::Ag => "Silver",
-            Element::Cd => "Cadmium",
-            Element::In => "Indium",
-            Element::Sn => "Tin",
-            Element::Sb => "Antimony",
-            Element::Te => "Tellurium",
-            Element::I  => "Iodine",
-            Element::Xe => "Xenon",
-            Element::Cs => "Cesium",
-            Element::Ba => "Barium",
-            Element::La => "Lanthanum",
-            Element::Ce => "Cerium",
-            Element::Pr => "Praseodymium",
-            Element::Nd => "Neodymium",
-            Element::Pm => "Promethium",
-            Element::Sm => "Samarium",
-            Element::Eu => "Europium",
-            Element::Gd => "Gadolinium",
-            Element::Tb => "Terbium",
-            Element::Dy => "Dysprosium",
-            Element::Ho => "Holmium",
-            Element::Er => "Erbium",
-            Element::Tm => "Thulium",
-            Element::Yb => "Ytterbium",
-            Element::Lu => "Lutetium",
-            Element::Hf => "Hafnium",
-            Element::Ta => "Tantalum",
-            Element::W  => "Tungsten",
-            Element::Re => "Rhenium",
-            Element::Os => "Osmium",
-            Element::Ir => "Iridium",
-            Element::Pt => "Platinum",
-            Element::Au => "Gold",
-            Element::Hg => "Mercury",
-            Element::Tl => "Thallium",
-            Element::Pb => "Lead",
-            Element::Bi => "Bismuth",
-            Element::Po => "Polonium",
-            Element::At => "Astatine",
-            Element::Rn => "Radon",
-            Element::Fr => "Francium",
-            Element::Ra => "Radium",
-            Element::Ac => "Actinium",
-            Element::Th => "Thorium",
-            Element::Pa => "Protactinium",
-            Element::U  => "Uranium",
-            Element::Np => "Neptunium",
-            Element::Pu => "Plutonium",
-            Element::Am => "Americium",
-            Element::Cm => "Curium",
-            Element::Bk => "Berkelium",
-            Element::Cf => "Californium",
-            Element::Es => "Einsteinium",
-            Element::Fm => "Fermium",
-            Element::Md => "Mendelevium",
-            Element::No => "Nobelium",
-            Element::Lr => "Lawerencium",
-            Element::Rf => "Rutherforium",
-            Element::Db => "Dubnium",
-            Element::Sg => "Seaborgium",
-            Element::Bh => "Bohrium",
-            Element::Hs => "Hassium",
-            Element::Mt => "Meitnerium",
-            Element::Ds => "Darmstadtium",
-            Element::Rg => "Roentgenium",
-            Element::Cn => "Copernicium",
-            Element::Nh => "Nihonium",
-            Element::Fl => "Flerovium",
-            Element::Mc => "Moscovium",
-            Element::Lv => "Livermorium",
-            Element::Ts => "Tennessine",
-            Element::Og => "Oganesson",
-        }
-    }
-
-    pub fn number(&self) -> u8 {
-        *self as u8 + 1 // Use Discriminant to get index, them add 1 since index starts at zero
-    }
-
-    pub fn mass(&self) -> f32 {
-        match *self {
-            Element::H  => 1.0080,
-            Element::He => 4.002602,
-            Element::Li => 6.94,
-            Element::Be => 9.0121831,
-            Element::B  => 10.81,
-            Element::C  => 12.011,
-            Element::N  => 14.007,
-            Element::O  => 15.999,
-            Element::F  => 18.998403162,
-            Element::Ne => 20.1797,
-            Element::Na => 22.98976928,
-            Element::Mg => 24.305,
-            Element::Al => 26.9815384,
-            Element::Si => 28.085,
-            Element::P  => 30.973761998,
-            Element::S  => 32.06,
-            Element::Cl => 35.45,
-            Element::Ar => 39.95,
-            Element::K  => 39.0983,
-            Element::Ca => 40.078,
-            Element::Sc => 44.955907,
-            Element::Ti => 47.867,
-            Element::V  => 50.9415,
-            Element::Cr => 51.9961,
-            Element::Mn => 54.938043,
-            Element::Fe => 55.845,
-            Element::Co => 58.933194,
-            Element::Ni => 58.6934,
-            Element::Cu => 63.546,
-            Element::Zn => 65.38,
-            Element::Ga => 69.723,
-            Element::Ge => 72.630,
-            Element::As => 74.921595,
-            Element::Se => 78.971,
-            Element::Br => 79.904,
-            Element::Kr => 83.798,
-            Element::Rb => 85.4678,
-            Element::Sr => 87.62,
-            Element::Y  => 88.905838,
-            Element::Zr => 91.222,
-            Element::Nb => 92.90637,
-            Element::Mo => 95.95,
-            Element::Tc => 97.0,
-            Element::Ru => 101.07,
-            Element::Rh => 102.90549,
-            Element::Pd => 106.42,
-            Element::Ag => 107.8682,
-            Element::Cd => 112.414,
-            Element::In => 114.818,
-            Element::Sn => 118.710,
-            Element::Sb => 121.760,
-            Element::Te => 127.60,
-            Element::I  => 126.90447,
-            Element::Xe => 131.293,
-            Element::Cs => 132.90545196,
-            Element::Ba => 137.327,
-            Element::La => 138.90547,
-            Element::Ce => 140.116,
-            Element::Pr => 140.90766,
-            Element::Nd => 144.242,
-            Element::Pm => 145.0,
-            Element::Sm => 150.36,
-            Element::Eu => 151.964,
-            Element::Gd => 157.249,
-            Element::Tb => 158.925354,
-            Element::Dy => 162.500,
-            Element::Ho => 164.930329,
-            Element::Er => 167.259,
-            Element::Tm => 168.934219,
-            Element::Yb => 173.045,
-            Element::Lu => 174.96669,
-            Element::Hf => 178.486,
-            Element::Ta => 180.94788,
-            Element::W  => 183.84,
-            Element::Re => 186.207,
-            Element::Os => 190.23,
-            Element::Ir => 192.217,
-            Element::Pt => 195.084,
-            Element::Au => 196.966570,
-            Element::Hg => 200.592,
-            Element::Tl => 204.38,
-            Element::Pb => 207.2,
-            Element::Bi => 208.98040,
-            Element::Po => 209.0,
-            Element::At => 210.0,
-            Element::Rn => 222.0,
-            Element::Fr => 223.0,
-            Element::Ra => 226.0,
-            Element::Ac => 227.0,
-            Element::Th => 232.0377,
-            Element::Pa => 231.03588,
-            Element::U  => 238.02891,
-            Element::Np => 237.0,
-            Element::Pu => 244.0,
-            Element::Am => 243.0,
-            Element::Cm => 247.0,
-            Element::Bk => 247.0,
-            Element::Cf => 251.0,
-            Element::Es => 252.0,
-            Element::Fm => 257.0,
-            Element::Md => 258.0,
-            Element::No => 259.0,
-            Element::Lr => 262.0,
-            Element::Rf => 267.0,
-            Element::Db => 270.0,
-            Element::Sg => 269.0,
-            Element::Bh => 270.0,
-            Element::Hs => 270.0,
-            Element::Mt => 278.0,
-            Element::Ds => 281.0,
-            Element::Rg => 281.0,
-            Element::Cn => 285.0,
-            Element::Nh => 286.0,
-            Element::Fl => 289.0,
-            Element::Mc => 289.0,
-            Element::Lv => 293.0,
-            Element::Ts => 293.0,
-            Element::Og => 294.0,
-        }
+impl Coordinate {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Coordinate{ x, y, z }
     }
 }
 
+impl From<[f64; 3]> for Coordinate {
+    fn from(value: [f64; 3]) -> Self {
+        Coordinate::new(value[0], value[1], value[2])
+    }
+}
 
-impl TryFrom<usize> for Element {
+impl TryFrom<Vec<f64>> for Coordinate {
     type Error = ();
-
-    fn try_from(number: usize) -> Result<Self, Self::Error> {
-        match number {
-            1   => Ok(Element::H),
-            2   => Ok(Element::He),
-            3   => Ok(Element::Li),
-            4   => Ok(Element::Be),
-            5   => Ok(Element::B),
-            6   => Ok(Element::C),
-            7   => Ok(Element::N),
-            8   => Ok(Element::O),
-            9   => Ok(Element::F),
-            10  => Ok(Element::Ne),
-            11  => Ok(Element::Na),
-            12  => Ok(Element::Mg),
-            13  => Ok(Element::Al),
-            14  => Ok(Element::Si),
-            15  => Ok(Element::P),
-            16  => Ok(Element::S),
-            17  => Ok(Element::Cl),
-            18  => Ok(Element::Ar),
-            19  => Ok(Element::K),
-            20  => Ok(Element::Ca),
-            21  => Ok(Element::Sc),
-            22  => Ok(Element::Ti),
-            23  => Ok(Element::V),
-            24  => Ok(Element::Cr),
-            25  => Ok(Element::Mn),
-            26  => Ok(Element::Fe),
-            27  => Ok(Element::Co),
-            28  => Ok(Element::Ni),
-            29  => Ok(Element::Cu),
-            30  => Ok(Element::Zn),
-            31  => Ok(Element::Ga),
-            32  => Ok(Element::Ge),
-            33  => Ok(Element::As),
-            34  => Ok(Element::Se),
-            35  => Ok(Element::Br),
-            36  => Ok(Element::Kr),
-            37  => Ok(Element::Rb),
-            38  => Ok(Element::Sr),
-            39  => Ok(Element::Y),
-            40  => Ok(Element::Zr),
-            41  => Ok(Element::Nb),
-            42  => Ok(Element::Mo),
-            43  => Ok(Element::Tc),
-            44  => Ok(Element::Ru),
-            45  => Ok(Element::Rh),
-            46  => Ok(Element::Pd),
-            47  => Ok(Element::Ag),
-            48  => Ok(Element::Cd),
-            49  => Ok(Element::In),
-            50  => Ok(Element::Sn),
-            51  => Ok(Element::Sb),
-            52  => Ok(Element::Te),
-            53  => Ok(Element::I),
-            54  => Ok(Element::Xe),
-            55  => Ok(Element::Cs),
-            56  => Ok(Element::Ba),
-            57  => Ok(Element::La),
-            58  => Ok(Element::Ce),
-            59  => Ok(Element::Pr),
-            60  => Ok(Element::Nd),
-            61  => Ok(Element::Pm),
-            62  => Ok(Element::Sm),
-            63  => Ok(Element::Eu),
-            64  => Ok(Element::Gd),
-            65  => Ok(Element::Tb),
-            66  => Ok(Element::Dy),
-            67  => Ok(Element::Ho),
-            68  => Ok(Element::Er),
-            69  => Ok(Element::Tm),
-            70  => Ok(Element::Yb),
-            71  => Ok(Element::Lu),
-            72  => Ok(Element::Hf),
-            73  => Ok(Element::Ta),
-            74  => Ok(Element::W),
-            75  => Ok(Element::Re),
-            76  => Ok(Element::Os),
-            77  => Ok(Element::Ir),
-            78  => Ok(Element::Pt),
-            79  => Ok(Element::Au),
-            80  => Ok(Element::Hg),
-            81  => Ok(Element::Tl),
-            82  => Ok(Element::Pb),
-            83  => Ok(Element::Bi),
-            84  => Ok(Element::Po),
-            85  => Ok(Element::At),
-            86  => Ok(Element::Rn),
-            87  => Ok(Element::Fr),
-            88  => Ok(Element::Ra),
-            89  => Ok(Element::Ac),
-            90  => Ok(Element::Th),
-            91  => Ok(Element::Pa),
-            92  => Ok(Element::U),
-            93  => Ok(Element::Np),
-            94  => Ok(Element::Pu),
-            95  => Ok(Element::Am),
-            96  => Ok(Element::Cm),
-            97  => Ok(Element::Bk),
-            98  => Ok(Element::Cf),
-            99  => Ok(Element::Es),
-            100 => Ok(Element::Fm),
-            101 => Ok(Element::Md),
-            102 => Ok(Element::No),
-            103 => Ok(Element::Lr),
-            104 => Ok(Element::Rf),
-            105 => Ok(Element::Db),
-            106 => Ok(Element::Sg),
-            107 => Ok(Element::Bh),
-            108 => Ok(Element::Hs),
-            109 => Ok(Element::Mt),
-            110 => Ok(Element::Ds),
-            111 => Ok(Element::Rg),
-            112 => Ok(Element::Cn),
-            113 => Ok(Element::Nh),
-            114 => Ok(Element::Fl),
-            115 => Ok(Element::Mc),
-            116 => Ok(Element::Lv),
-            117 => Ok(Element::Ts),
-            118 => Ok(Element::Og),
+    fn try_from(value: Vec<f64>) -> Result<Self, Self::Error> {
+        match value.len() {
+            3 => Ok(Coordinate::new(value[0], value[1], value[2])),
             _ => Err(()),
         }
     }
 }
 
+impl Neg for Coordinate {
+    type Output = Self;
+
+    fn neg(mut self) -> Self {
+        self.x = -self.x;
+        self.y = -self.y;
+        self.z = -self.z;
+        self
+    }
+}
+
+impl Add for Coordinate {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl Add for &Coordinate {
+    type Output = Coordinate;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl AddAssign<&Coordinate> for Coordinate {
+    fn add_assign(&mut self, rhs: &Coordinate) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self.z += rhs.z;
+    }
+}
+
+impl AddAssign for Coordinate {
+    fn add_assign(&mut self, rhs: Self) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self.z += rhs.z;
+    }
+}
+
+impl Sub for Coordinate {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self {
+        Coordinate::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
+impl Sub for &Coordinate {
+    type Output = Coordinate;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
+impl SubAssign for Coordinate {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
+        self.z -= rhs.z;
+    }
+}
+
+impl SubAssign<&Coordinate> for Coordinate {
+    fn sub_assign(&mut self, rhs: &Coordinate) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
+        self.z -= rhs.z;
+    }
+}
+
+impl PartialEq for Coordinate {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.x != other.x && self.y != other.y && self.z != other.z
+    }
+}
 
 #[derive(Debug)]
 pub struct Atom {
     pub element: Element,
-    pub xyz: [f64; 3],
+    pub coord: Coordinate,
 }
 
 
 impl Atom {
-    pub fn new(element: Element, xyz: [f64; 3]) -> Atom {
+    pub fn new(element: Element, coord: Coordinate) -> Atom {
         Atom {
             element,
-            xyz,
+            coord,
         }
     }
 
@@ -656,8 +148,8 @@ impl Atom {
         &self.element
     }
 
-    pub fn xyz(&self) -> &[f64; 3] {
-        &self.xyz
+    pub fn coord(&self) -> &Coordinate {
+        &self.coord
     }
 
     pub fn element_str(&self) -> &str  {
@@ -679,7 +171,7 @@ impl Geometry {
     }
 
 
-    pub fn from_vecs(elements: Vec<Element>, xyzs: Vec<[f64; 3]>) -> Geometry {
+    pub fn from_vecs(elements: Vec<Element>, xyzs: Vec<Coordinate>) -> Geometry {
         if elements.len() != xyzs.len() {
             panic!("There must be as many elements as coordinates, but you supplied {0} element(s) and {1} coordinate(s)", elements.len(), xyzs.len());
         }
@@ -688,13 +180,8 @@ impl Geometry {
 
         let atom_iter = elements.into_iter().zip(xyzs);
 
-        for (element, xyz) in atom_iter {
-            atoms.push(
-                Atom {
-                    element,
-                    xyz
-                }
-            )
+        for (element, coord) in atom_iter {
+            atoms.push(Atom { element, coord })
         }
 
         Geometry::new(atoms)
@@ -710,7 +197,7 @@ impl Geometry {
 
         let num_atoms= match xyz_string.next() {
             Some(num) => num,
-            None => panic!("XYZ File {} is improperly formatted!", xyz_path.display()),
+            None => panic!("XYZ File {} is improperly formatted!", xyz_path.canonicalize()?.display()),
         };
 
         let num_atoms: u32 = match num_atoms.trim().parse() {
@@ -731,9 +218,9 @@ impl Geometry {
             let x: f64 = row[1].parse().expect("Improperly formatted float for coordinate!");
             let y: f64 = row[2].parse().expect("Improperly formatted float for coordinate!");
             let z: f64 = row[3].parse().expect("Improperly formatted float for coordinate!");
-            let xyz: [f64; 3] = [x, y, z];
+            let coord = Coordinate::new(x, y, z);
 
-            atoms.push(Atom::new(element, xyz));
+            atoms.push(Atom::new(element, coord));
         }
 
         if num_atoms != atoms.len().try_into().unwrap() {
@@ -786,9 +273,9 @@ impl Geometry {
             let x: f64 = row[1].parse().expect("Improperly formatted float for coordinate!");
             let y: f64 = row[2].parse().expect("Improperly formatted float for coordinate!");
             let z: f64 = row[3].parse().expect("Improperly formatted float for coordinate!");
-            let xyz: [f64; 3] = [x, y, z];
+            let coord = Coordinate::new(x, y, z);
 
-            atoms.push(Atom::new(element, xyz));
+            atoms.push(Atom::new(element, coord));
         }
 
         if num_atoms != atoms.len().try_into().unwrap() {
@@ -798,7 +285,6 @@ impl Geometry {
         Ok(Geometry::new(atoms))
 
     }
-
 }
 
 
@@ -853,15 +339,6 @@ mod tests {
 
 
     #[test]
-    fn element_as_ref_str() {
-        let ref_str = Element::H.as_ref();
-        assert_eq!(ref_str, "H");
-        let ref_str = Element::Ru.as_ref();
-        assert_eq!(ref_str, "Ru");
-    }
-
-
-    #[test]
     fn element_from_string() {
         let element = Element::from_str("H").unwrap();
         assert_eq!(element, Element::H);
@@ -890,13 +367,13 @@ mod tests {
     fn atom_init() {
         let atom = Atom::new(
             Element::Ru,
-            [0.0, 42.0, 137.0]
+            Coordinate::new(0.0, 42.0, 137.0)
         );
         assert_eq!(atom.element, Element::Ru);
-        assert_eq!(atom.xyz, [0.0, 42.0, 137.0]);
-        assert_eq!(atom.xyz[0], 0.0);
-        assert_eq!(atom.xyz[1], 42.0);
-        assert_eq!(atom.xyz[2], 137.0);
+        assert_eq!(atom.coord, Coordinate::new(0.0, 42.0, 137.0));
+        assert_eq!(atom.coord.x, 0.0);
+        assert_eq!(atom.coord.y, 42.0);
+        assert_eq!(atom.coord.z, 137.0);
     }
 
 
@@ -904,10 +381,10 @@ mod tests {
     fn atom_get_coords() {
         let atom = Atom::new(
             Element::Ru,
-            [0.0, 42.0, 137.0],
+            Coordinate::new(0.0, 42.0, 137.0),
         );
-        let xyz = atom.xyz();
-        assert_eq!(*xyz, [0.0, 42.0, 137.0]);
+        let xyz = atom.coord();
+        assert_eq!(*xyz, Coordinate::new(0.0, 42.0, 137.0));
     }
 
 
@@ -915,14 +392,14 @@ mod tests {
     fn atom_replace_coords() {
         let mut atom = Atom::new(
             Element::Ru,
-            [0.0, 42.0, 137.0]
+            Coordinate::new(0.0, 42.0, 137.0)
         );
 
-        atom.xyz = [42.0, 137.0, 0.0];
+        atom.coord = Coordinate::new(42.0, 137.0, 0.0);
 
-        assert_eq!(atom.xyz[0], 42.0);
-        assert_eq!(atom.xyz[1], 137.0);
-        assert_eq!(atom.xyz[2], 0.0);
+        assert_eq!(atom.coord.x, 42.0);
+        assert_eq!(atom.coord.y, 137.0);
+        assert_eq!(atom.coord.z, 0.0);
     }
 
 
@@ -930,7 +407,7 @@ mod tests {
     fn atom_element_str() {
         let atom = Atom::new(
             Element::Ru,
-            [0.0, 42.0, 137.0]
+            Coordinate::new(0.0, 42.0, 137.0)
         );
         let name = atom.element_str();
         assert_eq!(name, "Ru");
@@ -940,31 +417,31 @@ mod tests {
     #[test]
     fn geometry_init() {
         let atoms = vec![
-            Atom::new(Element::H , [0.0, 1.0, 2.0]),
-            Atom::new(Element::Ru, [3.0, 4.0, 5.0]),
+            Atom::new(Element::H , Coordinate::new(0.0, 1.0, 2.0)),
+            Atom::new(Element::Ru, Coordinate::new(3.0, 4.0, 5.0)),
         ];
         let geometry = Geometry {atoms};
 
         assert_eq!(geometry.atoms[0].element, Element::H);
         assert_eq!(geometry.atoms[1].element, Element::Ru);
         
-        assert_eq!(geometry.atoms[0].xyz, [0.0, 1.0, 2.0]);
-        assert_eq!(geometry.atoms[1].xyz, [3.0, 4.0, 5.0]);
+        assert_eq!(geometry.atoms[0].coord, Coordinate::new(0.0, 1.0, 2.0));
+        assert_eq!(geometry.atoms[1].coord, Coordinate::new(3.0, 4.0, 5.0));
     }
 
 
     #[test]
     fn geometry_from_vec() {
         let elements = vec![Element::H, Element::Ru];
-        let xyzs = vec![[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]];
+        let xyzs = vec![Coordinate::new(0.0, 1.0, 2.0), Coordinate::new(3.0, 4.0, 5.0)];
 
         let geometry = Geometry::from_vecs(elements, xyzs);
 
         assert_eq!(geometry.atoms[0].element, Element::H);
         assert_eq!(geometry.atoms[1].element, Element::Ru);
         
-        assert_eq!(geometry.atoms[0].xyz, [0.0, 1.0, 2.0]);
-        assert_eq!(geometry.atoms[1].xyz, [3.0, 4.0, 5.0]);
+        assert_eq!(geometry.atoms[0].coord, Coordinate::new(0.0, 1.0, 2.0));
+        assert_eq!(geometry.atoms[1].coord, Coordinate::new(3.0, 4.0, 5.0));
     }
 
 
@@ -977,9 +454,9 @@ mod tests {
         assert_eq!(geometry.atoms[1].element, Element::H);
         assert_eq!(geometry.atoms[2].element, Element::H);
 
-        assert_eq!(geometry.atoms[0].xyz, [-0.000000, -0.000000, -0.000000]);
-        assert_eq!(geometry.atoms[1].xyz, [-0.584028, -0.760231,  0.000000]);
-        assert_eq!(geometry.atoms[2].xyz, [-0.584028,  0.760231, -0.000000]);
+        assert_eq!(geometry.atoms[0].coord, Coordinate::new(-0.000000, -0.000000, -0.000000));
+        assert_eq!(geometry.atoms[1].coord, Coordinate::new(-0.584028, -0.760231,  0.000000));
+        assert_eq!(geometry.atoms[2].coord, Coordinate::new(-0.584028,  0.760231, -0.000000));
         
         let num_atoms: u32 = geometry.atoms.len().try_into().unwrap();
         assert_eq!(num_atoms, 3);
@@ -995,9 +472,9 @@ mod tests {
         assert_eq!(geometry.atoms[1].element, Element::H);
         assert_eq!(geometry.atoms[2].element, Element::H);
 
-        assert_eq!(geometry.atoms[0].xyz, [8.770451552, 9.174907782, 8.771938274]);
-        assert_eq!(geometry.atoms[1].xyz, [9.544851428, 8.573414302, 8.771938274]);
-        assert_eq!(geometry.atoms[2].xyz, [8.000511848, 8.567492748, 8.771938274]);
+        assert_eq!(geometry.atoms[0].coord, Coordinate::new(8.770451552, 9.174907782, 8.771938274));
+        assert_eq!(geometry.atoms[1].coord, Coordinate::new(9.544851428, 8.573414302, 8.771938274));
+        assert_eq!(geometry.atoms[2].coord, Coordinate::new(8.000511848, 8.567492748, 8.771938274));
         
         let num_atoms: u32 = geometry.atoms.len().try_into().unwrap();
         assert_eq!(num_atoms, 3);
