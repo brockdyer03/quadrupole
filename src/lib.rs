@@ -1,6 +1,5 @@
 mod elements;
 
-#[allow(unused_imports)]
 use std::str::FromStr;
 
 use std::{
@@ -29,7 +28,7 @@ use ndarray::{self, Array2, arr2};
 pub struct Tensor3x3(Array2<f64>);
 
 impl Tensor3x3 {
-    fn new(array: [[f64; 3]; 3]) -> Tensor3x3 {
+    pub fn new(array: [[f64; 3]; 3]) -> Tensor3x3 {
         Tensor3x3(arr2(&array))
     }
 }
@@ -243,7 +242,7 @@ impl Rem for &Coordinate {
 }
 
 impl Coordinate {
-    pub fn outer_product(self, rhs: Coordinate) -> Tensor3x3 {
+    pub fn outer_product(&self, rhs: &Coordinate) -> Tensor3x3 {
         let mut outer: [[f64; 3]; 3] = [[0.0; 3]; 3];
         for i in 0..3 {
             for j in 0..3 {
@@ -252,13 +251,17 @@ impl Coordinate {
         }
         Tensor3x3::new(outer)
     }
+
+    pub fn nearest_int(&self) -> Coordinate {
+        Coordinate::new(self.x.round(), self.y.round(), self.z.round())
+    }
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Atom {
-    pub element: Element,
-    pub coord: Coordinate,
+    element: Element,
+    coord: Coordinate,
 }
 
 impl Atom {
@@ -285,7 +288,7 @@ impl Atom {
 
 #[derive(Debug)]
 pub struct Geometry {
-    pub atoms: Vec<Atom>,
+    atoms: Vec<Atom>,
 }
 
 impl Geometry {
@@ -295,6 +298,9 @@ impl Geometry {
         }
     }
 
+    pub fn atoms(&self) -> Vec<Atom> {
+        self.atoms.clone()
+    }
 
     pub fn from_vecs(elements: Vec<Element>, xyzs: Vec<Coordinate>) -> Geometry {
         if elements.len() != xyzs.len() {
@@ -311,7 +317,6 @@ impl Geometry {
 
         Geometry::new(atoms)
     }
-
 
     pub fn from_xyz(xyz_path: &Path) -> Result<Geometry, io::Error> {
         let mut xyz_string = String::new();
@@ -355,7 +360,6 @@ impl Geometry {
         Ok(Geometry::new(atoms))
 
     }
-
 
     pub fn from_xsf(xsf_path: &Path) -> Result<Geometry, io::Error> {
         let mut xsf_string = String::new();
@@ -483,7 +487,7 @@ mod tests {
     #[test]
     fn coordinate_outer_product() {
         let coord = Coordinate::new(1.0, 2.0, 3.0);
-        let outer = coord.outer_product(coord);
+        let outer = coord.outer_product(&coord);
         assert_eq!(outer, Tensor3x3::new([
             [1.0, 2.0, 3.0],
             [2.0, 4.0, 6.0],
