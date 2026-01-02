@@ -869,7 +869,9 @@ class Quadrupole:
         expt_signs = np.sign(expt_quad)
         calc_signs = np.sign(calc_quad)
 
+        invert_sign = False
         if expt_signs.sum() != calc_signs.sum():
+            invert_sign = True
             calc_quad = calc_quad * np.array([-1., -1., -1.])
 
         permutations = [
@@ -889,7 +891,10 @@ class Quadrupole:
 
         best_match = min(diffs, key=lambda x: np.sum(np.abs(x[1])))
 
-        best_quad = best_match[0]
+        if invert_sign:
+            best_quad = -best_match[0]
+        else:
+            best_quad = best_match[0]
 
         return Quadrupole(best_quad)
 
