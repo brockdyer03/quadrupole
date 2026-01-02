@@ -5,7 +5,15 @@ use std::str::FromStr;
 
 use std::{
     fmt::{Debug},
-    ops::{Add, AddAssign, Neg, Sub, SubAssign, Div, Mul, Rem},
+    ops::{
+        Neg,
+        Add, AddAssign,
+        Sub, SubAssign, 
+        Mul, MulAssign,
+        Div, DivAssign,
+        Rem,
+        Index,
+    },
     cmp::PartialEq,
     path::Path,
     fs::File,
@@ -14,6 +22,16 @@ use std::{
 
 use crate::elements::Element;
 
+use ndarray::{self, Array2, arr2};
+
+#[derive(Debug, PartialEq)]
+pub struct Tensor3x3(Array2<f64>);
+
+impl Tensor3x3 {
+    fn new(array: [[f64; 3]; 3]) -> Tensor3x3 {
+        Tensor3x3(arr2(&array))
+    }
+}
 
 #[derive(Debug, Copy, Clone)]
 pub struct Coordinate {
@@ -40,6 +58,19 @@ impl TryFrom<Vec<f64>> for Coordinate {
         match value.len() {
             3 => Ok(Coordinate::new(value[0], value[1], value[2])),
             _ => Err(()),
+        }
+    }
+}
+
+impl Index<usize> for Coordinate {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => panic!("Index {index} out of bounds for Coordinate (max is 2)!")
         }
     }
 }
@@ -71,16 +102,16 @@ impl Add for &Coordinate {
     }
 }
 
-impl AddAssign<&Coordinate> for Coordinate {
-    fn add_assign(&mut self, rhs: &Coordinate) {
+impl AddAssign for Coordinate {
+    fn add_assign(&mut self, rhs: Self) {
         self.x += rhs.x;
         self.y += rhs.y;
         self.z += rhs.z;
     }
 }
 
-impl AddAssign for Coordinate {
-    fn add_assign(&mut self, rhs: Self) {
+impl AddAssign<&Coordinate> for Coordinate {
+    fn add_assign(&mut self, rhs: &Coordinate) {
         self.x += rhs.x;
         self.y += rhs.y;
         self.z += rhs.z;
@@ -126,6 +157,98 @@ impl PartialEq for Coordinate {
 
     fn ne(&self, other: &Self) -> bool {
         self.x != other.x && self.y != other.y && self.z != other.z
+    }
+}
+
+impl Mul for Coordinate {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
+    }
+}
+
+impl Mul for &Coordinate {
+    type Output = Coordinate;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
+    }
+}
+
+impl MulAssign for Coordinate {
+    fn mul_assign(&mut self, rhs: Self) {
+        self.x *= rhs.x;
+        self.y *= rhs.y;
+        self.z *= rhs.z;
+    }
+}
+
+impl MulAssign<&Coordinate> for Coordinate {
+    fn mul_assign(&mut self, rhs: &Coordinate) {
+        self.x *= rhs.x;
+        self.y *= rhs.y;
+        self.z *= rhs.z;
+    }
+}
+
+impl Div for Coordinate {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z)
+    }
+}
+
+impl Div for &Coordinate {
+    type Output = Coordinate;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z)
+    }
+}
+
+impl DivAssign for Coordinate {
+    fn div_assign(&mut self, rhs: Self) {
+        self.x /= rhs.x;
+        self.y /= rhs.y;
+        self.z /= rhs.z;
+    }
+}
+
+impl DivAssign<&Coordinate> for Coordinate {
+    fn div_assign(&mut self, rhs: &Coordinate) {
+        self.x /= rhs.x;
+        self.y /= rhs.y;
+        self.z /= rhs.z;
+    }
+}
+
+impl Rem for Coordinate {
+    type Output = Self;
+
+    fn rem(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x % rhs.x, self.y % rhs.y, self.z % rhs.z)
+    }
+}
+
+impl Rem for &Coordinate {
+    type Output = Coordinate;
+
+    fn rem(self, rhs: Self) -> Self::Output {
+        Coordinate::new(self.x % rhs.x, self.y % rhs.y, self.z % rhs.z)
+    }
+}
+
+impl Coordinate {
+    pub fn outer_product(self, rhs: Coordinate) -> Tensor3x3 {
+        let mut outer: [[f64; 3]; 3] = [[0.0; 3]; 3];
+        for i in 0..3 {
+            for j in 0..3 {
+                outer[i][j] = self[i] * rhs[j]
+            }
+        }
+        Tensor3x3::new(outer)
     }
 }
 
@@ -301,7 +424,6 @@ mod tests {
         assert_eq!(symbol, "Ru");
     }
 
-
     #[test]
     fn get_element_name() {
         let name = Element::H.name();
@@ -309,7 +431,6 @@ mod tests {
         let name = Element::Ru.name();
         assert_eq!(name, "Ruthenium");
     }
-
 
     #[test]
     fn get_element_number() {
@@ -319,7 +440,6 @@ mod tests {
         assert_eq!(number, 44)
     }
 
-
     #[test]
     fn get_element_weight() {
         let weight = Element::H.weight();
@@ -327,7 +447,6 @@ mod tests {
         let weight = Element::Ru.weight();
         assert_eq!(weight, 101.07);
     }
-
 
     #[test]
     fn element_display() {
@@ -337,7 +456,6 @@ mod tests {
         assert_eq!(display_name, "Ru");
     }
 
-
     #[test]
     fn element_from_string() {
         let element = Element::from_str("H").unwrap();
@@ -345,7 +463,6 @@ mod tests {
         let element = Element::from_str("Ru").unwrap();
         assert_eq!(element, Element::Ru);
     }
-
 
     #[test]
     fn element_from_usize() {
@@ -362,6 +479,16 @@ mod tests {
         Element::try_from(137).expect("Out of bounds error");
     }
 
+    #[test]
+    fn coordinate_outer_product() {
+        let coord = Coordinate::new(1.0, 2.0, 3.0);
+        let outer = coord.outer_product(coord);
+        assert_eq!(outer, Tensor3x3::new([
+            [1.0, 2.0, 3.0],
+            [2.0, 4.0, 6.0],
+            [3.0, 6.0, 9.0]
+        ]));
+    }
 
     #[test]
     fn atom_init() {
