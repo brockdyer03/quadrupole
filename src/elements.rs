@@ -1,12 +1,15 @@
-// https://ciaaw.org/abridged-atomic-weights.htm
+// Sources used for code:
 // https://iupac.qmul.ac.uk/AtWt/
+
+// Data Retrieved on 2026-01-01 21:22:06.950397
+// Code was written automatically by src/elements/write_elements.py
 
 use strum_macros;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, strum_macros::EnumString, strum_macros::Display, strum_macros::AsRefStr)]
 pub enum Element {
-    Xx, // Start elements with dummy
-    H,  // has benefit of making H be 1 too
+    Xx,
+    H,
     He,
     Li,
     Be,
@@ -132,7 +135,6 @@ impl Element {
         self.as_ref()
     }
 
-
     pub fn name(&self) -> &str {
         match *self {
             Element::Xx => "Unknown",
@@ -238,8 +240,8 @@ impl Element {
             Element::Fm => "Fermium",
             Element::Md => "Mendelevium",
             Element::No => "Nobelium",
-            Element::Lr => "Lawerencium",
-            Element::Rf => "Rutherforium",
+            Element::Lr => "Lawrencium",
+            Element::Rf => "Rutherfordium",
             Element::Db => "Dubnium",
             Element::Sg => "Seaborgium",
             Element::Bh => "Bohrium",
@@ -254,16 +256,14 @@ impl Element {
             Element::Lv => "Livermorium",
             Element::Ts => "Tennessine",
             Element::Og => "Oganesson",
-        }
+      }
     }
-
 
     pub fn number(&self) -> u8 {
         *self as u8
     }
 
-    
-    pub fn mass(&self) -> f32 {
+    pub fn weight(&self) -> f32 {
         match *self {
             Element::Xx => 0.0,
             Element::H  => 1.0080,

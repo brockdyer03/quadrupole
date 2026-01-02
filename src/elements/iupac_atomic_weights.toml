@@ -1,0 +1,591 @@
+[[element]]
+[element.H]
+atomic_number = 1
+name          = "Hydrogen"
+atomic_weight = 1.0080
+
+[element.He]
+atomic_number = 2
+name          = "Helium"
+atomic_weight = 4.002602
+
+[element.Li]
+atomic_number = 3
+name          = "Lithium"
+atomic_weight = 6.94
+
+[element.Be]
+atomic_number = 4
+name          = "Beryllium"
+atomic_weight = 9.0121831
+
+[element.B]
+atomic_number = 5
+name          = "Boron"
+atomic_weight = 10.81
+
+[element.C]
+atomic_number = 6
+name          = "Carbon"
+atomic_weight = 12.011
+
+[element.N]
+atomic_number = 7
+name          = "Nitrogen"
+atomic_weight = 14.007
+
+[element.O]
+atomic_number = 8
+name          = "Oxygen"
+atomic_weight = 15.999
+
+[element.F]
+atomic_number = 9
+name          = "Fluorine"
+atomic_weight = 18.998403162
+
+[element.Ne]
+atomic_number = 10
+name          = "Neon"
+atomic_weight = 20.1797
+
+[element.Na]
+atomic_number = 11
+name          = "Sodium"
+atomic_weight = 22.98976928
+
+[element.Mg]
+atomic_number = 12
+name          = "Magnesium"
+atomic_weight = 24.305
+
+[element.Al]
+atomic_number = 13
+name          = "Aluminium"
+atomic_weight = 26.9815384
+
+[element.Si]
+atomic_number = 14
+name          = "Silicon"
+atomic_weight = 28.085
+
+[element.P]
+atomic_number = 15
+name          = "Phosphorus"
+atomic_weight = 30.973761998
+
+[element.S]
+atomic_number = 16
+name          = "Sulfur"
+atomic_weight = 32.06
+
+[element.Cl]
+atomic_number = 17
+name          = "Chlorine"
+atomic_weight = 35.45
+
+[element.Ar]
+atomic_number = 18
+name          = "Argon"
+atomic_weight = 39.95
+
+[element.K]
+atomic_number = 19
+name          = "Potassium"
+atomic_weight = 39.0983
+
+[element.Ca]
+atomic_number = 20
+name          = "Calcium"
+atomic_weight = 40.078
+
+[element.Sc]
+atomic_number = 21
+name          = "Scandium"
+atomic_weight = 44.955907
+
+[element.Ti]
+atomic_number = 22
+name          = "Titanium"
+atomic_weight = 47.867
+
+[element.V]
+atomic_number = 23
+name          = "Vanadium"
+atomic_weight = 50.9415
+
+[element.Cr]
+atomic_number = 24
+name          = "Chromium"
+atomic_weight = 51.9961
+
+[element.Mn]
+atomic_number = 25
+name          = "Manganese"
+atomic_weight = 54.938043
+
+[element.Fe]
+atomic_number = 26
+name          = "Iron"
+atomic_weight = 55.845
+
+[element.Co]
+atomic_number = 27
+name          = "Cobalt"
+atomic_weight = 58.933194
+
+[element.Ni]
+atomic_number = 28
+name          = "Nickel"
+atomic_weight = 58.6934
+
+[element.Cu]
+atomic_number = 29
+name          = "Copper"
+atomic_weight = 63.546
+
+[element.Zn]
+atomic_number = 30
+name          = "Zinc"
+atomic_weight = 65.38
+
+[element.Ga]
+atomic_number = 31
+name          = "Gallium"
+atomic_weight = 69.723
+
+[element.Ge]
+atomic_number = 32
+name          = "Germanium"
+atomic_weight = 72.630
+
+[element.As]
+atomic_number = 33
+name          = "Arsenic"
+atomic_weight = 74.921595
+
+[element.Se]
+atomic_number = 34
+name          = "Selenium"
+atomic_weight = 78.971
+
+[element.Br]
+atomic_number = 35
+name          = "Bromine"
+atomic_weight = 79.904
+
+[element.Kr]
+atomic_number = 36
+name          = "Krypton"
+atomic_weight = 83.798
+
+[element.Rb]
+atomic_number = 37
+name          = "Rubidium"
+atomic_weight = 85.4678
+
+[element.Sr]
+atomic_number = 38
+name          = "Strontium"
+atomic_weight = 87.62
+
+[element.Y]
+atomic_number = 39
+name          = "Yttrium"
+atomic_weight = 88.905838
+
+[element.Zr]
+atomic_number = 40
+name          = "Zirconium"
+atomic_weight = 91.222
+
+[element.Nb]
+atomic_number = 41
+name          = "Niobium"
+atomic_weight = 92.90637
+
+[element.Mo]
+atomic_number = 42
+name          = "Molybdenum"
+atomic_weight = 95.95
+
+[element.Tc]
+atomic_number = 43
+name          = "Technetium"
+atomic_weight = 97
+
+[element.Ru]
+atomic_number = 44
+name          = "Ruthenium"
+atomic_weight = 101.07
+
+[element.Rh]
+atomic_number = 45
+name          = "Rhodium"
+atomic_weight = 102.90549
+
+[element.Pd]
+atomic_number = 46
+name          = "Palladium"
+atomic_weight = 106.42
+
+[element.Ag]
+atomic_number = 47
+name          = "Silver"
+atomic_weight = 107.8682
+
+[element.Cd]
+atomic_number = 48
+name          = "Cadmium"
+atomic_weight = 112.414
+
+[element.In]
+atomic_number = 49
+name          = "Indium"
+atomic_weight = 114.818
+
+[element.Sn]
+atomic_number = 50
+name          = "Tin"
+atomic_weight = 118.710
+
+[element.Sb]
+atomic_number = 51
+name          = "Antimony"
+atomic_weight = 121.760
+
+[element.Te]
+atomic_number = 52
+name          = "Tellurium"
+atomic_weight = 127.60
+
+[element.I]
+atomic_number = 53
+name          = "Iodine"
+atomic_weight = 126.90447
+
+[element.Xe]
+atomic_number = 54
+name          = "Xenon"
+atomic_weight = 131.293
+
+[element.Cs]
+atomic_number = 55
+name          = "Caesium"
+atomic_weight = 132.90545196
+
+[element.Ba]
+atomic_number = 56
+name          = "Barium"
+atomic_weight = 137.327
+
+[element.La]
+atomic_number = 57
+name          = "Lanthanum"
+atomic_weight = 138.90547
+
+[element.Ce]
+atomic_number = 58
+name          = "Cerium"
+atomic_weight = 140.116
+
+[element.Pr]
+atomic_number = 59
+name          = "Praseodymium"
+atomic_weight = 140.90766
+
+[element.Nd]
+atomic_number = 60
+name          = "Neodymium"
+atomic_weight = 144.242
+
+[element.Pm]
+atomic_number = 61
+name          = "Promethium"
+atomic_weight = 145
+
+[element.Sm]
+atomic_number = 62
+name          = "Samarium"
+atomic_weight = 150.36
+
+[element.Eu]
+atomic_number = 63
+name          = "Europium"
+atomic_weight = 151.964
+
+[element.Gd]
+atomic_number = 64
+name          = "Gadolinium"
+atomic_weight = 157.249
+
+[element.Tb]
+atomic_number = 65
+name          = "Terbium"
+atomic_weight = 158.925354
+
+[element.Dy]
+atomic_number = 66
+name          = "Dysprosium"
+atomic_weight = 162.500
+
+[element.Ho]
+atomic_number = 67
+name          = "Holmium"
+atomic_weight = 164.930329
+
+[element.Er]
+atomic_number = 68
+name          = "Erbium"
+atomic_weight = 167.259
+
+[element.Tm]
+atomic_number = 69
+name          = "Thulium"
+atomic_weight = 168.934219
+
+[element.Yb]
+atomic_number = 70
+name          = "Ytterbium"
+atomic_weight = 173.045
+
+[element.Lu]
+atomic_number = 71
+name          = "Lutetium"
+atomic_weight = 174.96669
+
+[element.Hf]
+atomic_number = 72
+name          = "Hafnium"
+atomic_weight = 178.486
+
+[element.Ta]
+atomic_number = 73
+name          = "Tantalum"
+atomic_weight = 180.94788
+
+[element.W]
+atomic_number = 74
+name          = "Tungsten"
+atomic_weight = 183.84
+
+[element.Re]
+atomic_number = 75
+name          = "Rhenium"
+atomic_weight = 186.207
+
+[element.Os]
+atomic_number = 76
+name          = "Osmium"
+atomic_weight = 190.23
+
+[element.Ir]
+atomic_number = 77
+name          = "Iridium"
+atomic_weight = 192.217
+
+[element.Pt]
+atomic_number = 78
+name          = "Platinum"
+atomic_weight = 195.084
+
+[element.Au]
+atomic_number = 79
+name          = "Gold"
+atomic_weight = 196.966570
+
+[element.Hg]
+atomic_number = 80
+name          = "Mercury"
+atomic_weight = 200.592
+
+[element.Tl]
+atomic_number = 81
+name          = "Thallium"
+atomic_weight = 204.38
+
+[element.Pb]
+atomic_number = 82
+name          = "Lead"
+atomic_weight = 207.2
+
+[element.Bi]
+atomic_number = 83
+name          = "Bismuth"
+atomic_weight = 208.98040
+
+[element.Po]
+atomic_number = 84
+name          = "Polonium"
+atomic_weight = 209
+
+[element.At]
+atomic_number = 85
+name          = "Astatine"
+atomic_weight = 210
+
+[element.Rn]
+atomic_number = 86
+name          = "Radon"
+atomic_weight = 222
+
+[element.Fr]
+atomic_number = 87
+name          = "Francium"
+atomic_weight = 223
+
+[element.Ra]
+atomic_number = 88
+name          = "Radium"
+atomic_weight = 226
+
+[element.Ac]
+atomic_number = 89
+name          = "Actinium"
+atomic_weight = 227
+
+[element.Th]
+atomic_number = 90
+name          = "Thorium"
+atomic_weight = 232.0377
+
+[element.Pa]
+atomic_number = 91
+name          = "Protactinium"
+atomic_weight = 231.03588
+
+[element.U]
+atomic_number = 92
+name          = "Uranium"
+atomic_weight = 238.02891
+
+[element.Np]
+atomic_number = 93
+name          = "Neptunium"
+atomic_weight = 237
+
+[element.Pu]
+atomic_number = 94
+name          = "Plutonium"
+atomic_weight = 244
+
+[element.Am]
+atomic_number = 95
+name          = "Americium"
+atomic_weight = 243
+
+[element.Cm]
+atomic_number = 96
+name          = "Curium"
+atomic_weight = 247
+
+[element.Bk]
+atomic_number = 97
+name          = "Berkelium"
+atomic_weight = 247
+
+[element.Cf]
+atomic_number = 98
+name          = "Californium"
+atomic_weight = 251
+
+[element.Es]
+atomic_number = 99
+name          = "Einsteinium"
+atomic_weight = 252
+
+[element.Fm]
+atomic_number = 100
+name          = "Fermium"
+atomic_weight = 257
+
+[element.Md]
+atomic_number = 101
+name          = "Mendelevium"
+atomic_weight = 258
+
+[element.No]
+atomic_number = 102
+name          = "Nobelium"
+atomic_weight = 259
+
+[element.Lr]
+atomic_number = 103
+name          = "Lawrencium"
+atomic_weight = 262
+
+[element.Rf]
+atomic_number = 104
+name          = "Rutherfordium"
+atomic_weight = 267
+
+[element.Db]
+atomic_number = 105
+name          = "Dubnium"
+atomic_weight = 270
+
+[element.Sg]
+atomic_number = 106
+name          = "Seaborgium"
+atomic_weight = 269
+
+[element.Bh]
+atomic_number = 107
+name          = "Bohrium"
+atomic_weight = 270
+
+[element.Hs]
+atomic_number = 108
+name          = "Hassium"
+atomic_weight = 270
+
+[element.Mt]
+atomic_number = 109
+name          = "Meitnerium"
+atomic_weight = 278
+
+[element.Ds]
+atomic_number = 110
+name          = "Darmstadtium"
+atomic_weight = 281
+
+[element.Rg]
+atomic_number = 111
+name          = "Roentgenium"
+atomic_weight = 281
+
+[element.Cn]
+atomic_number = 112
+name          = "Copernicium"
+atomic_weight = 285
+
+[element.Nh]
+atomic_number = 113
+name          = "Nihonium"
+atomic_weight = 286
+
+[element.Fl]
+atomic_number = 114
+name          = "Flerovium"
+atomic_weight = 289
+
+[element.Mc]
+atomic_number = 115
+name          = "Moscovium"
+atomic_weight = 289
+
+[element.Lv]
+atomic_number = 116
+name          = "Livermorium"
+atomic_weight = 293
+
+[element.Ts]
+atomic_number = 117
+name          = "Tennessine"
+atomic_weight = 293
+
+[element.Og]
+atomic_number = 118
+name          = "Oganesson"
+atomic_weight = 294
+

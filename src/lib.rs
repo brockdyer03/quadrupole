@@ -321,11 +321,11 @@ mod tests {
 
 
     #[test]
-    fn get_element_mass() {
-        let mass = Element::H.mass();
-        assert_eq!(mass, 1.0080);
-        let mass = Element::Ru.mass();
-        assert_eq!(mass, 101.07);
+    fn get_element_weight() {
+        let weight = Element::H.weight();
+        assert_eq!(weight, 1.0080);
+        let weight = Element::Ru.weight();
+        assert_eq!(weight, 101.07);
     }
 
 
