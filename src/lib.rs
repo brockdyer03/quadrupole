@@ -24,6 +24,7 @@ use crate::elements::Element;
 
 use ndarray::{self, Array2, arr2};
 
+
 #[derive(Debug, PartialEq)]
 pub struct Tensor3x3(Array2<f64>);
 
@@ -32,6 +33,7 @@ impl Tensor3x3 {
         Tensor3x3(arr2(&array))
     }
 }
+
 
 #[derive(Debug, Copy, Clone)]
 pub struct Coordinate {
@@ -252,12 +254,12 @@ impl Coordinate {
     }
 }
 
+
 #[derive(Debug)]
 pub struct Atom {
     pub element: Element,
     pub coord: Coordinate,
 }
-
 
 impl Atom {
     pub fn new(element: Element, coord: Coordinate) -> Atom {
@@ -280,11 +282,11 @@ impl Atom {
     }
 }
 
+
 #[derive(Debug)]
 pub struct Geometry {
     pub atoms: Vec<Atom>,
 }
-
 
 impl Geometry {
     pub fn new(atoms: Vec<Atom>) -> Geometry {
@@ -472,7 +474,6 @@ mod tests {
         assert_eq!(element, Element::Ru);
     }
 
-
     #[test]
     #[should_panic(expected = "Out of bounds error")]
     fn element_out_of_bounds() {
@@ -503,7 +504,6 @@ mod tests {
         assert_eq!(atom.coord.z, 137.0);
     }
 
-
     #[test]
     fn atom_get_coords() {
         let atom = Atom::new(
@@ -513,7 +513,6 @@ mod tests {
         let xyz = atom.coord();
         assert_eq!(*xyz, Coordinate::new(0.0, 42.0, 137.0));
     }
-
 
     #[test]
     fn atom_replace_coords() {
@@ -529,7 +528,6 @@ mod tests {
         assert_eq!(atom.coord.z, 0.0);
     }
 
-
     #[test]
     fn atom_element_str() {
         let atom = Atom::new(
@@ -539,7 +537,6 @@ mod tests {
         let name = atom.element_str();
         assert_eq!(name, "Ru");
     }
-
 
     #[test]
     fn geometry_init() {
@@ -556,7 +553,6 @@ mod tests {
         assert_eq!(geometry.atoms[1].coord, Coordinate::new(3.0, 4.0, 5.0));
     }
 
-
     #[test]
     fn geometry_from_vec() {
         let elements = vec![Element::H, Element::Ru];
@@ -570,7 +566,6 @@ mod tests {
         assert_eq!(geometry.atoms[0].coord, Coordinate::new(0.0, 1.0, 2.0));
         assert_eq!(geometry.atoms[1].coord, Coordinate::new(3.0, 4.0, 5.0));
     }
-
 
     #[test]
     fn geometry_from_xyz_file() {
@@ -588,7 +583,6 @@ mod tests {
         let num_atoms: u32 = geometry.atoms.len().try_into().unwrap();
         assert_eq!(num_atoms, 3);
     }
-
 
     #[test]
     fn geometry_from_xsf_file() {
