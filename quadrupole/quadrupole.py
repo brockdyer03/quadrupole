@@ -2,390 +2,147 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 from os import PathLike
+from enum import Enum
+from dataclasses import dataclass
 
 
-# Helper functions for converting between atomic symbol and atomic number as well as getting atomic masses
+@dataclass
+class ElementData:
+    symbol: str
+    number: int
+    mass: float
 
-def get_atomic_number(atomic_symbol: str) -> int:
-    """Convert between atomic symbol and atomic number (case insensitive)."""
-    elements = [
-        "H" ,
-        "He",
-        "Li",
-        "Be",
-        "B" ,
-        "C" ,
-        "N" ,
-        "O" ,
-        "F" ,
-        "Ne",
-        "Na",
-        "Mg",
-        "Al",
-        "Si",
-        "P" ,
-        "S" ,
-        "Cl",
-        "Ar",
-        "K" ,
-        "Ca",
-        "Sc",
-        "Ti",
-        "V" ,
-        "Cr",
-        "Mn",
-        "Fe",
-        "Co",
-        "Ni",
-        "Cu",
-        "Zn",
-        "Ga",
-        "Ge",
-        "As",
-        "Se",
-        "Br",
-        "Kr",
-        "Rb",
-        "Sr",
-        "Y" ,
-        "Zr",
-        "Nb",
-        "Mo",
-        "Tc",
-        "Ru",
-        "Rh",
-        "Pd",
-        "Ag",
-        "Cd",
-        "In",
-        "Sn",
-        "Sb",
-        "Te",
-        "I" ,
-        "Xe",
-        "Cs",
-        "Ba",
-        "La",
-        "Ce",
-        "Pr",
-        "Nd",
-        "Pm",
-        "Sm",
-        "Eu",
-        "Gd",
-        "Tb",
-        "Dy",
-        "Ho",
-        "Er",
-        "Tm",
-        "Yb",
-        "Lu",
-        "Hf",
-        "Ta",
-        "W" ,
-        "Re",
-        "Os",
-        "Ir",
-        "Pt",
-        "Au",
-        "Hg",
-        "Tl",
-        "Pb",
-        "Bi",
-        "Po",
-        "At",
-        "Rn",
-        "Fr",
-        "Ra",
-        "Ac",
-        "Th",
-        "Pa",
-        "U" ,
-        "Np",
-        "Pu",
-        "Am",
-        "Cm",
-        "Bk",
-        "Cf",
-        "Es",
-        "Fm",
-        "Md",
-        "No",
-        "Lr",
-        "Rf",
-        "Db",
-        "Sg",
-        "Bh",
-        "Hs",
-        "Mt",
-        "Ds",
-        "Rg",
-        "Cn",
-        "Nh",
-        "Fl",
-        "Mc",
-        "Lv",
-        "Ts",
-        "Og",
-    ]
+class Element(ElementData, Enum):
+    def __new__(cls, symbol: str, number: int, mass: float):
+        element = ElementData.__new__(cls)
+        element._value_ = ElementData(symbol, number, mass)
+        element._add_alias_(symbol)
+        element._add_value_alias_(symbol)
+        element._add_value_alias_(number)
+        return element
 
-    return elements.index(atomic_symbol.title())+1 # str.title() returns string with the first letter capitalized
+    def __str__(self):
+        return self.symbol
 
-
-def get_atomic_symbol(atomic_number: int) -> str:
-    """Convert between atomic number and atomic symbol (case insensitive)."""
-    elements = [
-        "H" ,
-        "He",
-        "Li",
-        "Be",
-        "B" ,
-        "C" ,
-        "N" ,
-        "O" ,
-        "F" ,
-        "Ne",
-        "Na",
-        "Mg",
-        "Al",
-        "Si",
-        "P" ,
-        "S" ,
-        "Cl",
-        "Ar",
-        "K" ,
-        "Ca",
-        "Sc",
-        "Ti",
-        "V" ,
-        "Cr",
-        "Mn",
-        "Fe",
-        "Co",
-        "Ni",
-        "Cu",
-        "Zn",
-        "Ga",
-        "Ge",
-        "As",
-        "Se",
-        "Br",
-        "Kr",
-        "Rb",
-        "Sr",
-        "Y" ,
-        "Zr",
-        "Nb",
-        "Mo",
-        "Tc",
-        "Ru",
-        "Rh",
-        "Pd",
-        "Ag",
-        "Cd",
-        "In",
-        "Sn",
-        "Sb",
-        "Te",
-        "I" ,
-        "Xe",
-        "Cs",
-        "Ba",
-        "La",
-        "Ce",
-        "Pr",
-        "Nd",
-        "Pm",
-        "Sm",
-        "Eu",
-        "Gd",
-        "Tb",
-        "Dy",
-        "Ho",
-        "Er",
-        "Tm",
-        "Yb",
-        "Lu",
-        "Hf",
-        "Ta",
-        "W" ,
-        "Re",
-        "Os",
-        "Ir",
-        "Pt",
-        "Au",
-        "Hg",
-        "Tl",
-        "Pb",
-        "Bi",
-        "Po",
-        "At",
-        "Rn",
-        "Fr",
-        "Ra",
-        "Ac",
-        "Th",
-        "Pa",
-        "U" ,
-        "Np",
-        "Pu",
-        "Am",
-        "Cm",
-        "Bk",
-        "Cf",
-        "Es",
-        "Fm",
-        "Md",
-        "No",
-        "Lr",
-        "Rf",
-        "Db",
-        "Sg",
-        "Bh",
-        "Hs",
-        "Mt",
-        "Ds",
-        "Rg",
-        "Cn",
-        "Nh",
-        "Fl",
-        "Mc",
-        "Lv",
-        "Ts",
-        "Og",
-    ]
-
-    return elements[atomic_number - 1]
-
-
-def get_atomic_mass(atomic_id: str | int):
-    """Get atomic mass for an element, specified by either atomic symbol or atomic number (case insensitive)."""
-
-    if isinstance(atomic_id, str):
-        atomic_id = get_atomic_number(atomic_id)
-
-    masses = [
-        1.0080,
-        4.002602,
-        6.94,
-        9.0121831,
-        10.81,
-        12.011,
-        14.007,
-        15.999,
-        18.998403162,
-        20.1797,
-        22.98976928,
-        24.305,
-        26.9815384,
-        28.085,
-        30.973761998,
-        32.06,
-        35.45,
-        39.95,
-        39.0983,
-        40.078,
-        44.955907,
-        47.867,
-        50.9415,
-        51.9961,
-        54.938043,
-        55.845,
-        58.933194,
-        58.6934,
-        63.546,
-        65.38,
-        69.723,
-        72.630,
-        74.921595,
-        78.971,
-        79.904,
-        83.798,
-        85.4678,
-        87.62,
-        88.905838,
-        91.222,
-        92.90637,
-        95.95,
-        97.0,
-        101.07,
-        102.90549,
-        106.42,
-        107.8682,
-        112.414,
-        114.818,
-        118.710,
-        121.760,
-        127.60,
-        126.90447,
-        131.293,
-        132.90545196,
-        137.327,
-        138.90547,
-        140.116,
-        140.90766,
-        144.242,
-        145.0,
-        150.36,
-        151.964,
-        157.249,
-        158.925354,
-        162.500,
-        164.930329,
-        167.259,
-        168.934219,
-        173.045,
-        174.96669,
-        178.486,
-        180.94788,
-        183.84,
-        186.207,
-        190.23,
-        192.217,
-        195.084,
-        196.966570,
-        200.592,
-        204.38,
-        207.2,
-        208.98040,
-        209.0,
-        210.0,
-        222.0,
-        223.0,
-        226.0,
-        227.0,
-        232.0377,
-        231.03588,
-        238.02891,
-        237.0,
-        244.0,
-        243.0,
-        247.0,
-        247.0,
-        251.0,
-        252.0,
-        257.0,
-        258.0,
-        259.0,
-        262.0,
-        267.0,
-        270.0,
-        269.0,
-        270.0,
-        270.0,
-        278.0,
-        281.0,
-        281.0,
-        285.0,
-        286.0,
-        289.0,
-        289.0,
-        293.0,
-        293.0,
-        294.0,
-    ]
-
-    return masses[atomic_id - 1]
+    Unknown       = "Xx", 0,   0.0
+    Hydrogen      = "H",  1,   1.0080
+    Helium        = "He", 2,   4.002602
+    Lithium       = "Li", 3,   6.94
+    Beryllium     = "Be", 4,   9.0121831
+    Boron         = "B",  5,   10.81
+    Carbon        = "C",  6,   12.011
+    Nitrogen      = "N",  7,   14.007
+    Oxygen        = "O",  8,   15.999
+    Fluorine      = "F",  9,   18.998403162
+    Neon          = "Ne", 10,  20.1797
+    Sodium        = "Na", 11,  22.98976928
+    Magnesium     = "Mg", 12,  24.305
+    Aluminum      = "Al", 13,  26.9815384
+    Silicon       = "Si", 14,  28.085
+    Phosphorus    = "P",  15,  30.973761998
+    Sulfur        = "S",  16,  32.06
+    Chlorine      = "Cl", 17,  35.45
+    Argon         = "Ar", 18,  39.95
+    Potassium     = "K",  19,  39.0983
+    Calcium       = "Ca", 20,  40.078
+    Scandium      = "Sc", 21,  44.955907
+    Titanium      = "Ti", 22,  47.867
+    Vanadium      = "V",  23,  50.9415
+    Chromium      = "Cr", 24,  51.9961
+    Manganese     = "Mn", 25,  54.938043
+    Iron          = "Fe", 26,  55.845
+    Cobalt        = "Co", 27,  58.933194
+    Nickel        = "Ni", 28,  58.6934
+    Copper        = "Cu", 29,  63.546
+    Zinc          = "Zn", 30,  65.38
+    Gallium       = "Ga", 31,  69.723
+    Germanium     = "Ge", 32,  72.630
+    Arsenic       = "As", 33,  74.921595
+    Selenium      = "Se", 34,  78.971
+    Bromine       = "Br", 35,  79.904
+    Krypton       = "Kr", 36,  83.798
+    Rubidium      = "Rb", 37,  85.4678
+    Strontium     = "Sr", 38,  87.62
+    Yttrium       = "Y",  39,  88.905838
+    Zirconium     = "Zr", 40,  91.222
+    Niobium       = "Nb", 41,  92.90637
+    Molybdenum    = "Mo", 42,  95.95
+    Technetium    = "Tc", 43,  97.0
+    Ruthenium     = "Ru", 44,  101.07
+    Rhodium       = "Rh", 45,  102.90549
+    Palladium     = "Pd", 46,  106.42
+    Silver        = "Ag", 47,  107.8682
+    Cadmium       = "Cd", 48,  112.414
+    Indium        = "In", 49,  114.818
+    Tin           = "Sn", 50,  118.710
+    Antimony      = "Sb", 51,  121.760
+    Tellurium     = "Te", 52,  127.60
+    Iodine        = "I",  53,  126.90447
+    Xenon         = "Xe", 54,  131.293
+    Cesium        = "Cs", 55,  132.90545196
+    Barium        = "Ba", 56,  137.327
+    Lanthanum     = "La", 57,  138.90547
+    Cerium        = "Ce", 58,  140.116
+    Praseodymium  = "Pr", 59,  140.90766
+    Neodymium     = "Nd", 60,  144.242
+    Promethium    = "Pm", 61,  145.0
+    Samarium      = "Sm", 62,  150.36
+    Europium      = "Eu", 63,  151.964
+    Gadolinium    = "Gd", 64,  157.249
+    Terbium       = "Tb", 65,  158.925354
+    Dysprosium    = "Dy", 66,  162.500
+    Holmium       = "Ho", 67,  164.930329
+    Erbium        = "Er", 68,  167.259
+    Thulium       = "Tm", 69,  168.934219
+    Ytterbium     = "Yb", 70,  173.045
+    Lutetium      = "Lu", 71,  174.96669
+    Hafnium       = "Hf", 72,  178.486
+    Tantalum      = "Ta", 73,  180.94788
+    Tungsten      = "W",  74,  183.84
+    Rhenium       = "Re", 75,  186.207
+    Osmium        = "Os", 76,  190.23
+    Iridium       = "Ir", 77,  192.217
+    Platinum      = "Pt", 78,  195.084
+    Gold          = "Au", 79,  196.966570
+    Mercury       = "Hg", 80,  200.592
+    Thallium      = "Tl", 81,  204.38
+    Lead          = "Pb", 82,  207.2
+    Bismuth       = "Bi", 83,  208.98040
+    Polonium      = "Po", 84,  209.0
+    Astatine      = "At", 85,  210.0
+    Radon         = "Rn", 86,  222.0
+    Francium      = "Fr", 87,  223.0
+    Radium        = "Ra", 88,  226.0
+    Actinium      = "Ac", 89,  227.0
+    Thorium       = "Th", 90,  232.0377
+    Protactinium  = "Pa", 91,  231.03588
+    Uranium       = "U",  92,  238.02891
+    Neptunium     = "Np", 93,  237.0
+    Plutonium     = "Pu", 94,  244.0
+    Americium     = "Am", 95,  243.0
+    Curium        = "Cm", 96,  247.0
+    Berkelium     = "Bk", 97,  247.0
+    Californium   = "Cf", 98,  251.0
+    Einsteinium   = "Es", 99,  252.0
+    Fermium       = "Fm", 100, 257.0
+    Mendelevium   = "Md", 101, 258.0
+    Nobelium      = "No", 102, 259.0
+    Lawrencium    = "Lr", 103, 262.0
+    Rutherfordium = "Rf", 104, 267.0
+    Dubnium       = "Db", 105, 270.0
+    Seaborgium    = "Sg", 106, 269.0
+    Bohrium       = "Bh", 107, 270.0
+    Hassium       = "Hs", 108, 270.0
+    Meitnerium    = "Mt", 109, 278.0
+    Darmstadtium  = "Ds", 110, 281.0
+    Roentgenium   = "Rg", 111, 281.0
+    Copernicium   = "Cn", 112, 285.0
+    Nihonium      = "Nh", 113, 286.0
+    Flerovium     = "Fl", 114, 289.0
+    Moscovium     = "Mc", 115, 289.0
+    Livermorium   = "Lv", 116, 293.0
+    Tennessine    = "Ts", 117, 293.0
+    Oganesson     = "Og", 118, 294.0
 
 
 class Atom:
@@ -393,18 +150,18 @@ class Atom:
 
     Attributes
     ----------
-    element : str | int
-        The atomic symbol or number of the element.
-    xyz : NDArray
-        The x-, y-, and z-coordinates of the atom.
+    element : Element | str | int
+        A member of the `Element` enum, or the atomic symbol/number.
+    xyz : ArrayLike
+        The x-, y-, and z-coordinates of the atom in Ångstrom.
     """
 
     def __init__(
         self,
-        element: str | int,
+        element: Element | str | int,
         xyz: npt.ArrayLike,
     ):
-        self.element = element if isinstance(element, str) else get_atomic_symbol(element)
+        self.element = Element(element)
         self.xyz = np.array(xyz, dtype=np.float64)
 
     def __repr__(self):
@@ -598,7 +355,7 @@ class Geometry:
         center_of_mass = np.zeros(3, dtype=float)
         total_mass = 0.
         for atom in self:
-            mass = get_atomic_mass(atom.element)
+            mass = atom.element.mass
             center_of_mass += atom.xyz * mass
             total_mass += mass
 
@@ -607,7 +364,7 @@ class Geometry:
         inertia_matrix = np.zeros((3, 3), dtype=float)
 
         for atom in self:
-            mass = get_atomic_mass(atom.element)
+            mass = atom.element.mass
             x = atom.xyz[0] - center_of_mass[0]
             y = atom.xyz[1] - center_of_mass[1]
             z = atom.xyz[2] - center_of_mass[2]
