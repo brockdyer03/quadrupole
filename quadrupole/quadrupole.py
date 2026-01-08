@@ -12,6 +12,7 @@ class ElementData:
     number: int
     mass: float
 
+
 class Element(ElementData, Enum):
     def __new__(cls, symbol: str, number: int, mass: float):
         element = ElementData.__new__(cls)
@@ -169,6 +170,9 @@ class Atom:
             f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n"
             f"{self.element:9}{self.xyz[0]:11.6f}{self.xyz[1]:11.6f}{self.xyz[2]:11.6f}\n"
         )
+    
+    def __eq__(self, other: Atom):
+        return (self.element == other.element and (self.xyz == other.xyz).all())
 
 
 class Geometry:
@@ -246,7 +250,7 @@ class Geometry:
                 line = line.strip().split()
                 molecule_xyz.append(line)
 
-        expected_num_atoms = int(molecule_xyz[0])
+        expected_num_atoms = int(molecule_xyz[0][0])
 
         elements = []
         xyzs = []
