@@ -393,18 +393,18 @@ class Atom:
 
     Attributes
     ----------
-    element : str
-        The atomic symbol of the element.
+    element : str | int
+        The atomic symbol or number of the element.
     xyz : NDArray
         The x-, y-, and z-coordinates of the atom.
     """
 
     def __init__(
         self,
-        element: str,
+        element: str | int,
         xyz: npt.ArrayLike,
     ):
-        self.element = element
+        self.element = element if isinstance(element, str) else get_atomic_symbol(element)
         self.xyz = np.array(xyz, dtype=np.float64)
 
     def __repr__(self):
@@ -416,21 +416,24 @@ class Atom:
 
 class Geometry:
     """Class storing the geometric parameters of a molecular or crystalline geometry.
+    All quantities should be in Ångstrom
     
     Attributes
     ----------
     atoms : list[Atom]
         The atoms in the geometry.
     lat_vec : npt.NDArray or None, default=None
-        The primitive lattice vectors of the geometry in units of alat
+        The primitive lattice vectors of the geometry,
     alat : float or None, default=None
         The lattice parameter.
 
     Notes
     -----
-    The lattice vectors should be provided in units of alat here, which involves taking the square
-    root of the sum of the first row of the lattice vector matrix.
+    Alat is calculated by taking the square root of the sum 
+    of the first row of the lattice vector matrix.
     """
+
+    bohr_to_angstrom = 0.529177210544
 
     def __init__(
         self,
@@ -438,9 +441,9 @@ class Geometry:
         lat_vec: npt.NDArray | None = None,
         alat: float | None = None,
     ):
-        self.atoms = atoms
-        self.lat_vec = lat_vec
-        self.alat = float(alat) if alat is not None else None
+        self.atoms   = atoms
+        self.lat_vec = np.array(lat_vec, dtype=float) if lat_vec is not None else None
+        self.alat    = float(alat) if alat is not None else None
 
 
     def get_coords(self) -> npt.NDArray:
@@ -539,6 +542,47 @@ class Geometry:
 
         atoms = [Atom(i[0], np.array(i[1:4])) for i in xyz_data]
         return Geometry(atoms)
+    
+
+    @classmethod
+    def from_cube(cls, cube_file: PathLike) -> Geometry:
+        """Read in and interpret crystallographic information from a CUBE file.
+        
+        Note
+        ----
+        This function calculates the dimensions of the unit cell by taking the number
+        of grid points and muliplying it by the spacing of the grid points. Due to rounding
+        errors when an external program prints a CUBE file, the cell dimensions can have 
+        inaccuracies of +/- 5e-05 angstrom.
+        """
+        
+        with open(cube_file, "r") as cube:
+            # Skip over header
+            for _ in range(2):
+                next(cube)
+            
+            num_atoms = int(next(cube).strip().split()[0])
+
+            grid_info = [next(cube).strip().split() for _ in range(3)]
+            grid_points = [int(i[0]) for i in grid_info]
+
+            lat_vec = []
+            for i, dim in enumerate(grid_info):
+                lat_vec.append([grid_points[i]*float(dim[j]) for j in range(1,4)])
+
+            lat_vec = np.array(lat_vec) * Geometry.bohr_to_angstrom
+
+            alat = np.sqrt(np.sum(lat_vec[0,:] ** 2))
+
+            atom_data = [next(cube).strip().split() for _ in range(num_atoms)]
+
+            atoms = []
+            for atom in atom_data:
+                element = int(atom[0])
+                coordinate = np.array(atom[2:5], dtype=float) * Geometry.bohr_to_angstrom
+                atoms.append(Atom(element, coordinate))
+
+        return Geometry(atoms, lat_vec, alat)
 
 
     def calc_principal_moments(self):
@@ -646,9 +690,17 @@ class Quadrupole:
     :math:`Q_{aa}` and :math:`Q_{bb}`
     """
 
-    au_cm2_conversion   = 4.4865515185e-40
-    esu_cm2_conversion  = 2.99792458e13
-    esu_buck_conversion = 1e-26
+    # https://physics.nist.gov/cgi-bin/cuu/Value?aueqm
+    au_to_cm2_conversion   = 4.4865515185e-40
+
+    # Coulomb*m^2 to CGS statCoulomb*cm^2
+    # Factor of c * (100cm)^2/m^2
+    # c taken from https://physics.nist.gov/cgi-bin/cuu/Value?c
+    cm2_to_esu_conversion  = 2.99792458e13
+
+    # Suggested by Peter J. W. Debye in 1963
+    # https://doi.org/10.1021/cen-v041n016.p040
+    esu_to_buck_conversion = 1e-26
 
     def __init__(self, quadrupole: npt.ArrayLike, units: str = "buckingham"):
         quadrupole = np.array(quadrupole, dtype=float)
@@ -677,36 +729,36 @@ class Quadrupole:
     #-----------------------------------------------------------#
     def au_to_cm2(self) -> Quadrupole:                          #
         """Convert from Hartree atomic units to Coulomb•m²"""   #
-        q = self.quadrupole * Quadrupole.au_cm2_conversion      #
+        q = self.quadrupole * Quadrupole.au_to_cm2_conversion   #
         return Quadrupole(q, units="cm^2")                      #
-                                                                # https://physics.nist.gov/cgi-bin/cuu/Value?aueqm
+                                                                #
     def cm2_to_au(self) -> Quadrupole:                          #
         """Convert from Coulomb•m² to Hartree atomic units"""   #
-        q = self.quadrupole / Quadrupole.au_cm2_conversion      #
+        q = self.quadrupole / Quadrupole.au_to_cm2_conversion   #
         return Quadrupole(q, units="au")                        #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
     def cm2_to_esu(self) -> Quadrupole:                         #
         """Convert from Coulomb•m² to e.s.u•cm²"""              #
-        q = self.quadrupole * Quadrupole.esu_cm2_conversion     #
-        return Quadrupole(q, units="esu")                       # CGS statCoulomb/cm^2 to Coulomb/m^2
-                                                                # Factor of c * (100cm)^2/m^2
-    def esu_to_cm2(self) -> Quadrupole:                         # c taken from https://physics.nist.gov/cgi-bin/cuu/Value?c
+        q = self.quadrupole * Quadrupole.cm2_to_esu_conversion  #
+        return Quadrupole(q, units="esu")                       #
+                                                                #
+    def esu_to_cm2(self) -> Quadrupole:                         #
         """Convert from e.s.u•cm² to Coulomb•m²"""              #
-        q = self.quadrupole / Quadrupole.esu_cm2_conversion     #
+        q = self.quadrupole / Quadrupole.cm2_to_esu_conversion  #
         return Quadrupole(q, units="cm^2")                      #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
     def buck_to_esu(self) -> Quadrupole:                        #
         """Convert from Buckingham to e.s.u•cm²"""              #
-        q = self.quadrupole * Quadrupole.esu_buck_conversion    #
-        return Quadrupole(q, units="esu")                       # Suggested by Peter J. W. Debye in 1963
-                                                                # https://doi.org/10.1021/cen-v041n016.p040
+        q = self.quadrupole * Quadrupole.esu_to_buck_conversion #
+        return Quadrupole(q, units="esu")                       #
+                                                                #
     def esu_to_buck(self) -> Quadrupole:                        #
         """Convert from e.s.u•cm² to Buckingham"""              #
-        q = self.quadrupole / Quadrupole.esu_buck_conversion    #
+        q = self.quadrupole / Quadrupole.esu_to_buck_conversion #
         return Quadrupole(q, units="Buckingham")                #
     #-----------------------------------------------------------#
 
