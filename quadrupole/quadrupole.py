@@ -170,7 +170,7 @@ class Atom:
             f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n"
             f"{self.element:9}{self.xyz[0]:11.6f}{self.xyz[1]:11.6f}{self.xyz[2]:11.6f}\n"
         )
-    
+
     def __eq__(self, other: Atom):
         return (self.element == other.element and (self.xyz == other.xyz).all())
 
@@ -303,12 +303,12 @@ class Geometry:
 
         atoms = [Atom(i[0], np.array(i[1:4])) for i in xyz_data]
         return Geometry(atoms)
-    
+
 
     @classmethod
     def from_cube(cls, cube_file: PathLike) -> Geometry:
         """Read in and interpret crystallographic information from a CUBE file.
-        
+
         Note
         ----
         This function calculates the dimensions of the unit cell by taking the number
@@ -316,12 +316,12 @@ class Geometry:
         errors when an external program prints a CUBE file, the cell dimensions can have 
         inaccuracies of +/- 5e-05 angstrom.
         """
-        
+
         with open(cube_file, "r") as cube:
             # Skip over header
             for _ in range(2):
                 next(cube)
-            
+
             num_atoms = int(next(cube).strip().split()[0])
 
             grid_info = [next(cube).strip().split() for _ in range(3)]
@@ -348,7 +348,7 @@ class Geometry:
 
     def calc_principal_moments(self):
         """Calculate the principal inertial axes for a given geometry.
-        
+
         Returns
         -------
         eigenvalues : ndarray
@@ -424,7 +424,7 @@ class Geometry:
 
     def __len__(self):
         return len(self.atoms)
-    
+
 
     def __getitem__(self, index):
         return self.atoms[index]
@@ -567,7 +567,7 @@ class Quadrupole:
         new_units = units.lower()
         if new_units not in ["au", "buckingham", "cm^2", "esu"]:
             raise ValueError(f"Unit {units} not recognized, please select from ( 'au', 'buckingham', 'cm^2', 'esu' )")
-        
+
         if self_units == new_units:
             return self
 
@@ -667,7 +667,7 @@ class Quadrupole:
 
     def compare(self, expt: Quadrupole):
         """Attempt to align a diagonal calculated quadrupole moment with an experimental quadrupole moment.
-        
+
         Note
         ----
         This code does not guarantee a correct comparison, it simply uses statistical analysis to attempt to
@@ -722,14 +722,14 @@ class Quadrupole:
             self_str += f"{"Quadrupole Moment":18}({self.units}):      {"(xx)":13} {"(yy)":13} {"(zz)":13} {"(xy)":13} {"(xz)":13} {"(yz)":13}\n"
             self_str += f"{"":15}{" "*len(self.units)}Total: {quad[0,0]:13.5e} {quad[1,1]:13.5e} {quad[2,2]:13.5e} {quad[0,1]:13.5e} {quad[0,2]:13.5e} {quad[1,2]:13.5e}\n"
         return self_str
-    
+
 
     def __add__(self, quad: Quadrupole) -> Quadrupole:
         q1 = self.quadrupole
         q2 = quad.as_unit(self.units)
         q2 = q2.quadrupole
         return Quadrupole(quadrupole=q1+q2, units=self.units)
-    
+
 
     def __sub__(self, quad: Quadrupole) -> Quadrupole:
         q1 = self.quadrupole

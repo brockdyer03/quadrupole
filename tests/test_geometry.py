@@ -71,14 +71,16 @@ def test_geometry():
     assert(np.all(geometry.get_coords() == xyzs))
     assert(geometry.get_elements() == elements)
 
-    ref_eigenvalues = np.array([1261.1061354199865, -1.1368683772161603e-13, 1261.1061354199867], dtype=np.float64)
+    ref_eigenvalues = np.array(
+        [1261.1061354199865, -1.1368683772161603e-13, 1261.1061354199867], dtype=np.float64
+    )
 
     ref_eigenvectors = np.array(
         [
             [ 0.81649658, -0.57735027,  0.02797921],
             [-0.40824829, -0.57735027, -0.72068110],
             [-0.40824829, -0.57735027,  0.69270189],
-        ]
+        ], dtype=np.float64
     )
 
     eigenvalues, eigenvectors = geometry.calc_principal_moments()
