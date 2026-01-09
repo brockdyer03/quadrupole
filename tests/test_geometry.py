@@ -95,6 +95,7 @@ def test_geometry_from_list():
         Element.Ruthenium,
         Element.Bromine,
     ]
+
     xyzs = np.array([
         [1.0, 2.0, 3.0],
         [4.0, 5.0, 6.0],
@@ -113,6 +114,7 @@ def test_geometry_from_xyz(tmp_path):
         Element.Ruthenium,
         Element.Bromine,
     ]
+
     xyzs = np.array([
         [1.0, 2.0, 3.0],
         [4.0, 5.0, 6.0],
@@ -145,16 +147,19 @@ def test_geometry_from_xsf(tmp_path):
         Element.Hydrogen,
         Element.Hydrogen,
     ]
+
     xyzs = np.array([
         [8.770451552, 9.174907782, 8.771938274],
         [9.544851428, 8.573414302, 8.771938274],
         [8.000511848, 8.567492748, 8.771938274],
     ], dtype=np.float64)
+
     lat_vec = np.array([
         [17.543876553,  0.000000000,  0.000000000],
         [ 0.000000000, 17.543876553,  0.000000000],
         [ 0.000000000,  0.000000000, 17.543876553],
     ], dtype=np.float64)
+
     alat = 17.543876553
 
     xsf = (
@@ -183,3 +188,30 @@ def test_geometry_from_xsf(tmp_path):
     assert(np.all(geometry.get_coords() == xyzs))
     assert(np.all(geometry.lat_vec == lat_vec))
     assert(geometry.alat == alat)
+
+
+def test_geometry_from_orca():
+    elements = [
+        Element.Oxygen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+    ]
+    final_xyzs = np.array([
+        [5.736637, 3.296256, 2.732843],
+        [4.932128, 3.398823, 2.238126],
+        [5.754947, 3.927980, 3.442132],
+    ], dtype=np.float64)
+
+    input_xyzs = np.array([
+        [5.753633, 3.280382, 2.728205],
+        [4.931827, 3.412032, 2.252440],
+        [5.738252, 3.930645, 3.432457],
+    ], dtype=np.float64)
+
+    orca_output_path = (Path(__file__) / "../../notebook/example_outputs/water_random_rotation.out").resolve()
+
+    geometry = Geometry.from_orca(orca_output_path)
+
+    assert(geometry.get_elements() == elements)
+    assert(np.all(geometry.get_coords() == final_xyzs))
+    assert(np.all(geometry.get_coords() != input_xyzs))
