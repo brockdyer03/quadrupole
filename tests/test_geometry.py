@@ -46,7 +46,7 @@ def test_atom():
     assert(np.all(atom.xyz == np.array([3.14, 42.0, 137.0], dtype=np.float64)))
 
 
-def test_geometry():
+def test_inertia():
     elements = [
         Element.Hydrogen,
         Element.Ruthenium,
@@ -93,7 +93,7 @@ def test_geometry():
     np.testing.assert_allclose(eigenvectors, ref_eigenvectors, rtol=1e-8)
 
 
-def test_geometry_from_list():
+def test_from_list():
     elements = [
         Element.Hydrogen,
         Element.Ruthenium,
@@ -112,7 +112,7 @@ def test_geometry_from_list():
     assert(np.all(geometry.get_coords() == xyzs))
 
 
-def test_geometry_from_xyz(tmp_path):
+def test_from_xyz(tmp_path):
     elements = [
         Element.Hydrogen,
         Element.Ruthenium,
@@ -145,7 +145,7 @@ def test_geometry_from_xyz(tmp_path):
     np.testing.assert_array_equal(geometry.get_coords(), xyzs)
 
 
-def test_geometry_from_xsf(tmp_path):
+def test_from_xsf(tmp_path):
     elements = [
         Element.Oxygen,
         Element.Hydrogen,
@@ -194,7 +194,7 @@ def test_geometry_from_xsf(tmp_path):
     assert(geometry.alat == alat)
 
 
-def test_geometry_from_orca():
+def test_from_orca():
     elements = [
         Element.Oxygen,
         Element.Hydrogen,
@@ -217,7 +217,7 @@ def test_geometry_from_orca():
     np.testing.assert_array_equal(geometry.get_coords(), final_xyzs)
 
 
-def test_geometry_from_cube(tmp_path):
+def test_from_cube(tmp_path):
     elements = [
         Element.Oxygen,
         Element.Hydrogen,
