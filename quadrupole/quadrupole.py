@@ -2,8 +2,19 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 from os import PathLike
+from pathlib import Path
 from enum import Enum
 from dataclasses import dataclass
+
+
+class FileFormatError(Exception):
+    """Exception raised when a file is improperly formatted"""
+
+    def __init__(self, message: str):
+        self.message = message
+
+    def __str__(self):
+        return self.message
 
 
 @dataclass
@@ -176,7 +187,7 @@ class Atom:
 
 
 class Geometry:
-    """Class storing the geometric parameters of a molecular or crystalline geometry.
+    """Class storing the geometric parameters of a molecular geometry or crystal structure.
     All quantities should be in Ångstrom
     
     Attributes
@@ -286,20 +297,75 @@ class Geometry:
     def from_orca(cls, file: PathLike) -> Geometry:
         xyz_data = []
         with open(file, "r") as orca_out:
-            found_xyz = False
-            while not found_xyz:
-                line = orca_out.readline().strip()
-                if line == "CARTESIAN COORDINATES (ANGSTROEM)":
-                    orca_out.readline()
-                    found_xyz = True
+            input_search = True
+            while input_search:
+                # Check for end of input so we can start looking for the calculation type
+                line = orca_out.readline()
+                if "END OF INPUT" in line:
+                    input_search = False
+                elif line == "":
+                    raise FileFormatError(
+                        f"Error reading file '{Path(file).resolve()}', did not find end of input!"
+                    )
 
-            finished_xyz = False
-            while not finished_xyz:
-                line = orca_out.readline().strip()
-                if line == "":
-                    finished_xyz = True
-                else:
-                    xyz_data.append(line.split())
+            for i in range(20):
+                # The calculation type should be printed only 4 lines after the
+                # end of the input, but we still go for 20 just in case
+                line = orca_out.readline()
+                if "Geometry Optimization Run" in line:
+                    opt_run = True
+                    break
+                elif "Single Point Calculation" in line:
+                    opt_run = False
+                    break
+                elif i == 19:
+                    raise FileFormatError(
+                        f"Error reading file '{Path(file).resolve()}' at line {orca_out.tell()}!"
+                    )
+
+            if not opt_run:
+                # If this isn't an optimization, do not spin through the whole file
+                # The geometry is only printed once at the beginning in an SCF calculation
+                coordinate_search = True
+                while coordinate_search:
+                    line = orca_out.readline()
+                    if "CARTESIAN COORDINATES (ANGSTROEM)" in line:
+                        orca_out.readline() # Skip forward one more line
+                        coordinate_search = False
+
+                read_data = True
+                while read_data:
+                    line = orca_out.readline()
+                    if line == "\n":
+                        read_data = False
+                    else:
+                        xyz_data.append(line.strip().split())
+            else:
+                final_geom_search = True
+                while final_geom_search:
+                    line = orca_out.readline()
+                    if "FINAL ENERGY EVALUATION AT THE STATIONARY POINT" in line:
+                        final_geom_search = False
+                    elif line == "":
+                        raise FileFormatError(
+                            f"Error reading file '{Path(file).resolve()}', "
+                            "can not find final geometry"
+                        )
+
+                coordinate_search = True
+                while coordinate_search:
+                    line = orca_out.readline()
+                    if "CARTESIAN COORDINATES (ANGSTROEM)" in line:
+                        orca_out.readline()
+                        coordinate_search = False
+
+                read_data = True
+                while read_data:
+                    line = orca_out.readline()
+                    if line == "\n":
+                        read_data = False
+                    else:
+                        xyz_data.append(line.strip().split())
 
         atoms = [Atom(i[0], np.array(i[1:4])) for i in xyz_data]
         return Geometry(atoms)

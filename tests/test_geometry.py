@@ -72,7 +72,8 @@ def test_geometry():
     assert(geometry.get_elements() == elements)
 
     ref_eigenvalues = np.array(
-        [1261.1061354199865, -1.1368683772161603e-13, 1261.1061354199867], dtype=np.float64
+        [1261.1061354199865, -1.1368683772161603e-13, 1261.1061354199867],
+        dtype=np.float64
     )
 
     ref_eigenvectors = np.array(
@@ -196,19 +197,22 @@ def test_geometry_from_orca():
         Element.Hydrogen,
         Element.Hydrogen,
     ]
-    final_xyzs = np.array([
-        [5.736637, 3.296256, 2.732843],
-        [4.932128, 3.398823, 2.238126],
-        [5.754947, 3.927980, 3.442132],
-    ], dtype=np.float64)
 
-    input_xyzs = np.array([
+    final_xyzs = np.array([
         [5.753633, 3.280382, 2.728205],
         [4.931827, 3.412032, 2.252440],
         [5.738252, 3.930645, 3.432457],
     ], dtype=np.float64)
 
-    orca_output_path = (Path(__file__) / "../../notebook/example_outputs/water_random_rotation.out").resolve()
+    input_xyzs = np.array([
+        [5.736637, 3.296256, 2.732843],
+        [4.932128, 3.398823, 2.238126],
+        [5.754947, 3.927980, 3.442132],
+    ], dtype=np.float64)
+
+    orca_output_path = Path(
+        __file__ + "../../../notebook/example_outputs/water_random_rotation.out"
+    ).resolve()
 
     geometry = Geometry.from_orca(orca_output_path)
 
