@@ -87,21 +87,36 @@ def test_inertia():
         dtype=np.float64
     )
 
-    ref_eigenvectors = np.array(
-        [
-            [ 0.816496580928, -0.57735026919,  0.027979205835],
-            [-0.408248290464, -0.57735026919, -0.720681100695],
-            [-0.408248290464, -0.57735026919,  0.692701894860],
-        ], dtype=np.float64
-    )
+    # ref_eigenvectors = np.array([
+    #     [ 0.816496580928, -0.57735026919,  0.027979205835],
+    #     [-0.408248290464, -0.57735026919, -0.720681100695],
+    #     [-0.408248290464, -0.57735026919,  0.692701894860],
+    # ], dtype=np.float64)
+
+    ref_diagonal_inertia_matrix = np.array([
+        [ 1.26110614e+03, -1.26746377e-13, -1.04221575e-14],
+        [-3.53654456e-14, -1.00000169e-08,  1.00177653e-13],
+        [-1.39411949e-14,  2.90059484e-14,  1.26110614e+03],
+    ], dtype=np.float64)
+
+    # Turns out the eigenvectors and eigenvalues will not necessarily be
+    # consistent across platforms, so instead of comparing them directly,
+    # we are going to diagonalize the inertia matrix of the system and 
+    # ensure that it is properly diagonalized to within tolerance.
+    inertia_matrix = np.array([
+        [ 840.73742361, -420.36871181, -420.36871181],
+        [-420.36871181,  840.73742361, -420.36871181],
+        [-420.36871181, -420.36871181,  840.73742361],
+    ], dtype=np.float64)
 
     eigenvalues, eigenvectors = geometry.calc_principal_moments()
 
-    print(eigenvalues)
-    print(eigenvectors)
+    diagonal_inertia_matrix = np.linalg.inv(eigenvectors) @ inertia_matrix @ eigenvectors
 
     np.testing.assert_allclose(eigenvalues,  ref_eigenvalues,  atol=1e-8)
-    np.testing.assert_allclose(eigenvectors, ref_eigenvectors, atol=1e-8)
+    np.testing.assert_allclose(diagonal_inertia_matrix,  ref_diagonal_inertia_matrix,  atol=1e-8)
+
+    #np.testing.assert_allclose(eigenvectors, ref_eigenvectors, atol=1e-8)
 
 
 def test_from_list():
