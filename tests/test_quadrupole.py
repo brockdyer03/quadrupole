@@ -18,10 +18,23 @@ def test_create():
     ], dtype=np.float64)
 
     quad_3x1 = Quadrupole([1.0, 2.0, 3.0])
-    quad_6x1 = Quadrupole([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+    arr_6x1 = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+    quad_6x1 = Quadrupole(arr_6x1)
 
     np.testing.assert_array_equal(quad_3x1.quadrupole, ref_quad_3x1)
     np.testing.assert_array_equal(quad_6x1.quadrupole, ref_quad_6x1)
+
+    assert(quad_6x1[0,0] == arr_6x1[0])
+    assert(quad_6x1[1,1] == arr_6x1[1])
+    assert(quad_6x1[2,2] == arr_6x1[2])
+    
+    assert(quad_6x1[0,1] == arr_6x1[3])
+    assert(quad_6x1[0,2] == arr_6x1[4])
+    assert(quad_6x1[1,2] == arr_6x1[5])
+
+    assert(quad_6x1[1,0] == arr_6x1[3])
+    assert(quad_6x1[2,0] == arr_6x1[4])
+    assert(quad_6x1[2,1] == arr_6x1[5])
 
 
 def test_inertialize():
@@ -406,6 +419,45 @@ def test_compare():
         [ 0.00000,  0.00000,  0.06339],
     ], dtype=np.float64)
 
+    # We aren't making this a Quadrupole object so that we can ensure
+    # that the compare function will properly convert it to a Quadrupole
+    expt_quad = np.array([
+        [-0.13,  0.00,  0.00],
+        [ 0.00,  2.63,  0.00],
+        [ 0.00,  0.00, -2.50],
+    ], dtype=np.float64)
+
+    calc_quad = Quadrupole(
+        np.array([
+            [-2.43661,  0.00000,  0.00000],
+            [ 0.00000, -0.15398,  0.00000],
+            [ 0.00000,  0.00000,  2.59059],
+        ], dtype=np.float64),
+        units="buckingham"
+    )
+
+    compared_quad = calc_quad.compare(expt=expt_quad)
+    diff = compared_quad - Quadrupole(expt_quad)
+
+    np.testing.assert_allclose(compared_quad.quadrupole, ref_compared_quad, tol)
+    np.testing.assert_allclose(diff.quadrupole, ref_diff, tol)
+
+
+def test_compare_mismatched_signs():
+    tol = 1e-11
+
+    ref_compared_quad = np.array([
+        [ 0.15398,  0.00000,  0.00000],
+        [ 0.00000, -2.59059,  0.00000],
+        [ 0.00000,  0.00000,  2.43661],
+    ], dtype=np.float64)
+
+    ref_diff = np.array([
+        [ 0.28398,  0.00000,  0.00000],
+        [ 0.00000, -5.22059,  0.00000],
+        [ 0.00000,  0.00000,  4.93661],
+    ], dtype=np.float64)
+
     expt_quad = Quadrupole(
         np.array([
             [-0.13,  0.00,  0.00],
@@ -414,11 +466,12 @@ def test_compare():
         ], dtype=np.float64),
         units="buckingham"
     )
+
     calc_quad = Quadrupole(
         np.array([
-            [-2.43661,  0.00000,  0.00000],
-            [ 0.00000, -0.15398,  0.00000],
-            [ 0.00000,  0.00000,  2.59059],
+            [ 2.43661,  0.00000,  0.00000],
+            [ 0.00000,  0.15398,  0.00000],
+            [ 0.00000,  0.00000, -2.59059],
         ], dtype=np.float64),
         units="buckingham"
     )

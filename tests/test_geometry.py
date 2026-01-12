@@ -45,6 +45,13 @@ def test_atom():
 
     assert(np.all(atom.xyz == np.array([3.14, 42.0, 137.0], dtype=np.float64)))
 
+    atom_repr = (
+        "Element     X          Y          Z          \n"
+        "H           3.140000  42.000000 137.000000\n"
+    )
+
+    assert(atom.__repr__() == atom_repr)
+
 
 def test_inertia():
     elements = [
@@ -67,7 +74,11 @@ def test_inertia():
         alat=None,
     )
 
+    assert(len(geometry) == 3)
     assert(geometry.atoms == atoms)
+    assert(geometry[0] == atoms[0])
+    assert(geometry[1] == atoms[1])
+    assert(geometry[2] == atoms[2])
     assert(geometry.get_elements() == elements)
     np.testing.assert_array_equal(geometry.get_coords(), xyzs)
 
@@ -134,7 +145,7 @@ def test_from_xyz(tmp_path):
     )
 
     temp_dir = tmp_path / Path("test_files")
-    temp_dir.mkdir()
+    temp_dir.mkdir(exist_ok=True)
 
     xyz_path = temp_dir / Path("test.xyz")
     xyz_path.write_text(xyz, encoding="utf-8")
@@ -180,7 +191,7 @@ def test_from_xsf(tmp_path):
     )
 
     temp_dir = tmp_path / Path("test_files")
-    temp_dir.mkdir()
+    temp_dir.mkdir(exist_ok=True)
 
     xsf_path = temp_dir / Path("test.xsf")
 
@@ -194,7 +205,7 @@ def test_from_xsf(tmp_path):
     assert(geometry.alat == alat)
 
 
-def test_from_orca():
+def test_from_orca_opt():
     elements = [
         Element.Oxygen,
         Element.Hydrogen,
@@ -208,7 +219,30 @@ def test_from_orca():
     ], dtype=np.float64)
 
     orca_output_path = Path(
-        __file__ + "../../../notebook/example_outputs/water_random_rotation.out"
+        __file__ + "/../../notebook/example_outputs/water_random_rotation.out"
+    ).resolve()
+
+    geometry = Geometry.from_orca(orca_output_path)
+
+    assert(geometry.get_elements() == elements)
+    np.testing.assert_array_equal(geometry.get_coords(), final_xyzs)
+
+
+def test_from_orca_scf():
+    elements = [
+        Element.Oxygen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+    ]
+
+    final_xyzs = np.array([
+        [-0.001484,  0.389368, 0.000000],
+        [ 0.760953, -0.191788, 0.000000],
+        [-0.759469, -0.197581, 0.000000],
+    ], dtype=np.float64)
+
+    orca_output_path = Path(
+        __file__ + "/../files/water_scf.out"
     ).resolve()
 
     geometry = Geometry.from_orca(orca_output_path)
@@ -257,7 +291,7 @@ def test_from_cube(tmp_path):
     )
 
     temp_dir = tmp_path / Path("test_files")
-    temp_dir.mkdir()
+    temp_dir.mkdir(exist_ok=True)
 
     cube_path = temp_dir / Path("test.cube")
 
@@ -269,3 +303,50 @@ def test_from_cube(tmp_path):
     np.testing.assert_allclose(geometry.get_coords(), xyzs, rtol=1e-8)
     np.testing.assert_allclose(geometry.lat_vec, lat_vec, rtol=1e-7)
     np.testing.assert_almost_equal(geometry.alat,  alat, decimal=8)
+
+
+def test_repr():
+    ref_repr = (
+        "Element     X          Y          Z          \n"
+        "\n"
+        "H           1.000000   2.000000   3.000000\n"
+        "Ru          4.000000   5.000000   6.000000\n"
+        "Br          7.000000   8.000000   9.000000\n"
+    )
+
+    ref_repr_crystal = (
+        "Lattice     X          Y          Z          \n"
+        "Vectors    \n"
+        "           10.000000   0.000000   0.000000\n"
+        "            0.000000  20.000000   0.000000\n"
+        "            0.000000   0.000000  30.000000\n"
+        "\n"
+        "Element     X          Y          Z          \n"
+        "\n"
+        "H           1.000000   2.000000   3.000000\n"
+        "Ru          4.000000   5.000000   6.000000\n"
+        "Br          7.000000   8.000000   9.000000\n"
+    )
+
+    atoms = [
+        Atom(Element.Hydrogen, [1.0, 2.0, 3.0]),
+        Atom(Element.Ruthenium, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+
+    lat_vec = np.array([
+        [10.0,  0.0,  0.0],
+        [ 0.0, 20.0,  0.0],
+        [ 0.0,  0.0, 30.0],
+    ], dtype=np.float64)
+
+    alat = 10.0
+
+    geometry = Geometry(atoms)
+    
+    assert(geometry.__repr__() == ref_repr)
+
+    geometry.lat_vec = lat_vec
+    geometry.alat = alat
+
+    assert(geometry.__repr__() == ref_repr_crystal)

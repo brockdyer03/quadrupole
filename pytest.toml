@@ -1,0 +1,4 @@
+[pytest]
+addopts = ["--cov=quadrupole"]
+testpaths = ["tests"]
+xfail_strict = true

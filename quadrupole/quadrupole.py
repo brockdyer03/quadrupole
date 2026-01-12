@@ -254,27 +254,32 @@ class Geometry:
     def from_xyz(cls, file: PathLike) -> Geometry:
         """Read in XYZ file and return a `Geometry` object"""
 
-        molecule_xyz = []
-
         with open(file) as xyz:
-            for line in xyz:
-                line = line.strip().split()
-                molecule_xyz.append(line)
+            num_atoms = xyz.readline()
+            try:
+                num_atoms = int(num_atoms)
+            except ValueError:
+                raise FileFormatError(
+                    f"File {Path(file).resolve()} is improperly formatted at line 1, "
+                    f"expected number of atoms, got '{num_atoms}' instead!"
+                )
+            
+            xyz.readline() # Skip comment line
 
-        expected_num_atoms = int(molecule_xyz[0][0])
-
-        elements = []
-        xyzs = []
-        for index, line in enumerate(molecule_xyz[2:]):
-            if len(line) == 0:
-                break
-            if index > expected_num_atoms:
-                raise ValueError("File contains more atoms than expected!")
-            elements.append(line[0])
-            xyzs.append(np.array(line[1:4], dtype=float))
+            elements = []
+            xyzs = []
+            for i in range(num_atoms):
+                line = xyz.readline()
+                if line == "":
+                    raise FileFormatError(f"File {Path(file).resolve()} contains less atoms than expected!")
+                elif line.strip() == "":
+                    raise FileFormatError(f"File {Path(file).resolve()} is improperly formatted!")
+                else:
+                    line = line.strip().split()
+                    elements.append(line[0])
+                    xyzs.append(line[1:4])
 
         atoms = []
-
         for i, element in enumerate(elements):
             atoms.append(Atom(element, xyzs[i]))
 
