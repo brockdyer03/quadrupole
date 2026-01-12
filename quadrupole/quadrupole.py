@@ -504,7 +504,7 @@ class Quadrupole:
     quadrupole : ndarray
         Array containing the 3x3 quadrupole matrix, the diagonal components of the quadrupole (shape 3x1),
         or the 6 independent elements of the quadrupole (shape 6x1, in order, [xx, yy, zz, xy, xz, yz])
-    units : {"au", "buckingham", "cm^2", "esu"}, default="buckingham"
+    units : {"au", "buckingham", "cm2", "esu"}, default="buckingham"
         Units of the quadrupole matrix (case insensitive).
 
     Note
@@ -547,8 +547,8 @@ class Quadrupole:
             raise ValueError(f"Cannot cast array of shape {quadrupole.shape} to a quadrupole, supply either shape (3, 3) or (3,) or (6,)!")
 
         units = units.lower()
-        if units not in ["au", "buckingham", "cm^2", "esu"]:
-            raise ValueError("Invalid units, please select from ( 'au', 'buckingham', 'cm^2', 'esu' )")
+        if units not in ["au", "buckingham", "cm2", "esu"]:
+            raise ValueError("Invalid units, please select from ( 'au', 'buckingham', 'cm2', 'esu' )")
         else:
             self.units = units
 
@@ -557,7 +557,7 @@ class Quadrupole:
     def au_to_cm2(self) -> Quadrupole:                          #
         """Convert from Hartree atomic units to Coulomb•m²"""   #
         q = self.quadrupole * Quadrupole.au_to_cm2_conversion   #
-        return Quadrupole(q, units="cm^2")                      #
+        return Quadrupole(q, units="cm2")                      #
                                                                 #
     def cm2_to_au(self) -> Quadrupole:                          #
         """Convert from Coulomb•m² to Hartree atomic units"""   #
@@ -574,7 +574,7 @@ class Quadrupole:
     def esu_to_cm2(self) -> Quadrupole:                         #
         """Convert from e.s.u•cm² to Coulomb•m²"""              #
         q = self.quadrupole / Quadrupole.cm2_to_esu_conversion  #
-        return Quadrupole(q, units="cm^2")                      #
+        return Quadrupole(q, units="cm2")                      #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
@@ -631,8 +631,8 @@ class Quadrupole:
         """Return quadrupole as a specified unit"""
         self_units = self.units
         new_units = units.lower()
-        if new_units not in ["au", "buckingham", "cm^2", "esu"]:
-            raise ValueError(f"Unit {units} not recognized, please select from ( 'au', 'buckingham', 'cm^2', 'esu' )")
+        if new_units not in ["au", "buckingham", "cm2", "esu"]:
+            raise ValueError(f"Unit {units} not recognized, please select from ( 'au', 'buckingham', 'cm2', 'esu' )")
 
         if self_units == new_units:
             return self
@@ -640,27 +640,27 @@ class Quadrupole:
         match (self_units, new_units):
             case ("buckingham", "au"):
                 return self.buck_to_au()
-            case ("buckingham", "cm^2"):
+            case ("buckingham", "cm2"):
                 return self.buck_to_cm2()
             case ("buckingham", "esu"):
                 return self.buck_to_esu()
             case ("au", "buckingham"):
                 return self.au_to_buck()
-            case ("au", "cm^2"):
+            case ("au", "cm2"):
                 return self.au_to_cm2()
             case ("au", "esu"):
                 return self.au_to_esu()
             case ("esu", "buckingham"):
                 return self.esu_to_buck()
-            case ("esu", "cm^2"):
+            case ("esu", "cm2"):
                 return self.esu_to_cm2()
             case ("esu", "au"):
                 return self.esu_to_au()
-            case ("cm^2", "buck"):
+            case ("cm2", "buckingham"):
                 return self.cm2_to_buck()
-            case ("cm^2", "au"):
+            case ("cm2", "au"):
                 return self.cm2_to_au()
-            case ("cm^2", "esu"):
+            case ("cm2", "esu"):
                 return self.cm2_to_esu()
 
 
