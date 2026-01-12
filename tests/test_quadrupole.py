@@ -69,7 +69,7 @@ def test_inertialize():
     inertial_quadrupole = quadrupole.inertialize(geometry)
 
     np.testing.assert_array_equal(quadrupole.quadrupole, ref_quadrupole)
-    np.testing.assert_allclose(inertial_quadrupole.quadrupole, ref_inertial_quadrupole, rtol=1e-10)
+    np.testing.assert_allclose(inertial_quadrupole.quadrupole, ref_inertial_quadrupole, atol=1e-10)
 
 
 def test_detrace():
@@ -84,7 +84,7 @@ def test_detrace():
     traceless_quadrupole = quadrupole.detrace()
 
     np.testing.assert_allclose(
-        traceless_quadrupole.quadrupole, ref_traceless_quadrupole, rtol=1e-10
+        traceless_quadrupole.quadrupole, ref_traceless_quadrupole, atol=1e-10
     )
 
 
@@ -145,13 +145,13 @@ def test_unit_convert():
         units="esu"
     )
 
-    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham, tol)
+    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham, atol=tol)
     assert(quad_buckingham.units == "buckingham")
-    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au, tol)
+    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au, atol=tol)
     assert(quad_au.units == "au")
-    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2, tol)
+    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2, atol=tol)
     assert(quad_cm2.units == "cm2")
-    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu, atol=tol)
     assert(quad_esu.units == "esu")
 
     # From buckingham
@@ -162,9 +162,9 @@ def test_unit_convert():
     assert(quad_au_from_buckingham.units == "au")
     assert(quad_cm2_from_buckingham.units == "cm2")
     assert(quad_esu_from_buckingham.units == "esu")
-    np.testing.assert_allclose(quad_au_from_buckingham.quadrupole, ref_quad_au, tol)
-    np.testing.assert_allclose(quad_cm2_from_buckingham.quadrupole, ref_quad_cm2, tol)
-    np.testing.assert_allclose(quad_esu_from_buckingham.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_allclose(quad_au_from_buckingham.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_allclose(quad_cm2_from_buckingham.quadrupole, ref_quad_cm2, atol=tol)
+    np.testing.assert_allclose(quad_esu_from_buckingham.quadrupole, ref_quad_esu, atol=tol)
 
     # From esu
     quad_buckingham_from_esu = quad_esu.esu_to_buck()
@@ -174,9 +174,9 @@ def test_unit_convert():
     assert(quad_buckingham_from_esu.units == "buckingham")
     assert(quad_au_from_esu.units == "au")
     assert(quad_cm2_from_esu.units == "cm2")
-    np.testing.assert_allclose(quad_buckingham_from_esu.quadrupole, ref_quad_buckingham, tol)
-    np.testing.assert_allclose(quad_au_from_esu.quadrupole, ref_quad_au, tol)
-    np.testing.assert_allclose(quad_cm2_from_esu.quadrupole, ref_quad_cm2, tol)
+    np.testing.assert_allclose(quad_buckingham_from_esu.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_allclose(quad_au_from_esu.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_allclose(quad_cm2_from_esu.quadrupole, ref_quad_cm2, atol=tol)
 
     # From au
     quad_buckingham_from_au = quad_au.au_to_buck()
@@ -186,9 +186,9 @@ def test_unit_convert():
     assert(quad_buckingham_from_au.units == "buckingham")
     assert(quad_cm2_from_au.units == "cm2")
     assert(quad_esu_from_au.units == "esu")
-    np.testing.assert_allclose(quad_buckingham_from_au.quadrupole, ref_quad_buckingham, tol)
-    np.testing.assert_allclose(quad_cm2_from_au.quadrupole, ref_quad_cm2, tol)
-    np.testing.assert_allclose(quad_esu_from_au.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_allclose(quad_buckingham_from_au.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_allclose(quad_cm2_from_au.quadrupole, ref_quad_cm2, atol=tol)
+    np.testing.assert_allclose(quad_esu_from_au.quadrupole, ref_quad_esu, atol=tol)
 
     # From cm2
     quad_buckingham_from_cm2 = quad_cm2.cm2_to_buck()
@@ -198,9 +198,9 @@ def test_unit_convert():
     assert(quad_buckingham_from_cm2.units == "buckingham")
     assert(quad_au_from_cm2.units == "au")
     assert(quad_esu_from_cm2.units == "esu")
-    np.testing.assert_allclose(quad_buckingham_from_cm2.quadrupole, ref_quad_buckingham, tol)
-    np.testing.assert_allclose(quad_au_from_cm2.quadrupole, ref_quad_au, tol)
-    np.testing.assert_allclose(quad_esu_from_cm2.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_allclose(quad_buckingham_from_cm2.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_allclose(quad_au_from_cm2.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_allclose(quad_esu_from_cm2.quadrupole, ref_quad_esu, atol=tol)
 
 
 def test_as_unit():
@@ -260,13 +260,13 @@ def test_as_unit():
         units="esu"
     )
 
-    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham, tol)
+    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham, atol=tol)
     assert(quad_buckingham.units == "buckingham")
-    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au, tol)
+    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au, atol=tol)
     assert(quad_au.units == "au")
-    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2, tol)
+    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2, atol=tol)
     assert(quad_cm2.units == "cm2")
-    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu, atol=tol)
     assert(quad_esu.units == "esu")
 
     # From buckingham
@@ -277,9 +277,9 @@ def test_as_unit():
     assert(quad_au_from_buckingham.units == "au")
     assert(quad_cm2_from_buckingham.units == "cm2")
     assert(quad_esu_from_buckingham.units == "esu")
-    np.testing.assert_allclose(quad_au_from_buckingham.quadrupole, ref_quad_au, tol)
-    np.testing.assert_allclose(quad_cm2_from_buckingham.quadrupole, ref_quad_cm2, tol)
-    np.testing.assert_allclose(quad_esu_from_buckingham.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_allclose(quad_au_from_buckingham.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_allclose(quad_cm2_from_buckingham.quadrupole, ref_quad_cm2, atol=tol)
+    np.testing.assert_allclose(quad_esu_from_buckingham.quadrupole, ref_quad_esu, atol=tol)
 
     # From esu
     quad_buckingham_from_esu = quad_esu.as_unit("buckingham")
@@ -289,9 +289,9 @@ def test_as_unit():
     assert(quad_buckingham_from_esu.units == "buckingham")
     assert(quad_au_from_esu.units == "au")
     assert(quad_cm2_from_esu.units == "cm2")
-    np.testing.assert_allclose(quad_buckingham_from_esu.quadrupole, ref_quad_buckingham, tol)
-    np.testing.assert_allclose(quad_au_from_esu.quadrupole, ref_quad_au, tol)
-    np.testing.assert_allclose(quad_cm2_from_esu.quadrupole, ref_quad_cm2, tol)
+    np.testing.assert_allclose(quad_buckingham_from_esu.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_allclose(quad_au_from_esu.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_allclose(quad_cm2_from_esu.quadrupole, ref_quad_cm2, atol=tol)
 
     # From au
     quad_buckingham_from_au = quad_au.as_unit("buckingham")
@@ -301,9 +301,9 @@ def test_as_unit():
     assert(quad_buckingham_from_au.units == "buckingham")
     assert(quad_cm2_from_au.units == "cm2")
     assert(quad_esu_from_au.units == "esu")
-    np.testing.assert_allclose(quad_buckingham_from_au.quadrupole, ref_quad_buckingham, tol)
-    np.testing.assert_allclose(quad_cm2_from_au.quadrupole, ref_quad_cm2, tol)
-    np.testing.assert_allclose(quad_esu_from_au.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_allclose(quad_buckingham_from_au.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_allclose(quad_cm2_from_au.quadrupole, ref_quad_cm2, atol=tol)
+    np.testing.assert_allclose(quad_esu_from_au.quadrupole, ref_quad_esu, atol=tol)
 
     # From cm2
     quad_buckingham_from_cm2 = quad_cm2.as_unit("buckingham")
@@ -313,9 +313,9 @@ def test_as_unit():
     assert(quad_buckingham_from_cm2.units == "buckingham")
     assert(quad_au_from_cm2.units == "au")
     assert(quad_esu_from_cm2.units == "esu")
-    np.testing.assert_allclose(quad_buckingham_from_cm2.quadrupole, ref_quad_buckingham, tol)
-    np.testing.assert_allclose(quad_au_from_cm2.quadrupole, ref_quad_au, tol)
-    np.testing.assert_allclose(quad_esu_from_cm2.quadrupole, ref_quad_esu, tol)
+    np.testing.assert_allclose(quad_buckingham_from_cm2.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_allclose(quad_au_from_cm2.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_allclose(quad_esu_from_cm2.quadrupole, ref_quad_esu, atol=tol)
 
 
 def test_unit_cycle():
@@ -345,7 +345,7 @@ def test_unit_cycle():
         quadrupole = quadrupole.as_unit("esu")
         quadrupole = quadrupole.as_unit("buckingham")
 
-    np.testing.assert_allclose(quadrupole.quadrupole, ref_quad_buckingham, tol)
+    np.testing.assert_allclose(quadrupole.quadrupole, ref_quad_buckingham, atol=tol)
     assert(quadrupole.units == "buckingham")
 
 
@@ -383,8 +383,8 @@ def test_arithmetic():
     one_minus_two = quad_one - quad_two
     one_plus_two = quad_one + quad_two
 
-    np.testing.assert_allclose(one_minus_two.quadrupole, ref_one_minus_two, tol)
-    np.testing.assert_allclose(one_plus_two.quadrupole, ref_one_plus_two, tol)
+    np.testing.assert_allclose(one_minus_two.quadrupole, ref_one_minus_two, atol=tol)
+    np.testing.assert_allclose(one_plus_two.quadrupole, ref_one_plus_two, atol=tol)
 
 
 def test_from_orca():
@@ -439,8 +439,8 @@ def test_compare():
     compared_quad = calc_quad.compare(expt=expt_quad)
     diff = compared_quad - Quadrupole(expt_quad)
 
-    np.testing.assert_allclose(compared_quad.quadrupole, ref_compared_quad, tol)
-    np.testing.assert_allclose(diff.quadrupole, ref_diff, tol)
+    np.testing.assert_allclose(compared_quad.quadrupole, ref_compared_quad, atol=tol)
+    np.testing.assert_allclose(diff.quadrupole, ref_diff, atol=tol)
 
 
 def test_compare_mismatched_signs():
@@ -479,8 +479,8 @@ def test_compare_mismatched_signs():
     compared_quad = calc_quad.compare(expt=expt_quad)
     diff = compared_quad - expt_quad
 
-    np.testing.assert_allclose(compared_quad.quadrupole, ref_compared_quad, tol)
-    np.testing.assert_allclose(diff.quadrupole, ref_diff, tol)
+    np.testing.assert_allclose(compared_quad.quadrupole, ref_compared_quad, atol=tol)
+    np.testing.assert_allclose(diff.quadrupole, ref_diff, atol=tol)
 
 
 def test_repr():

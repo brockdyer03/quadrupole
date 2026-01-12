@@ -100,8 +100,8 @@ def test_inertia():
     print(eigenvalues)
     print(eigenvectors)
 
-    np.testing.assert_allclose(eigenvalues,  ref_eigenvalues,  rtol=1e-8)
-    np.testing.assert_allclose(eigenvectors, ref_eigenvectors, rtol=1e-8)
+    np.testing.assert_allclose(eigenvalues,  ref_eigenvalues,  atol=1e-8)
+    np.testing.assert_allclose(eigenvectors, ref_eigenvectors, atol=1e-8)
 
 
 def test_from_list():
@@ -300,8 +300,8 @@ def test_from_cube(tmp_path):
     geometry = Geometry.from_cube(cube_path)
 
     assert(geometry.get_elements() == elements)
-    np.testing.assert_allclose(geometry.get_coords(), xyzs, rtol=1e-8)
-    np.testing.assert_allclose(geometry.lat_vec, lat_vec, rtol=1e-7)
+    np.testing.assert_allclose(geometry.get_coords(), xyzs, atol=1e-8)
+    np.testing.assert_allclose(geometry.lat_vec, lat_vec, atol=1e-7)
     np.testing.assert_almost_equal(geometry.alat,  alat, decimal=8)
 
 
