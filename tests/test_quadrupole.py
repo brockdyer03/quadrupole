@@ -145,13 +145,13 @@ def test_unit_convert():
         units="esu"
     )
 
-    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham)
     assert(quad_buckingham.units == "buckingham")
-    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au)
     assert(quad_au.units == "au")
-    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2, atol=tol)
+    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2)
     assert(quad_cm2.units == "cm2")
-    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu, atol=tol)
+    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu)
     assert(quad_esu.units == "esu")
 
     # From buckingham
@@ -260,13 +260,13 @@ def test_as_unit():
         units="esu"
     )
 
-    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham, atol=tol)
+    np.testing.assert_array_equal(quad_buckingham.quadrupole, ref_quad_buckingham)
     assert(quad_buckingham.units == "buckingham")
-    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au, atol=tol)
+    np.testing.assert_array_equal(quad_au.quadrupole, ref_quad_au)
     assert(quad_au.units == "au")
-    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2, atol=tol)
+    np.testing.assert_array_equal(quad_cm2.quadrupole, ref_quad_cm2)
     assert(quad_cm2.units == "cm2")
-    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu, atol=tol)
+    np.testing.assert_array_equal(quad_esu.quadrupole, ref_quad_esu)
     assert(quad_esu.units == "esu")
 
     # From buckingham
