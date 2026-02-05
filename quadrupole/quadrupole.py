@@ -60,7 +60,7 @@ class LatticeError(Exception):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class ElementData:
     symbol: str
     number: int
@@ -277,7 +277,7 @@ class Geometry:
         return np.array([i.xyz for i in self.atoms])
 
 
-    def get_elements(self) -> list[str]:
+    def get_elements(self) -> list[Element]:
         return [i.element for i in self.atoms]
 
 
