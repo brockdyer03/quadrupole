@@ -119,6 +119,112 @@ def test_inertia():
     #np.testing.assert_allclose(eigenvectors, ref_eigenvectors, atol=1e-8)
 
 
+def test_simple_cubic():
+    ref_cell = np.array([
+        [42.24, 0, 0],
+        [0, 42.24, 0],
+        [0, 0, 42.24],
+    ], dtype=np.float64)
+
+    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=1,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_equal(gen_cell, ref_cell)
+
+
+def test_face_centered_cubic():
+    ref_cell = np.array([
+        [-21.12,     0, 21.12],
+        [     0, 21.12, 21.12],
+        [-21.12, 21.12,     0],
+    ], dtype=np.float64)
+
+    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=2,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_equal(gen_cell, ref_cell)
+
+
+def test_body_centered_cubic_low_sym():
+    ref_cell = np.array([
+        [ 21.12,  21.12, 21.12],
+        [-21.12,  21.12, 21.12],
+        [-21.12, -21.12, 21.12],
+    ], dtype=np.float64)
+
+    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=3,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_equal(gen_cell, ref_cell)
+
+
+def test_body_centered_cubic_high_sym():
+    ref_cell = np.array([
+        [-21.12,  21.12,  21.12],
+        [ 21.12, -21.12,  21.12],
+        [ 21.12,  21.12, -21.12],
+    ], dtype=np.float64)
+
+    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=-3,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_equal(gen_cell, ref_cell)
+
+
+def test_hexagonal():
+    # Elemental Cobalt
+    ref_cell = np.array([
+        [ 2.50710,       0,       0],
+        [-1.25355, 2.17121,       0],
+        [       0,       0, 4.06860],
+    ], dtype=np.float64)
+
+    cell_params = np.array([2.50710, 2.50710, 4.06860, np.pi/2, np.pi/2, 2*np.pi/3])
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=4,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+#+ Fails Currently
+def test_rhombohedral_z_symmetry():
+    # β-polonium
+    ref_cell = np.array([
+        [ 2.54650,  1.47022, 1.64233],
+        [ 0.00000, -2.94044, 1.64233],
+        [-2.54650,  1.47022, 1.64233],
+    ], dtype=np.float64)
+
+    angle = 98.24053 * np.pi / 180
+    cell_params = np.array([3.36801, 3.36801, 3.36801, angle, angle, angle])
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=5,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
 def test_from_list():
     elements = [
         Element.Hydrogen,
@@ -318,6 +424,117 @@ def test_from_cube(tmp_path):
     np.testing.assert_allclose(geometry.get_coords(), xyzs, atol=1e-8)
     np.testing.assert_allclose(geometry.lat_vec, lat_vec, atol=1e-7)
     np.testing.assert_almost_equal(geometry.alat,  alat, decimal=8)
+
+
+def test_from_qe_pp_ibrav(tmp_path):
+    """Test read from a QE post-processing output with ibrav!=0"""
+    elements = [
+        Element.Oxygen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+    ]
+
+    xyzs = np.array([
+        [12.75798555, 13.05368543, 12.76021096],
+        [13.52042186, 12.47252963, 12.76021096],
+        [12.00000006, 12.46673650, 12.76021096],
+    ], dtype=np.float64)
+
+    lat_vec = np.array([
+        [25.52042192,  0.00000000,  0.00000000],
+        [ 0.00000000, 25.52042192,  0.00000000],
+        [ 0.00000000,  0.00000000, 25.52042192],
+    ], dtype=np.float64)
+
+    alat = 25.520421921897817
+
+    ibrav_pp = (
+        "                                                                           \n"
+        "     320     320     320     320     320     320       3       2\n"
+        "     1       48.22660805      0.00000000      0.00000000      0.00000000      0.00000000      0.00000000\n"
+        "    23565.3388878648        4.0000000000      100.0000000000     0\n"
+        "   1   H     1.00\n"
+        "   2   O     6.00\n"
+        "   1       0.499912799    0.511499593    0.500000000    2\n"
+        "   2       0.529788336    0.488727407    0.500000000    1\n"
+        "   3       0.470211664    0.488500407    0.500000000    1\n"
+        " -2.299083350E-07 -7.838054251E-08  2.006116960E-07  1.688000881E-08 -4.123357949E-08\n"
+        "  1.884541410E-07 -6.697910057E-09 -1.293898826E-07 -5.921296723E-08  2.149459995E-07\n"
+        "  1.274520306E-07 -7.357167995E-08  2.090725496E-08 -3.161760662E-09 -1.262719220E-07\n"
+        " -1.857340482E-07  1.293451047E-07  7.212858794E-08 -1.506511456E-07 -6.644561901E-08\n"
+        "  7.335879733E-08  7.680247865E-08 -3.131195191E-08 -5.796952834E-09 -2.667106558E-08\n"
+    )
+
+    temp_dir = tmp_path / Path("test_files")
+    temp_dir.mkdir(exist_ok=True)
+
+    ibrav_path = temp_dir / Path("test_ibrav.pp")
+
+    ibrav_path.write_text(ibrav_pp, encoding="utf-8")
+
+    ibrav_geometry = Geometry.from_qe_pp(ibrav_path)
+
+    assert(ibrav_geometry.get_elements() == elements)
+    np.testing.assert_allclose(ibrav_geometry.get_coords(), xyzs, atol=1e-8)
+    np.testing.assert_allclose(ibrav_geometry.lat_vec, lat_vec, atol=1e-7)
+    np.testing.assert_almost_equal(ibrav_geometry.alat,  alat, decimal=8)
+
+
+def test_from_qe_pp_cell(tmp_path):
+    """Test read from a QE post-processing output with ibrav=0"""
+    elements = [
+        Element.Oxygen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+    ]
+
+    xyzs = np.array([
+        [12.75798555, 13.05368543, 12.76021096],
+        [13.52042186, 12.47252963, 12.76021096],
+        [12.00000006, 12.46673650, 12.76021096],
+    ], dtype=np.float64)
+
+    lat_vec = np.array([
+        [25.52042192,  0.00000000,  0.00000000],
+        [ 0.00000000, 25.52042192,  0.00000000],
+        [ 0.00000000,  0.00000000, 25.52042192],
+    ], dtype=np.float64)
+
+    alat = 25.520421921897817
+
+    cell_pp = (
+        "                                                                           \n"
+        "     320     320     320     320     320     320       3       2\n"
+        "     0       48.22660805      0.00000000      0.00000000      0.00000000      0.00000000      0.00000000\n"
+        "   1.0000000000000000        0.0000000000000000        0.0000000000000000     \n"
+        "   0.0000000000000000        1.0000000000000000        0.0000000000000000     \n"
+        "   0.0000000000000000        0.0000000000000000        1.0000000000000000     \n"
+        "    23565.3388878648        4.0000000000      100.0000000000     0\n"
+        "   1   H     1.00\n"
+        "   2   O     6.00\n"
+        "   1       0.499912799    0.511499593    0.500000000    2\n"
+        "   2       0.529788336    0.488727407    0.500000000    1\n"
+        "   3       0.470211664    0.488500407    0.500000000    1\n"
+        " -2.299083350E-07 -7.838054251E-08  2.006116960E-07  1.688000881E-08 -4.123357949E-08\n"
+        "  1.884541410E-07 -6.697910057E-09 -1.293898826E-07 -5.921296723E-08  2.149459995E-07\n"
+        "  1.274520306E-07 -7.357167994E-08  2.090725496E-08 -3.161760660E-09 -1.262719220E-07\n"
+        " -1.857340482E-07  1.293451047E-07  7.212858794E-08 -1.506511456E-07 -6.644561900E-08\n"
+        "  7.335879733E-08  7.680247866E-08 -3.131195191E-08 -5.796952831E-09 -2.667106558E-08\n"
+    )
+
+    temp_dir = tmp_path / Path("test_files")
+    temp_dir.mkdir(exist_ok=True)
+
+    cell_path = temp_dir / Path("test_cell.pp")
+
+    cell_path.write_text(cell_pp, encoding="utf-8")
+
+    cell_geometry = Geometry.from_qe_pp(cell_path)
+
+    assert(cell_geometry.get_elements() == elements)
+    np.testing.assert_allclose(cell_geometry.get_coords(), xyzs, atol=1e-8)
+    np.testing.assert_allclose(cell_geometry.lat_vec, lat_vec, atol=1e-7)
+    np.testing.assert_almost_equal(cell_geometry.alat,  alat, decimal=8)
 
 
 def test_repr():

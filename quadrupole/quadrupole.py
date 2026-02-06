@@ -1,5 +1,6 @@
 from __future__ import annotations
 import numpy as np
+from numpy import sin, cos, sqrt
 import numpy.typing as npt
 from os import PathLike
 from pathlib import Path
@@ -285,7 +286,6 @@ class Geometry:
     def _gen_prim_lattice(
         bravais_index: int,
         cell_params: npt.ArrayLike,
-        espresso_like: bool = False,
     ) -> npt.NDArray:
         """Generate a primitive unit cell. FOR INTERNAL USE ONLY, USERS SHOULD
         USE `generate_lattice()`!!
@@ -298,14 +298,6 @@ class Geometry:
         gamma = cell_params[5]
 
         # region LatticeCheck
-        # Temporarily convert into a form for comparison
-        if espresso_like:
-            b = b * a
-            c = c * a
-            alpha = np.arccos(alpha) * 180.0 / np.pi
-            beta  = np.arccos(beta)  * 180.0 / np.pi
-            gamma = np.arccos(gamma) * 180.0 / np.pi
-
         right_angles = [
             1, 2, 3, -3,          # Cubic
             6, 7,                 # Tetragonal
@@ -313,77 +305,207 @@ class Geometry:
         ]
 
         # Check cell parameters to make sure they match the lattice type
-        lattice_mismatch = False
         # First all cells where α = β = γ = 90°
         if bravais_index in right_angles:
             # Check all
-            if not (alpha == beta == gamma == 90):
-                lattice_mismatch = True
+            if not (alpha == beta == gamma == np.pi/2):
+                raise LatticeError(bravais_index, cell_params)
             # Narrow down to tetragonal and cubic
             elif bravais_index in right_angles[:-6] and not (a == b):
-                lattice_mismatch = True
+                raise LatticeError(bravais_index, cell_params)
             # Next check cubic lattices
             elif bravais_index in right_angles[:-8] and not (a == b == c):
-                lattice_mismatch = True
+                raise LatticeError(bravais_index, cell_params)
 
         # Now check rhombohedral
         elif bravais_index in [5, -5]:
             if not (alpha == beta == gamma) or not (a == b == c):
-                lattice_mismatch = True
+                raise LatticeError(bravais_index, cell_params)
+        # Now check hexagonal
         elif bravais_index == 4:
-            if not (a == b) or not (alpha == beta == 90 and gamma == 120):
-                lattice_mismatch = True
+            if (
+                not (a == b)
+                or not (
+                    alpha == beta == np.pi/2
+                    and gamma == 2*np.pi/3
+                )
+                or c <= 0.0
+            ):
+                raise LatticeError(bravais_index, cell_params)
         elif bravais_index in [12, -12, 13, -13]:
-            if not (alpha == gamma == 90):
-                lattice_mismatch = True
+            if not (alpha == gamma == np.pi/2):
+                raise LatticeError(bravais_index, cell_params)
 
-        if lattice_mismatch:
-            raise LatticeError(bravais_index, cell_params)
         # endregion LatticeCheck
 
         # Now that we have guaranteed the parameters will provide the correct
         # output, we can proceed with making the cell.
-
-        # We need to convert back into a convenient form for cell creation
-        if espresso_like:
-            b = b / a
-            c = c / a
-            alpha = np.cos(alpha * np.pi / 180.0 )
-            beta  = np.cos(beta * np.pi / 180.0 )
-            gamma = np.cos(gamma * np.pi / 180.0 )
-
         match bravais_index:
-            case 1:
+            case 1: # Simple Cubic
                 cell = a * np.eye(3, dtype=np.float64)
                 return cell
-            case 2:
+            case 2: # Face-Centered Cubic
                 cell = np.array([
                     [-1,  0,  1],
                     [ 0,  1,  1],
                     [-1,  1,  0],
                 ], dtype=np.float64)
                 return (a / 2) * cell
-            case 3:
+            case 3: # Body-Centered Cubic
                 cell = np.array([
                     [ 1,  1,  1],
                     [-1,  1,  1],
                     [-1, -1,  1],
                 ], dtype=np.float64)
                 return (a / 2) * cell
-            case -3:
+            case -3: # Body-Centered Cubic, More Symmetric Axis
                 cell = np.array([
                     [-1,  1,  1],
                     [ 1, -1,  1],
                     [ 1,  1, -1],
                 ], dtype=np.float64)
                 return (a / 2) * cell
-            case 4:
+            case 4: # Hexagonal
                 cell = np.array([
-                    [ 1,    0,             0],
-                    [-0.5,  np.sqrt(3)/2,  0],
-                    [ 1,    1,           c],
+                    [   a,           0,  0],
+                    [-a/2, a*sqrt(3)/2,  0],
+                    [   0,           0,  c],
                 ], dtype=np.float64)
-                return (a / 2) * cell
+                return cell
+            case 5 | -5: # Rhombohedral
+                term1 = sqrt(1 + 2 * cos(gamma))
+                term2 = sqrt(1 - cos(gamma))
+                if bravais_index == 5: # Rhombohedral, Symmetry about z-axis
+                    cell = np.array([
+                        [ term2/sqrt(2),        -term2/sqrt(6), term1/sqrt(3)],
+                        [             0, sqrt(2)*term1/sqrt(3), term1/sqrt(3)],
+                        [-term2/sqrt(2),        -term2/sqrt(6), term1/sqrt(3)],
+                    ], dtype=np.float64)
+                    return a * cell
+                else: # Rhombohedral, Symmetry about <111>
+                    u = (term1 - 2*term2) / 3
+                    v = (term1 + term2) / 3
+                    cell = np.array([
+                        [u, v, v],
+                        [v, u, v],
+                        [v, v, u],
+                    ], dtype=np.float64)
+                    return a * cell
+            case 6: # Simple Tetragonal
+                cell = np.array([
+                    [a, 0, 0],
+                    [0, a, 0],
+                    [0, 0, c],
+                ], dtype=np.float64)
+                return cell
+            case 7: # Body-Centered Tetragonal
+                cell = np.array([
+                    [ a, -a, c],
+                    [ a,  a, c],
+                    [-a, -a, c],
+                ], dtype=np.float64)
+                return cell / 2
+            case 8: # Simple Orthorhombic
+                cell = np.array([
+                    [a, 0, 0],
+                    [0, b, 0],
+                    [0, 0, c],
+                ], dtype=np.float64)
+                return cell
+            case 9: # Base-Centered Orthorhombic, C-type, legacy PWscf
+                cell = np.array([
+                    [ a/2, b/2, 0],
+                    [-a/2, b/2, 0],
+                    [   0,   0, c],
+                ], dtype=np.float64)
+                return cell
+            case -9: # Base-Centered Orthorhombic, C-type
+                cell = np.array([
+                    [a/2, -b/2, 0],
+                    [a/2,  b/2, 0],
+                    [  0,    0, c],
+                ], dtype=np.float64)
+                return cell
+            case 91: # Base-Centered Orthorhombic, A type
+                cell = np.array([
+                    [a,   0,    0],
+                    [0, b/2, -c/2],
+                    [0, b/2,  c/2],
+                ], dtype=np.float64)
+                return cell
+            case 10: # Face-Centered Orthorhombic
+                cell = np.array([
+                    [a, 0, c],
+                    [a, b, 0],
+                    [0, b, c],
+                ], dtype=np.float64)
+                return cell / 2
+            case 11: # Body-Centered Orthorhombic
+                cell = np.array([
+                    [ a,  b,  c],
+                    [-a,  b,  c],
+                    [-a, -b,  c],
+                ], dtype=np.float64)
+                return cell / 2
+            case 12: # Simple Monoclinic, unique axis c (orthogonal to a)
+                bcosg = b * cos(gamma)
+                bsing = b * sin(gamma)
+                cell = np.array([
+                    [    a,     0, 0],
+                    [bcosg, bsing, 0],
+                    [    0,     0, c],
+                ], dtype=np.float64)
+                return cell
+            case -12: # Simple Monoclinic, unique axis b
+                ccosbe = c * cos(beta)
+                csinbe = c * sin(beta)
+                cell = np.array([
+                    [     a,  0,      0],
+                    [     0,  b,      0],
+                    [ccosbe,  0, csinbe],
+                ], dtype=np.float64)
+                return cell
+            case 13: # Base-Centered Monoclinic, unique axis c
+                bcosg = b * cos(gamma)
+                bsing = b * sin(gamma)
+                cell = np.array([
+                    [  a/2,     0, -c/2],
+                    [bcosg, bsing,    0],
+                    [  a/2,     0,  c/2],
+                ], dtype=np.float64)
+                return cell
+            case -13: # Base-Centered Monoclinic, unique axis b
+                ccosbe = c * cos(beta)
+                csinbe = c * sin(beta)
+                cell = np.array([
+                    [   a/2, b/2,      0],
+                    [  -a/2, b/2,      0],
+                    [ccosbe,   0, csinbe],
+                ], dtype=np.float64)
+                return cell
+            case 14: # Triclinic
+                bcosg  = b * cos(gamma)
+                bsing  = b * sin(gamma)
+                ccosbe = c * cos(beta)
+                term1 = (
+                    c * (cos(alpha) - cos(beta) * cos(gamma))
+                    / sin(gamma)
+                )
+                term2 = c * sqrt(
+                    (
+                        1 + 2 * cos(alpha) * cos(beta) * cos(gamma)
+                        - cos(alpha)**2 - cos(beta)**2 - cos(gamma)**2
+                    ) / sin(gamma)
+                )
+
+                cell = np.array([
+                    [     a,     0,     0],
+                    [ bcosg, bsing,     0],
+                    [ccosbe, term1, term2],
+                ], dtype=np.float64)
+                return cell
+            case _:
+                raise ValueError(f"Invalid lattice type: {bravais_index}")
 
 
     @staticmethod
@@ -461,10 +583,110 @@ class Geometry:
             Simple Triclinic, aP
         """
 
-        lattice = Geometry._gen_prim_lattice(bravais_index, cell_params, espresso_like)
+        supported_indices = [
+            1, 2, 3, -3, # Cubic
+            4, # Hexagonal
+            5, -5, # Rhombohedral
+            6, 7, # Tetragonal
+            8, 9, -9, 91, 10, 11, # Orthorhombic
+            12, 13, -12, -13, # Monoclinic
+            14, # Triclinic
+        ]
 
-        if primitive:
+        if bravais_index not in supported_indices:
+            raise ValueError(
+               f"Bravais lattice index {bravais_index} not supported!\n"
+                "Please select from a supported index!"
+            )
+
+        if not espresso_like:
+            lattice = Geometry._gen_prim_lattice(bravais_index, cell_params)
+            if primitive or espresso_like:
+                return lattice
+            else:
+                raise ValueError(
+                    "Only primitive cells are currently supported!"
+                )
+
+        # If we are reading a QE output then we need to translate the parameters
+        # to match the typical a, b, c, α, β, γ
+        match bravais_index:
+            case 1 | 2 | 3 | -3: # Cubic cells
+                a = cell_params[0]
+                b = a
+                c = a
+                alpha = np.pi / 2
+                beta  = np.pi / 2
+                gamma = np.pi / 2
+            case 4: # Hexagonal
+                a = cell_params[0]
+                b = a
+                c = cell_params[2]
+                alpha = np.pi / 2
+                beta  = np.pi / 2
+                gamma = 2 * np.pi / 3
+            case 5 | -5: # Rhombohedral
+                a = cell_params[0]
+                b = a
+                c = a
+                gamma = np.arccos(cell_params[3])
+                alpha = gamma
+                beta  = gamma
+            case 6 | 7: # Tetragonal
+                a = cell_params[0]
+                b = a
+                c = a * cell_params[2]
+                alpha = np.pi / 2
+                beta  = np.pi / 2
+                gamma = np.pi / 2
+            case 8 | 9 | -9 | 91 | 10 | 11: # Orthorhombic
+                a = cell_params[0]
+                b = a * cell_params[1]
+                c = a * cell_params[2]
+                alpha = np.pi / 2
+                beta  = np.pi / 2
+                gamma = np.pi / 2
+            case 12 | -12: # Monoclinic
+                a = cell_params[0]
+                b = a * cell_params[1]
+                c = a * cell_params[2]
+                if bravais_index == 12: # Monoclinic, unique axis c
+                    gamma = np.arccos(cell_params[3])
+                    alpha = np.pi / 2
+                    beta  = np.pi / 2
+                else: # Monoclinic, unique axis b
+                    beta = np.arccos(cell_params[4])
+                    alpha = np.pi / 2
+                    gamma = np.pi / 2
+            case 13 | -13: # Base-Centered Monoclinic
+                #+ I am pretty sure this isn't correct,
+                #+ but I don't know what correct is.
+                a = cell_params[0]
+                b = a * cell_params[1]
+                c = a * cell_params[2]
+                if bravais_index == 13: # Base-Centered Monoclinic, unique axis c
+                    gamma = np.arccos(cell_params[3])
+                    alpha = np.pi / 2
+                    beta  = np.pi / 2
+                else: # Base-Centered Monoclinic, unique axis b
+                    beta = np.arccos(cell_params[4])
+                    alpha = np.pi / 2
+                    gamma = np.pi / 2
+            case 14:
+                a = cell_params[0]
+                b = a * cell_params[1]
+                c = a * cell_params[2]
+                gamma = cell_params[3]
+                beta  = cell_params[4]
+                alpha = cell_params[5]
+
+        cell_params = np.array([a, b, c, alpha, beta, gamma], dtype=np.float64)
+        lattice = Geometry._gen_prim_lattice(bravais_index, cell_params)
+
+        if primitive or espresso_like:
             return lattice
+        else:
+            raise ValueError("Only primitive cells are currently supported!")
 
 
     @classmethod
@@ -479,7 +701,7 @@ class Geometry:
             lat_vec = np.array([line.strip().split() for line in crystal_info[2:5]], dtype=np.float64)
 
             # Calculate lattice parameter
-            alat = np.sqrt(np.sum(lat_vec[0,:] ** 2))
+            alat = sqrt(np.sum(lat_vec[0,:] ** 2))
 
             # Pull the number of atoms
             num_atoms = int(crystal_info[-1].split()[0])
@@ -528,7 +750,7 @@ class Geometry:
 
 
     @classmethod
-    def from_list(cls, elements: list[str], xyzs: npt.NDArray) -> Geometry:
+    def from_list(cls, elements: list[ElementLike], xyzs: npt.NDArray) -> Geometry:
         if len(elements) != len(xyzs):
             raise ValueError("The list of elements and coordinates must be of the same size!")
 
@@ -645,7 +867,7 @@ class Geometry:
 
             lat_vec = np.array(lat_vec) * Geometry.bohr_to_angstrom
 
-            alat = np.sqrt(np.sum(lat_vec[0,:] ** 2))
+            alat = sqrt(np.sum(lat_vec[0,:] ** 2))
 
             atom_data = [next(cube).strip().split() for _ in range(num_atoms)]
 
@@ -670,7 +892,7 @@ class Geometry:
             sys_info = next(qe_pp).split()
             num_atoms = int(sys_info[-2])
             num_types = int(sys_info[-1])
-            
+
             cell_info = next(qe_pp).split()
             ibrav = int(cell_info[0])
             alat = float(cell_info[1]) * Geometry.bohr_to_angstrom
@@ -687,8 +909,8 @@ class Geometry:
                         bravais_index=ibrav,
                         cell_params=np.array(cell_info[1:], dtype=np.float64),
                         primitive=True,
-                        espresso_like=True
-                    )
+                        espresso_like=True,
+                    ) * Geometry.bohr_to_angstrom
 
             # Skip over PW Parameters
             next(qe_pp)

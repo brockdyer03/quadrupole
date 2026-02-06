@@ -1,7 +1,13 @@
 import pytest
 from pathlib import Path
 import numpy as np
-from quadrupole import Element, Geometry, Quadrupole, FileFormatError
+from quadrupole import (
+    Element,
+    Geometry,
+    Quadrupole,
+    FileFormatError,
+    LatticeError,
+)
 
 
 @pytest.mark.xfail(
@@ -136,6 +142,69 @@ def test_orca_no_final_geom():
     ).resolve()
 
     Geometry.from_orca(orca_output_path)
+
+
+@pytest.mark.xfail(
+    reason="Bravais lattice index outside of supported values",
+    raises=ValueError,
+)
+def test_invalid_bravais_index():
+    cell_params = np.zeros(6)
+    Geometry.generate_lattice(42, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request simple cubic lattice with non-simple cubic values",
+    raises=LatticeError,
+)
+def test_lattice_mismatch_cubic():
+    cell_params = np.array([42, 42, 20, np.pi/2, np.pi/2, np.pi/2])
+    Geometry.generate_lattice(1, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request tetragonal lattice with non-tetragonal values",
+    raises=LatticeError,
+)
+def test_lattice_mismatch_tetragonal():
+    cell_params = np.array([42, 20, 42, np.pi/2, np.pi/2, np.pi/2])
+    Geometry.generate_lattice(6, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request orthorhombic lattice with non-orthorhombic values",
+    raises=LatticeError,
+)
+def test_lattice_mismatch_orthorhombic():
+    cell_params = np.array([42, 20, 12, np.pi/3, np.pi/2, np.pi/2])
+    Geometry.generate_lattice(10, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request rhombohedral lattice with non-rhombohedral values",
+    raises=LatticeError,
+)
+def test_lattice_mismatch_rhombohedral():
+    cell_params = np.array([42, 42, 20, np.pi/2, np.pi/2, np.pi/2])
+    Geometry.generate_lattice(5, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request hexagonal lattice with non-hexagonal values",
+    raises=LatticeError,
+)
+def test_lattice_mismatch_hexagonal():
+    cell_params = np.array([42, 42, 20, np.pi/15, np.pi/2, 2*np.pi/3])
+    Geometry.generate_lattice(4, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request monoclinic lattice with non-monoclinic values",
+    raises=LatticeError,
+)
+def test_lattice_mismatch_monoclinic():
+    cell_params = np.array([42, 12, 20, np.pi/3, np.pi/2, np.pi/2])
+    Geometry.generate_lattice(13, cell_params)
 
 
 @pytest.mark.xfail(
