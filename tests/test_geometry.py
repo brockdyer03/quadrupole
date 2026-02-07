@@ -126,7 +126,9 @@ def test_simple_cubic():
         [0, 0, 42.24],
     ], dtype=np.float64)
 
-    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    cell_params = np.array(
+        [42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2]
+    )
     gen_cell = Geometry.generate_lattice(
         bravais_index=1,
         cell_params=cell_params,
@@ -143,7 +145,9 @@ def test_face_centered_cubic():
         [-21.12, 21.12,     0],
     ], dtype=np.float64)
 
-    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    cell_params = np.array(
+        [42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2]
+    )
     gen_cell = Geometry.generate_lattice(
         bravais_index=2,
         cell_params=cell_params,
@@ -160,7 +164,9 @@ def test_body_centered_cubic_low_sym():
         [-21.12, -21.12, 21.12],
     ], dtype=np.float64)
 
-    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    cell_params = np.array(
+        [42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2]
+    )
     gen_cell = Geometry.generate_lattice(
         bravais_index=3,
         cell_params=cell_params,
@@ -177,7 +183,9 @@ def test_body_centered_cubic_high_sym():
         [ 21.12,  21.12, -21.12],
     ], dtype=np.float64)
 
-    cell_params = np.array([42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2])
+    cell_params = np.array(
+        [42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2]
+    )
     gen_cell = Geometry.generate_lattice(
         bravais_index=-3,
         cell_params=cell_params,
@@ -195,7 +203,9 @@ def test_hexagonal():
         [       0,       0, 4.06860],
     ], dtype=np.float64)
 
-    cell_params = np.array([2.50710, 2.50710, 4.06860, np.pi/2, np.pi/2, 2*np.pi/3])
+    cell_params = np.array(
+        [2.50710, 2.50710, 4.06860, np.pi/2, np.pi/2, 2*np.pi/3]
+    )
     gen_cell = Geometry.generate_lattice(
         bravais_index=4,
         cell_params=cell_params,
@@ -205,19 +215,136 @@ def test_hexagonal():
     np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
 
 
-#+ Fails Currently
 def test_rhombohedral_z_symmetry():
-    # β-polonium
     ref_cell = np.array([
-        [ 2.54650,  1.47022, 1.64233],
-        [ 0.00000, -2.94044, 1.64233],
-        [-2.54650,  1.47022, 1.64233],
+        [ 12.000000, -6.928200, 19.595928],
+        [  0.000000, 13.856400, 19.595928],
+        [-12.000000, -6.928200, 19.595928],
     ], dtype=np.float64)
 
-    angle = 98.24053 * np.pi / 180
-    cell_params = np.array([3.36801, 3.36801, 3.36801, angle, angle, angle])
+    cell_params = np.array(
+        [24.000, 24.000, 24.000, np.pi/3, np.pi/3, np.pi/3]
+    )
     gen_cell = Geometry.generate_lattice(
         bravais_index=5,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_rhombohedral_111_symmetry():
+    ref_cell = np.array([
+        [ 0.000000, 16.970568, 16.970568],
+        [16.970568,  0.000000, 16.970568],
+        [16.970568, 16.970568,  0.000000],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [24.000, 24.000, 24.000, np.pi/3, np.pi/3, np.pi/3]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=-5,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_simple_tetragonal():
+    # β-tin
+    ref_cell = np.array([
+        [5.81970, 0.00000, 0.00000],
+        [0.00000, 5.81970, 0.00000],
+        [0.00000, 0.00000, 3.17488],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [5.81970, 5.81970, 3.17488, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=6,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_body_centered_tetragonal():
+    ref_cell = np.array([
+        [ 1.62615, -1.62615, 2.47295],
+        [ 1.62615,  1.62615, 2.47295],
+        [-1.62615, -1.62615, 2.47295],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [3.25230, 3.25230, 4.94590, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=7,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_simple_orthorhombic():
+    # Cementite, Fe₃C
+    ref_cell = np.array([
+        [5.09230, 0.00000, 0.00000],
+        [0.00000, 6.78960, 0.00000],
+        [0.00000, 0.00000, 4.52920],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [5.09230, 6.78960, 4.52920, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=8,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_legacy_base_centered_orthorhombic_c_type():
+    # OsCl₄
+    ref_cell = np.array([
+        [ 3.96450, 4.16300, 0.00000],
+        [-3.96450, 4.16300, 0.00000],
+        [ 0.00000, 0.00000, 3.56000],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [7.92900, 8.32600, 3.56000, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=9,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_base_centered_orthorhombic_c_type():
+    # OsCl₄
+    ref_cell = np.array([
+        [3.96450, -4.16300, 0.00000],
+        [3.96450,  4.16300, 0.00000],
+        [0.00000,  0.00000, 3.56000],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [7.92900, 8.32600, 3.56000, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=-9,
         cell_params=cell_params,
         primitive=True,
     )

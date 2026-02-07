@@ -290,12 +290,12 @@ class Geometry:
         """Generate a primitive unit cell. FOR INTERNAL USE ONLY, USERS SHOULD
         USE `generate_lattice()`!!
         """
-        a = cell_params[0]
-        b = cell_params[1]
-        c = cell_params[2]
-        alpha = cell_params[3]
-        beta  = cell_params[4]
-        gamma = cell_params[5]
+        a = np.float64(cell_params[0])
+        b = np.float64(cell_params[1])
+        c = np.float64(cell_params[2])
+        alpha = np.float64(cell_params[3])
+        beta  = np.float64(cell_params[4])
+        gamma = np.float64(cell_params[5])
 
         # region LatticeCheck
         right_angles = [
@@ -378,7 +378,7 @@ class Geometry:
                 if bravais_index == 5: # Rhombohedral, Symmetry about z-axis
                     cell = np.array([
                         [ term2/sqrt(2),        -term2/sqrt(6), term1/sqrt(3)],
-                        [             0, sqrt(2)*term1/sqrt(3), term1/sqrt(3)],
+                        [             0, sqrt(2)*term2/sqrt(3), term1/sqrt(3)],
                         [-term2/sqrt(2),        -term2/sqrt(6), term1/sqrt(3)],
                     ], dtype=np.float64)
                     return a * cell
