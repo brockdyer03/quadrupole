@@ -16,7 +16,7 @@ class FileFormatError(Exception):
 
     def __str__(self):
         return self.message
-    
+
 
 class LatticeError(Exception):
     """Exception raised when trying to generate lattices with
@@ -243,9 +243,9 @@ class Atom:
 
 
 class Geometry:
-    """Class storing the geometric parameters of a molecular geometry or crystal structure.
-    All quantities should be in Ångstrom
-    
+    """Class storing the geometric parameters of a molecular geometry or
+    crystal structure. All quantities should be in Ångstrom.
+
     Attributes
     ----------
     atoms : list[Atom]
@@ -287,8 +287,8 @@ class Geometry:
         bravais_index: int,
         cell_params: npt.ArrayLike,
     ) -> npt.NDArray:
-        """Generate a primitive unit cell. FOR INTERNAL USE ONLY, USERS SHOULD
-        USE `generate_lattice()`!!
+        """Generate a primitive unit cell. FOR INTERNAL USE ONLY, USERS
+        SHOULD USE `generate_lattice()`!!
         """
         a = np.float64(cell_params[0])
         b = np.float64(cell_params[1])
@@ -426,6 +426,7 @@ class Geometry:
                     [  0,    0, c],
                 ], dtype=np.float64)
                 return cell
+            #+ Untested after this point
             case 91: # Base-Centered Orthorhombic, A type
                 cell = np.array([
                     [a,   0,    0],
@@ -520,15 +521,19 @@ class Geometry:
 
         Parameters
         ----------
-        bravais_index : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, -3, -5, -9, -12, -13, 91}
-            Integer corresponding to the type of Bravais lattice. Described in Notes.
+        bravais_index : {1, 2, 3, -3, 4, 5, -5, 6, 7, 8, 9, -9, 91, 10, 11, 12, -12, 13, -13, 14}
+            Integer corresponding to the type of Bravais lattice.
+            Described in ``Bravais Indices``.
         cell_params : ArrayLike, dtype float, size 6
-            ArrayLike of cell parameters, in order: (`a`, `b`, `c`, `α`, `β`, `γ`)
+            ArrayLike of cell parameters, in order:
+            (`a`, `b`, `c`, `α`, `β`, `γ`)
         primitive : bool, default=False
-            Denote whether supplied cell parameters are for a primitive or a conventional unit cell.
+            Denote whether supplied cell parameters are for a primitive
+            or a conventional unit cell.
         espresso_like : bool, default=False
-            If `cell_params` are provided in Quantum ESPRESSO format, this should
-            be set to ``True``. Automatically sets `primitive` to ``True`` as well.
+            If `cell_params` are provided in Quantum ESPRESSO format,
+            this should be set to ``True``.
+            Automatically sets `primitive` to ``True`` as well.
 
         Notes
         -----
@@ -537,8 +542,8 @@ class Geometry:
         cell_params = (a, b/a, c/a, cos(α), cos(β), cos(γ))
         ```
 
-        This function will cross-check all Bravais types against the provided
-        cell parameters.
+        This function will cross-check all Bravais types against the
+        provided cell parameters.
 
         Bravais Indices
         ---------------
@@ -691,7 +696,7 @@ class Geometry:
 
     @classmethod
     def from_xsf(cls, file: PathLike) -> Geometry:
-        """Read in only the crystallographic information from an XSF file."""
+        """Read in the crystallographic information from an XSF file."""
         with open(file, "r") as xsf:
 
             # Pulls in the lines that contain the primitive lattice vectors and the line containing the number of atoms.
@@ -723,10 +728,10 @@ class Geometry:
                 num_atoms = int(num_atoms)
             except ValueError:
                 raise FileFormatError(
-                    f"File {Path(file).resolve()} is improperly formatted at line 1, "
+                    f"File {Path(file).resolve()} is improperly formatted at line 1,\n"
                     f"expected number of atoms, got '{num_atoms}' instead!"
                 )
-            
+
             xyz.readline() # Skip comment line
 
             elements = []
@@ -734,9 +739,13 @@ class Geometry:
             for i in range(num_atoms):
                 line = xyz.readline()
                 if line == "":
-                    raise FileFormatError(f"File {Path(file).resolve()} contains less atoms than expected!")
+                    raise FileFormatError(
+                        f"File {Path(file).resolve()} contains less atoms than expected!"
+                    )
                 elif line.strip() == "":
-                    raise FileFormatError(f"File {Path(file).resolve()} is improperly formatted!")
+                    raise FileFormatError(
+                        f"File {Path(file).resolve()} is improperly formatted!"
+                    )
                 else:
                     line = line.strip().split()
                     elements.append(line[0])
@@ -750,9 +759,11 @@ class Geometry:
 
 
     @classmethod
-    def from_list(cls, elements: list[ElementLike], xyzs: npt.NDArray) -> Geometry:
+    def from_list(cls, elements: list[ElementLike], xyzs: npt.ArrayLike) -> Geometry:
         if len(elements) != len(xyzs):
-            raise ValueError("The list of elements and coordinates must be of the same size!")
+            raise ValueError(
+                "The list of elements and coordinates must be of the same size!"
+            )
 
         atoms = []
         for i, element in enumerate(elements):
@@ -816,8 +827,7 @@ class Geometry:
                         final_geom_search = False
                     elif line == "":
                         raise FileFormatError(
-                            f"Error reading file '{Path(file).resolve()}', "
-                            "can not find final geometry"
+                            f"Error reading file '{Path(file).resolve()}', can not find final geometry"
                         )
 
                 coordinate_search = True
@@ -841,14 +851,16 @@ class Geometry:
 
     @classmethod
     def from_cube(cls, file: PathLike) -> Geometry:
-        """Read in and interpret crystallographic information from a CUBE file.
+        """Read in and interpret crystallographic information from a
+        CUBE file.
 
         Note
         ----
-        This function calculates the dimensions of the unit cell by taking the number
-        of grid points and muliplying it by the spacing of the grid points. Due to rounding
-        errors when an external program prints a CUBE file, the cell dimensions can have 
-        inaccuracies of +/- 5e-05 angstrom.
+        This function calculates the dimensions of the unit cell by
+        taking the number of grid points and muliplying it by the
+        spacing of the grid points. Due to rounding errors when an
+        external program prints a CUBE file, the cell dimensions can
+        have inaccuracies of +/- 5e-05 angstrom.
         """
 
         with open(file, "r") as cube:
@@ -863,7 +875,9 @@ class Geometry:
 
             lat_vec = []
             for i, dim in enumerate(grid_info):
-                lat_vec.append([grid_points[i]*float(dim[j]) for j in range(1,4)])
+                lat_vec.append(
+                    [grid_points[i]*float(dim[j]) for j in range(1,4)]
+                )
 
             lat_vec = np.array(lat_vec) * Geometry.bohr_to_angstrom
 
@@ -882,8 +896,9 @@ class Geometry:
 
     @classmethod
     def from_qe_pp(cls, file: PathLike) -> Geometry:
-        """Read in only the crystallographic information from a Quantum ESPRESSO
-        post-processing file. (e.g. leaving the ``&PLOT`` blank and reading ``filplot``)
+        """Read in only the crystallographic information from a
+        Quantum ESPRESSO post-processing file.
+        (e.g. leaving the ``&PLOT`` blank and reading ``filplot``)
         """
         with open(file, "r") as qe_pp:
             # First line is either blank or has a title, either way, skip.
@@ -1017,24 +1032,29 @@ class Geometry:
 
 
 class Quadrupole:
-    """Class containing data and functions required for analyzing a quadrupole moment.
+    """Class containing data and functions required for analyzing a
+    quadrupole moment.
 
     Attributes
     ----------
     quadrupole : ndarray
-        Array containing the 3x3 quadrupole matrix, the diagonal components of the quadrupole (shape 3x1),
-        or the 6 independent elements of the quadrupole (shape 6x1, in order, [xx, yy, zz, xy, xz, yz])
+        Array containing the 3x3 quadrupole matrix, the diagonal
+        components of the quadrupole (shape 3x1, [xx, yy, zz]),
+        or the 6 independent elements of the quadrupole
+        (shape 6x1, in order, [xx, yy, zz, xy, xz, yz]).
     units : {"au", "buckingham", "cm2", "esu"}, default="buckingham"
         Units of the quadrupole matrix (case insensitive).
 
     Note
     ----
-    The attributes specify that there are 6 independent elements of a quadrupole tensor. This is
-    because a molecular quadrupole, by definition, is symmetric. It is worth noting however that a
-    traceless quadrupole moment only has 5 independent elements as being traceless dictates that
-    one of the diagonal components must be equal to the negative sum of the remaining two, i.e. it
-    is required that :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore :math:`Q_{cc}` depends on 
-    :math:`Q_{aa}` and :math:`Q_{bb}`
+    The attributes specify that there are 6 independent elements of a
+    quadrupole tensor. This is because a molecular quadrupole, by
+    definition, is symmetric. It is worth noting however that a
+    traceless quadrupole moment only has 5 independent elements as being
+    traceless dictates that one of the diagonal components must be equal
+    to the negative sum of the remaining two, i.e. it is required that
+    :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore :math:`Q_{cc}` depends
+    on :math:`Q_{aa}` and :math:`Q_{bb}`
     """
 
     # https://physics.nist.gov/cgi-bin/cuu/Value?aueqm
@@ -1064,11 +1084,15 @@ class Quadrupole:
                 ]
             )
         else:
-            raise ValueError(f"Cannot cast array of shape {quadrupole.shape} to a quadrupole, supply either shape (3, 3) or (3,) or (6,)!")
+            raise ValueError(
+                f"Cannot cast array of shape {quadrupole.shape} to a quadrupole, supply either shape (3, 3) or (3,) or (6,)!"
+            )
 
         units = units.lower()
         if units not in ["au", "buckingham", "cm2", "esu"]:
-            raise ValueError("Invalid units, please select from ( 'au', 'buckingham', 'cm2', 'esu' )")
+            raise ValueError(
+                "Invalid units, please select from ( 'au', 'buckingham', 'cm2', 'esu' )"
+            )
         else:
             self.units = units
 
@@ -1077,7 +1101,7 @@ class Quadrupole:
     def au_to_cm2(self) -> Quadrupole:                          #
         """Convert from Hartree atomic units to Coulomb•m²"""   #
         q = self.quadrupole * Quadrupole.au_to_cm2_conversion   #
-        return Quadrupole(q, units="cm2")                      #
+        return Quadrupole(q, units="cm2")                       #
                                                                 #
     def cm2_to_au(self) -> Quadrupole:                          #
         """Convert from Coulomb•m² to Hartree atomic units"""   #
@@ -1094,7 +1118,7 @@ class Quadrupole:
     def esu_to_cm2(self) -> Quadrupole:                         #
         """Convert from e.s.u•cm² to Coulomb•m²"""              #
         q = self.quadrupole / Quadrupole.cm2_to_esu_conversion  #
-        return Quadrupole(q, units="cm2")                      #
+        return Quadrupole(q, units="cm2")                       #
     #-----------------------------------------------------------#
 
     #-----------------------------------------------------------#
@@ -1152,7 +1176,9 @@ class Quadrupole:
         self_units = self.units
         new_units = units.lower()
         if new_units not in ["au", "buckingham", "cm2", "esu"]:
-            raise ValueError(f"Unit {units} not recognized, please select from ( 'au', 'buckingham', 'cm2', 'esu' )")
+            raise ValueError(
+                f"Unit {units} not recognized, please pick from ('au', 'buckingham', 'cm2', 'esu')"
+            )
 
         if self_units == new_units:
             return self
@@ -1186,20 +1212,22 @@ class Quadrupole:
 
     @classmethod
     def from_orca(cls, file: PathLike) -> tuple[Quadrupole]:
-        """Read an ORCA output and pull the quadrupole moment(s) from it.
+        """Read an ORCA output and pull out the quadrupole moment(s).
 
         Returns
         -------
         quad_matrices : tuple[Quadrupole]
-            Tuple containing quadrupoles. See Notes for explanation of why
-            this can return multiple matrices instead of just one.
+            Tuple containing quadrupoles. See Notes for explanation of 
+            why this can return multiple matrices instead of just one.
 
         Note
         ----
-        For ORCA outputs with methods that produce multiple densities (post-HF methods usually),
-        there can be multiple quadrupoles listed. In this case it is up to the user to pull the correct
-        quadrupole from the output. Typically, whichever is listed last is the one that is the most accurate
-        to the given level of theory of the calculation, but this should be double checked.
+        For ORCA outputs with methods that produce multiple densities
+        (post-HF methods usually), there can be multiple quadrupoles
+        listed. In this case it is up to the user to pull the correct
+        quadrupole from the output. Typically, whichever is listed last
+        is the one that is the most accurate to the given level of
+        theory of the calculation, but this should be double checked.
         """
 
         with open(file, "r") as output:
@@ -1219,15 +1247,21 @@ class Quadrupole:
             )
             quad_matrices.append(quad_matrix)
 
-        quads = tuple(Quadrupole(quad, units="Buckingham") for quad in quad_matrices)
+        quads = tuple(
+            Quadrupole(quad, units="Buckingham") for quad in quad_matrices
+        )
 
         return quads
 
 
     def inertialize(self, geometry: Geometry) -> Quadrupole:
-        """Rotate the quadrupole into the inertial frame of the given molecular geometry."""
+        """Rotate the quadrupole into the inertial frame of the given
+        molecular geometry.
+        """
         eigenvalues, eigenvectors = geometry.calc_principal_moments()
-        q = np.real_if_close(np.linalg.inv(eigenvectors) @ self.quadrupole @ eigenvectors, tol=1e-8)
+        q = np.real_if_close(
+            np.linalg.inv(eigenvectors) @ self.quadrupole @ eigenvectors, tol=1e-8
+        )
         return Quadrupole(q, units=self.units)
 
 
@@ -1236,28 +1270,43 @@ class Quadrupole:
 
         Notes
         -----
-        This detracing operator subtracts out the average of the trace of the quadrupole matrix, then multiplies by 3/2.
-        The factor of 3/2 comes from the definition of the traceless quadrupole moment from
-        Buckingham (1959) (https://doi.org/10.1039/QR9591300183). This is also the form that the NIST CCCBDB
-        reports quadrupole moments in.
+        This detracing operator subtracts out the average of the trace
+        of the quadrupole matrix, then multiplies by 3/2. The factor of
+        3/2 comes from the definition of the traceless quadrupole moment
+        from Buckingham (1959) (https://doi.org/10.1039/QR9591300183).
+        This is also the form that the NIST CCCBDB reports quadrupole
+        moments in.
 
-        It is also important to note that while this is a common definition, there are arguments both for and against the use of the
-        traceless quadrupole moment. See https://doi.org/10.1080/00268977500101151 for further discussion.
+        It is also important to note that while this is a common
+        definition, there are arguments both for and against the use of
+        the traceless quadrupole moment.
+        See https://doi.org/10.1080/00268977500101151 for further
+        discussion.
 
-        ORCA uses a similar definition but instead uses a factor of 3 instead of 3/2.
+        ORCA uses a similar definition but uses a factor of 3 instead
+        of 3/2.
         Quantum ESPRESSO does not detrace the quadrupole moment.
         """
-        q = (3 / 2) * (self.quadrupole - (np.eye(3,3) * (np.trace(self.quadrupole) / 3)))
+        q = (
+            (3 / 2)
+            * (
+                self.quadrupole
+                - (np.eye(3,3) * (np.trace(self.quadrupole) / 3))
+            )
+        )
         return Quadrupole(q, units=self.units)
 
 
     def compare(self, expt: Quadrupole):
-        """Attempt to align a diagonal calculated quadrupole moment with an experimental quadrupole moment.
+        """Attempt to align a diagonal calculated quadrupole moment with
+        an experimental quadrupole moment.
 
         Note
         ----
-        This code does not guarantee a correct comparison, it simply uses statistical analysis to attempt to
-        rotate a calculated quadrupole into the correct frame to be compared to an experimental quadrupole.
+        This code does not guarantee a correct comparison, it simply
+        uses statistical analysis to attempt to rotate a calculated
+        quadrupole into the correct frame to be compared to an
+        experimental quadrupole.
         """
         if not isinstance(expt, Quadrupole):
             expt = Quadrupole(expt)
