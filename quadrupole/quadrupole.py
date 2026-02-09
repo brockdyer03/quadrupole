@@ -376,24 +376,25 @@ class Geometry:
                 ], dtype=np.float64)
                 return cell
             case 5 | -5: # Rhombohedral
-                term1 = sqrt(1 + 2 * cos(gamma))
-                term2 = sqrt(1 - cos(gamma))
+                tx = sqrt((1 - cos(gamma)) / 2)
+                ty = sqrt((1 - cos(gamma)) / 6)
+                tz = sqrt((1 + 2 * cos(gamma)) / 3)
                 if bravais_index == 5: # Rhombohedral, Symmetry about z-axis
                     cell = np.array([
-                        [ term2/sqrt(2),        -term2/sqrt(6), term1/sqrt(3)],
-                        [             0, sqrt(2)*term2/sqrt(3), term1/sqrt(3)],
-                        [-term2/sqrt(2),        -term2/sqrt(6), term1/sqrt(3)],
+                        [ tx,  -ty, tz],
+                        [  0, 2*ty, tz],
+                        [-tx,  -ty, tz],
                     ], dtype=np.float64)
                     return a * cell
                 else: # Rhombohedral, Symmetry about <111>
-                    u = (term1 - 2*term2) / 3
-                    v = (term1 + term2) / 3
+                    u = tz - 2 * ty * sqrt(2)
+                    v = tz + ty * sqrt(2)
                     cell = np.array([
                         [u, v, v],
                         [v, u, v],
                         [v, v, u],
                     ], dtype=np.float64)
-                    return a * cell
+                    return a * cell / sqrt(3)
             case 6: # Simple Tetragonal
                 cell = np.array([
                     [a, 0, 0],
