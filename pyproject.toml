@@ -20,10 +20,15 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",
-    "pydata-sphinx-theme>=0.16.1",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.14.10",
+]
+docs = [
+    "sphinx>=9.1.0",
+    "pydata-sphinx-theme>=0.16.1",
+    "myst-parser>=5.0.0",
+    "numpydoc>=1.10.0",
 ]
 
 [project.urls]
