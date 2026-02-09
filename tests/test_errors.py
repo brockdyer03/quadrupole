@@ -202,9 +202,39 @@ def test_lattice_mismatch_hexagonal():
     reason="Request monoclinic lattice with non-monoclinic values",
     raises=LatticeError,
 )
-def test_lattice_mismatch_monoclinic():
+def test_lattice_mismatch_monoclinic_alpha_gamma():
     cell_params = np.array([42, 12, 20, np.pi/3, np.pi/2, np.pi/2])
+    Geometry.generate_lattice(-13, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request monoclinic lattice with non-monoclinic values",
+    raises=LatticeError,
+)
+def test_lattice_mismatch_monoclinic_beta_gamma():
+    cell_params = np.array([42, 12, 20, np.pi/2, np.pi/3, np.pi/2])
     Geometry.generate_lattice(13, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request lattice with invalid bravais index",
+    raises=ValueError,
+)
+def test_prim_lattice_invalid_bravais_index():
+    """This shouldn't actually be accessible by users, but
+    I want 100% test coverage.
+    """
+    cell_params = np.array([42, 12, 20, np.pi/2, np.pi/3, np.pi/2])
+    Geometry._gen_prim_lattice(42, cell_params)
+
+
+@pytest.mark.xfail(
+    reason="Request non-primitive lattice",
+    raises=ValueError,
+)
+def test_request_non_primitive_lattice():
+    cell_params = np.array([20, 20, 20, np.pi/2, np.pi/2, np.pi/2])
+    Geometry.generate_lattice(1, cell_params)
 
 
 @pytest.mark.xfail(

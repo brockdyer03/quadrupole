@@ -120,14 +120,15 @@ def test_inertia():
 
 
 def test_simple_cubic():
+    # Polonium
     ref_cell = np.array([
-        [42.24, 0, 0],
-        [0, 42.24, 0],
-        [0, 0, 42.24],
+        [3.34000, 0.00000, 0.00000],
+        [0.00000, 3.34000, 0.00000],
+        [0.00000, 0.00000, 3.34000],
     ], dtype=np.float64)
 
     cell_params = np.array(
-        [42.24, 42.24, 42.24, np.pi/2, np.pi/2, np.pi/2]
+        [3.34000, 3.34000, 3.34000, np.pi/2, np.pi/2, np.pi/2]
     )
     gen_cell = Geometry.generate_lattice(
         bravais_index=1,
@@ -347,6 +348,391 @@ def test_base_centered_orthorhombic_c_type():
         bravais_index=-9,
         cell_params=cell_params,
         primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_base_centered_orthorhombic_a_type():
+    ref_cell = np.array([
+        [24.000000,  0.000000,  0.000000],
+        [ 0.000000,  7.200000, -4.800000],
+        [ 0.000000,  7.200000,  4.800000],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [24.000000, 14.400000, 9.600000, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=91,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_face_centered_orthorhombic():
+    # Cs₂P₃
+    ref_cell = np.array([
+        [4.71900, 0.00000, 7.49950],
+        [4.71900, 4.98600, 0.00000],
+        [0.00000, 4.98600, 7.49950],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [9.43800, 9.97200, 14.99900, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=10,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_body_centered_orthorhombic():
+    # I (Pearson Symbol oI2)
+    ref_cell = np.array([
+        [ 1.45200,  1.51550, 2.62600],
+        [-1.45200,  1.51550, 2.62600],
+        [-1.45200, -1.51550, 2.62600],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [2.90400, 3.03100, 5.25200, np.pi/2, np.pi/2, np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=11,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_simple_monoclinic_unique_c():
+    ref_cell = np.array([
+        [24.00000,  0.00000, 0.00000],
+        [-6.00000, 10.39231, 0.00000],
+        [ 0.00000,  0.00000, 6.00000],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [24.00000, 12.00000, 6.00000, np.pi/2, np.pi/2, 2*np.pi/3]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=12,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_simple_monoclinic_unique_b():
+    # S₈
+    ref_cell = np.array([
+        [10.66300,  0.00000,  0.00000],
+        [ 0.00000, 10.68400,  0.00000],
+        [-1.07443,  0.00000, 10.74542],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [10.66300, 10.68400, 10.799, np.pi/2, (95.71*np.pi/180), np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=-12,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_base_centered_monoclinic_unique_c():
+    # CCl₄, modified
+    ref_cell = np.array([
+        [ 10.09050,  0.00000, -9.88050],
+        [ -4.15242, 10.56314,  0.00000],
+        [ 10.09050,  0.00000,  9.88050],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [20.18100, 11.35000, 19.76100, np.pi/2, np.pi/2, (111.46*np.pi/180)]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=13,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_base_centered_monoclinic_unique_b():
+    # CCl₄
+    ref_cell = np.array([
+        [ 10.09050, 5.67500,  0.00000],
+        [-10.09050, 5.67500,  0.00000],
+        [ -7.22959, 0.00000, 18.39103],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [20.18100, 11.35000, 19.76100, np.pi/2, (111.46*np.pi/180), np.pi/2]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=-13,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_triclinic():
+    # Montbrayite, Au₂Te₃
+    ref_cell = np.array([
+        [10.80000,  0.00000,  0.00000],
+        [-1.59507, 11.99441,  0.00000],
+        [-3.38831, -4.62223, 12.17892],
+    ], dtype=np.float64)
+
+    cell_params = np.array(
+        [10.80000, 12.10000, 13.46000, (107.892*np.pi/180), (104.58*np.pi/180), (97.575*np.pi/180)]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=14,
+        cell_params=cell_params,
+        primitive=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_params_hexagonal():
+    # Elemental Cobalt
+    ref_cell = np.array([
+        [ 2.50710,       0,       0],
+        [-1.25355, 2.17121,       0],
+        [       0,       0, 4.06860],
+    ], dtype=np.float64)
+
+    a = 2.50710
+    c = 4.06860 / a
+
+    cell_params = np.array(
+        [a, 0, c, 0, 0, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=4,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_params_rhombohedral():
+    ref_cell = np.array([
+        [ 12.000000, -6.928200, 19.595928],
+        [  0.000000, 13.856400, 19.595928],
+        [-12.000000, -6.928200, 19.595928],
+    ], dtype=np.float64)
+
+    a = 24.00000
+    gamma = np.cos(np.pi/3)
+
+    cell_params = np.array(
+        [a, 0, 0, gamma, 0, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=5,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_params_tetragonal():
+    # β-tin
+    ref_cell = np.array([
+        [5.81970, 0.00000, 0.00000],
+        [0.00000, 5.81970, 0.00000],
+        [0.00000, 0.00000, 3.17488],
+    ], dtype=np.float64)
+
+    a = 5.81970
+    c = 3.17488 / a
+
+    cell_params = np.array(
+        [a, 0, c, 0, 0, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=6,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_params_orthorhombic():
+    # Cementite, Fe₃C
+    ref_cell = np.array([
+        [5.09230, 0.00000, 0.00000],
+        [0.00000, 6.78960, 0.00000],
+        [0.00000, 0.00000, 4.52920],
+    ], dtype=np.float64)
+
+    a = 5.09230
+    b = 6.78960 / a
+    c = 4.52920 / a
+
+    cell_params = np.array(
+        [a, b, c, 0, 0, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=8,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_simple_monoclinic_unique_b():
+    # S₈
+    ref_cell = np.array([
+        [10.66300,  0.00000,  0.00000],
+        [ 0.00000, 10.68400,  0.00000],
+        [-1.07443,  0.00000, 10.74542],
+    ], dtype=np.float64)
+
+    a = 10.66300
+    b = 10.68400 / a
+    c = 10.79900 / a
+    beta = np.cos(95.71*np.pi/180)
+
+    cell_params = np.array(
+        [a, b, c, 0, beta, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=-12,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_monoclinic_unique_c():
+    ref_cell = np.array([
+        [24.00000,  0.00000, 0.00000],
+        [-6.00000, 10.39231, 0.00000],
+        [ 0.00000,  0.00000, 6.00000],
+    ], dtype=np.float64)
+
+    a = 24.00000
+    b = 12.00000 / a
+    c =  6.00000 / a
+    gamma = np.cos(2*np.pi/3)
+
+    cell_params = np.array(
+        [a, b, c, gamma, 0, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=12,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_base_centered_monoclinic_unique_c():
+    # CCl₄, modified
+    ref_cell = np.array([
+        [ 10.09050,  0.00000, -9.88050],
+        [ -4.15242, 10.56314,  0.00000],
+        [ 10.09050,  0.00000,  9.88050],
+    ], dtype=np.float64)
+
+    a = 20.18100
+    b = 11.35000 / a
+    c = 19.76100 / a
+    gamma = np.cos(111.46*np.pi/180)
+
+    cell_params = np.array(
+        [a, b, c, gamma, 0, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=13,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_base_centered_monoclinic_unique_b():
+    # CCl₄
+    ref_cell = np.array([
+        [ 10.09050, 5.67500,  0.00000],
+        [-10.09050, 5.67500,  0.00000],
+        [ -7.22959, 0.00000, 18.39103],
+    ], dtype=np.float64)
+
+    a = 20.18100
+    b = 11.35000 / a
+    c = 19.76100 / a
+    beta = np.cos(111.46*np.pi/180)
+
+    cell_params = np.array(
+        [a, b, c, 0, beta, 0]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=-13,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
+    )
+
+    np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
+
+
+def test_qe_format_triclinic():
+    # Montbrayite, Au₂Te₃
+    ref_cell = np.array([
+        [10.80000,  0.00000,  0.00000],
+        [-1.59507, 11.99441,  0.00000],
+        [-3.38831, -4.62223, 12.17892],
+    ], dtype=np.float64)
+
+    a = 10.80000
+    b = 12.10000 / a
+    c = 13.46000 / a
+    alpha = np.cos(107.892*np.pi/180)
+    beta  = np.cos(104.58*np.pi/180)
+    gamma = np.cos(97.575*np.pi/180)
+
+    cell_params = np.array(
+        [a, b, c, alpha, beta, gamma]
+    )
+    gen_cell = Geometry.generate_lattice(
+        bravais_index=14,
+        cell_params=cell_params,
+        primitive=True,
+        espresso_like=True,
     )
 
     np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)

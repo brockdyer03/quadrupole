@@ -332,7 +332,10 @@ class Geometry:
                 or c <= 0.0
             ):
                 raise LatticeError(bravais_index, cell_params)
-        elif bravais_index in [12, -12, 13, -13]:
+        elif bravais_index in [12, 13]:
+            if not (alpha == beta == np.pi/2):
+                raise LatticeError(bravais_index, cell_params)
+        elif bravais_index in [-12, -13]:
             if not (alpha == gamma == np.pi/2):
                 raise LatticeError(bravais_index, cell_params)
 
@@ -426,7 +429,6 @@ class Geometry:
                     [  0,    0, c],
                 ], dtype=np.float64)
                 return cell
-            #+ Untested after this point
             case 91: # Base-Centered Orthorhombic, A type
                 cell = np.array([
                     [a,   0,    0],
@@ -494,10 +496,10 @@ class Geometry:
                 )
                 term2 = c * sqrt(
                     (
-                        1 + 2 * cos(alpha) * cos(beta) * cos(gamma)
+                        1.0 + (2.0 * cos(alpha) * cos(beta) * cos(gamma))
                         - cos(alpha)**2 - cos(beta)**2 - cos(gamma)**2
-                    ) / sin(gamma)
-                )
+                    )
+                ) / sin(gamma)
 
                 cell = np.array([
                     [     a,     0,     0],
@@ -626,7 +628,7 @@ class Geometry:
             case 4: # Hexagonal
                 a = cell_params[0]
                 b = a
-                c = cell_params[2]
+                c = cell_params[2] * a
                 alpha = np.pi / 2
                 beta  = np.pi / 2
                 gamma = 2 * np.pi / 3
@@ -664,8 +666,6 @@ class Geometry:
                     alpha = np.pi / 2
                     gamma = np.pi / 2
             case 13 | -13: # Base-Centered Monoclinic
-                #+ I am pretty sure this isn't correct,
-                #+ but I don't know what correct is.
                 a = cell_params[0]
                 b = a * cell_params[1]
                 c = a * cell_params[2]
@@ -681,17 +681,14 @@ class Geometry:
                 a = cell_params[0]
                 b = a * cell_params[1]
                 c = a * cell_params[2]
-                gamma = cell_params[3]
-                beta  = cell_params[4]
-                alpha = cell_params[5]
+                alpha = np.arccos(cell_params[3])
+                beta  = np.arccos(cell_params[4])
+                gamma = np.arccos(cell_params[5])
 
         cell_params = np.array([a, b, c, alpha, beta, gamma], dtype=np.float64)
         lattice = Geometry._gen_prim_lattice(bravais_index, cell_params)
 
-        if primitive or espresso_like:
-            return lattice
-        else:
-            raise ValueError("Only primitive cells are currently supported!")
+        return lattice
 
 
     @classmethod

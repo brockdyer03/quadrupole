@@ -1,4 +1,4 @@
 [pytest]
-addopts = ["--cov=quadrupole"]
+addopts = ["--cov=quadrupole", "--cov-report=term-missing"]
 testpaths = ["tests"]
 xfail_strict = true
