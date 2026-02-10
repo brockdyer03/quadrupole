@@ -422,8 +422,7 @@ class Geometry:
         This function will cross-check all Bravais types against the
         provided cell parameters.
 
-        Bravais Indices
-        ---------------
+        ## Bravais Indices
 
         1
             Simple Cubic, cP

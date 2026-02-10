@@ -4,12 +4,17 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class ElementData:
+    """Dataclass for storing element data."""
     symbol: str
     number: int
     mass: float
 
 
 class Element(ElementData, Enum):
+    """Enumeration of all elements on the periodic table.
+    All real element data here was taken from the 
+    International Union of Pure and Applied Chemistry (IUPAC).
+    """
     def __new__(cls, symbol: str, number: int, mass: float):
         element = ElementData.__new__(cls)
         element._value_ = ElementData(symbol, number, mass)

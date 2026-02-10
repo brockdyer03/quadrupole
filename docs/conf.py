@@ -19,15 +19,20 @@ sys.path.insert(0, str(Path("..").resolve()))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
-    "myst_parser",
     "pydata_sphinx_theme",
+    "sphinx_design",
+    "myst_parser",
     "numpydoc",
 ]
-numpydoc_show_class_members = False
-imgmath_image_format = "svg"
+
+napoleon_google_docstring = False
+numpydoc_show_class_members = True
+
 source_suffix = {
     ".rst": "restructuredtext",
     ".md" : "markdown",
@@ -49,5 +54,15 @@ html_theme_options = {
         "image_dark": "_static/quadrupole_dark_with_text.svg",
         "image_light": "_static/quadrupole_light_with_text.svg",
     },
-    "github_url": "https://github.com/brockdyer03/quadrupole"
+    "github_url": "https://github.com/brockdyer03/quadrupole",
+    "navbar_end": [
+        "search-button",
+        "theme-switcher",
+        "navbar-icon-links"
+    ],
 }
+
+html_context = {"default_mode": "dark"}
+
+
+

@@ -12,15 +12,13 @@ class Quadrupole:
     Attributes
     ----------
     quadrupole : ndarray
-        Array containing the 3x3 quadrupole matrix, the diagonal
-        components of the quadrupole (shape 3x1, [xx, yy, zz]),
-        or the 6 independent elements of the quadrupole
-        (shape 6x1, in order, [xx, yy, zz, xy, xz, yz]).
-    units : {"au", "buckingham", "cm2", "esu"}, default="buckingham"
+        3x3 array of floats.
+    units : {"au", "buckingham", "cm2", "esu"}
         Units of the quadrupole matrix (case insensitive).
 
-    Note
-    ----
+
+    Notes
+    -----
     The attributes specify that there are 6 independent elements of a
     quadrupole tensor. This is because a molecular quadrupole, by
     definition, is symmetric. It is worth noting however that a
@@ -44,6 +42,20 @@ class Quadrupole:
     esu_to_buck_conversion = 1e-26
 
     def __init__(self, quadrupole: npt.ArrayLike, units: str = "buckingham"):
+        """Class containing data and functions required for analyzing a
+        quadrupole moment.
+
+        Parameters
+        ----------
+        quadrupole : array_like
+            Sequence containing the 3x3 quadrupole matrix, the diagonal
+            components of the quadrupole (shape 3x1, [xx, yy, zz]),
+            or the 6 independent elements of the quadrupole
+            (shape 6x1, in order, [xx, yy, zz, xy, xz, yz]).
+        units : {"au", "buckingham", "cm2", "esu"}, default="buckingham"
+            Units of the quadrupole matrix (case insensitive).
+        """
+
         quadrupole = np.array(quadrupole, dtype=float)
         if quadrupole.shape == (3, 3):
             self.quadrupole = quadrupole

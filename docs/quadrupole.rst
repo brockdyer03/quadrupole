@@ -1,22 +1,8 @@
-API Reference
-=============
+.. _quadrupole:
 
-:Release: |version|
-:Date: |today|
+Quadrupole Class
+================
 
-This is an in-depth look at all of the user-facing classes and functions in Quadrupole. If you are a new user who is looking to get started, see the `user guide <user_guide>`.
-
-Python API
-==========
-
-.. toctree::
-   :maxdepth: 1
-
-   module_structure
-
-.. toctree::
-   :maxdepth: 1
-
-   element
-   geometry
-   quadrupole_class
+.. autoclass:: quadrupole.quadrupole.Quadrupole
+   :members:
+   :show-inheritance:
