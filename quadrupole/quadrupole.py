@@ -287,17 +287,20 @@ class Quadrupole:
         """Attempt to align a diagonal calculated quadrupole moment with
         an experimental quadrupole moment.
 
-        Note
-        ----
+        Notes
+        -----
+        This function defaults to ensuring all units are those of
+        `expt` and will return a ``Quadrupole`` with those units.
+
         This code does not guarantee a correct comparison, it simply
-        uses statistical analysis to attempt to rotate a calculated
+        uses statistical analysis to attempt to permute a calculated
         quadrupole into the correct frame to be compared to an
         experimental quadrupole.
         """
         if not isinstance(expt, Quadrupole):
-            expt = Quadrupole(expt)
-
-        calc_quad = np.diag(self.quadrupole)
+            expt = Quadrupole(expt, units=self.units)
+        
+        calc_quad = np.diag(self.as_unit(expt.units).quadrupole)
         expt_quad = np.diag(expt.quadrupole)
 
         expt_signs = np.sign(expt_quad)
@@ -330,7 +333,7 @@ class Quadrupole:
         else:
             best_quad = best_match[0]
 
-        return Quadrupole(best_quad)
+        return Quadrupole(best_quad, expt.units)
 
 
     def __repr__(self):
