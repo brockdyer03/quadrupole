@@ -5,9 +5,8 @@ from quadrupole import (
     Element,
     Geometry,
     Quadrupole,
-    FileFormatError,
-    LatticeError,
 )
+from quadrupole.geometry import FileFormatError, LatticeError
 
 
 @pytest.mark.xfail(
