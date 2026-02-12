@@ -48,7 +48,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = "pydata_sphinx_theme"
 html_static_path = ['_static']
-
+html_css_files = ["quadrupole.css"]
 html_theme_options = {
     "logo": {
         "image_dark": "_static/quadrupole_dark_with_text.svg",
@@ -62,7 +62,7 @@ html_theme_options = {
     ],
 }
 
-html_context = {"default_mode": "dark"}
+html_context = {"default_mode": "auto"}
 
 
 
