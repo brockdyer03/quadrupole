@@ -25,6 +25,10 @@ class Element(ElementData, Enum):
 
     def __str__(self):
         return self.symbol
+    
+    @classmethod
+    def _missing_(cls, value: str):
+        return cls(value.title())
 
     Unknown       = "Xx", 0,   0.0
     Hydrogen      = "H",  1,   1.0080

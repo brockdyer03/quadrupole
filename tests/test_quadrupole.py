@@ -485,20 +485,20 @@ def test_compare_mismatched_signs():
 
 def test_repr():
     buck_repr = (
-        "Quadrupole Moment (buckingham):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      \n"
-        "                         Total:    1.00000    2.00000    3.00000    0.00000    0.00000    0.00000\n"
+        "Quadrupole (buckingham):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      \n"
+        "                  Total:    1.00000    2.00000    3.00000    0.00000    0.00000    0.00000\n"
     )
     au_repr = (
-        "Quadrupole Moment (au):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      \n"
-        "                 Total:    0.74348    1.48695    2.23043    0.00000    0.00000    0.00000\n"
+        "Quadrupole (au):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      \n"
+        "          Total:    0.74348    1.48695    2.23043    0.00000    0.00000    0.00000\n"
     )
     cm2_repr = (
-        "Quadrupole Moment (cm2):      (xx)          (yy)          (zz)          (xy)          (xz)          (yz)         \n"
-        "                  Total:   3.33564e-40   6.67128e-40   1.00069e-39   0.00000e+00   0.00000e+00   0.00000e+00\n"
+        "Quadrupole (cm2):      (xx)          (yy)          (zz)          (xy)          (xz)          (yz)         \n"
+        "           Total:   3.33564e-40   6.67128e-40   1.00069e-39   0.00000e+00   0.00000e+00   0.00000e+00\n"
     )
     esu_repr = (
-        "Quadrupole Moment (esu):      (xx)          (yy)          (zz)          (xy)          (xz)          (yz)         \n"
-        "                  Total:   1.00000e-26   2.00000e-26   3.00000e-26   0.00000e+00   0.00000e+00   0.00000e+00\n"
+        "Quadrupole (esu):      (xx)          (yy)          (zz)          (xy)          (xz)          (yz)         \n"
+        "           Total:   1.00000e-26   2.00000e-26   3.00000e-26   0.00000e+00   0.00000e+00   0.00000e+00\n"
     )
 
     quad_buckingham = Quadrupole(

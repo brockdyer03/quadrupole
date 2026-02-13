@@ -8,6 +8,7 @@ def test_element():
     hydrogen = Element.Hydrogen
     assert(hydrogen == Element.H)
     assert(hydrogen == Element("H"))
+    assert(hydrogen == Element("h"))
     assert(hydrogen == Element(1))
     assert(hydrogen.name == "Hydrogen")
     assert(hydrogen.symbol == "H")
@@ -18,6 +19,9 @@ def test_element():
     ruthenium = Element.Ruthenium
     assert(ruthenium == Element.Ru)
     assert(ruthenium == Element("Ru"))
+    assert(ruthenium == Element("ru"))
+    assert(ruthenium == Element("RU"))
+    assert(ruthenium == Element("rU"))
     assert(ruthenium == Element(44))
     assert(ruthenium.name == "Ruthenium")
     assert(ruthenium.symbol == "Ru")
@@ -1095,3 +1099,60 @@ def test_repr():
     geometry.alat = alat
 
     assert(geometry.__repr__() == ref_repr_crystal)
+
+
+def test_eq():
+    atoms = [
+        Atom(Element.Hydrogen, [1.0, 2.0, 3.0]),
+        Atom(Element.Ruthenium, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+
+    lat_vec = np.array([
+        [10.0,  0.0,  0.0],
+        [ 0.0, 20.0,  0.0],
+        [ 0.0,  0.0, 30.0],
+    ], dtype=np.float64)
+
+    alat = 10.0
+
+    geom_1 = Geometry(atoms, lat_vec, alat)
+    geom_2 = Geometry(atoms, lat_vec, alat)
+
+    assert(geom_1 == geom_2)
+
+
+def test_neq():
+    atoms = [
+        Atom(Element.Hydrogen, [1.0, 2.0, 3.0]),
+        Atom(Element.Ruthenium, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+    alt_atoms = [
+        Atom(Element.Ruthenium, [1.0, 2.0, 3.0]),
+        Atom(Element.Hydrogen, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+
+    lat_vec = np.array([
+        [10.0,  0.0,  0.0],
+        [ 0.0, 20.0,  0.0],
+        [ 0.0,  0.0, 30.0],
+    ], dtype=np.float64)
+
+    alat = 10.0
+
+    geom_1 = Geometry(atoms, lat_vec, alat)
+    geom_2 = Geometry(alt_atoms, lat_vec, alat)
+
+    assert not (geom_1 == geom_2)
+
+    geom_1 = Geometry(atoms, lat_vec, alat)
+    geom_2 = Geometry(atoms, lat_vec+1, alat)
+
+    assert not (geom_1 == geom_2)
+
+    geom_1 = Geometry(atoms, lat_vec, alat)
+    geom_2 = Geometry(atoms, lat_vec, alat+1)
+
+    assert not (geom_1 == geom_2)

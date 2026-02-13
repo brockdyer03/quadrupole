@@ -911,3 +911,4 @@ class Geometry:
             for self_atom, other_atom in zip(self, other):
                 if self_atom != other_atom:
                     return False
+        return True
