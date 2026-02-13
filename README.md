@@ -1,4 +1,10 @@
+[![codecov](https://codecov.io/gh/brockdyer03/quadrupole/graph/badge.svg?token=L0EOKXKZJN)](https://codecov.io/gh/brockdyer03/quadrupole)
+[![Test Quadrupole Functions](https://github.com/brockdyer03/quadrupole/actions/workflows/test_quadrupole.yml/badge.svg)](https://github.com/brockdyer03/quadrupole/actions/workflows/test_quadrupole.yml)
+[![Geometry Tests](https://github.com/brockdyer03/quadrupole/actions/workflows/test_geometry.yml/badge.svg)](https://github.com/brockdyer03/quadrupole/actions/workflows/test_geometry.yml)
+[![Error Tests](https://github.com/brockdyer03/quadrupole/actions/workflows/test_errors.yml/badge.svg)](https://github.com/brockdyer03/quadrupole/actions/workflows/test_errors.yml)
+
 # Quadrupole Analysis
+
 
 Python functions for taking molecular quadrupole tensors and converting to forms for comparison to literature.
 
