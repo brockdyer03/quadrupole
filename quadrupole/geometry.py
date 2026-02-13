@@ -108,13 +108,6 @@ class Geometry:
         The atoms in the geometry.
     lat_vec : ndarray of float with shape (3,3), optional
         The primitive lattice vectors of the geometry,
-    alat : float, optional
-        The lattice parameter.
-
-    Note
-    ----
-    `alat` is calculated by taking the square root of the sum 
-    of the first row of the lattice vector matrix.
     """
 
     bohr_to_angstrom = 0.529177210544
@@ -123,7 +116,6 @@ class Geometry:
         self,
         atoms: list[Atom],
         lat_vec: npt.NDArray[np.float64] | None = None,
-        alat: float | None = None,
     ):
         """Create a new `Geometry` object.
 
@@ -133,17 +125,9 @@ class Geometry:
             The atoms in the geometry.
         lat_vec : ArrayLike of float with shape (3,3), optional
             The primitive lattice vectors of the geometry,
-        alat : float, optional
-            The lattice parameter.
-
-        Note
-        ----
-        `alat` is calculated by taking the square root of the sum 
-        of the first row of the lattice vector matrix.
         """
         self.atoms   = atoms
         self.lat_vec = np.array(lat_vec, dtype=float) if lat_vec is not None else None
-        self.alat    = float(alat) if alat is not None else None
 
 
     @property
@@ -579,9 +563,6 @@ class Geometry:
             # Extract the lattice vectors
             lat_vec = np.array([line.strip().split() for line in crystal_info[2:5]], dtype=np.float64)
 
-            # Calculate lattice parameter
-            alat = sqrt(np.sum(lat_vec[0,:] ** 2))
-
             # Pull the number of atoms
             num_atoms = int(crystal_info[-1].split()[0])
 
@@ -589,7 +570,7 @@ class Geometry:
             atoms = [next(xsf).strip().split() for _ in range(num_atoms)]
             atoms = [Atom(element=atom[0], xyz=np.array([float(i) for i in atom[1:4]])) for atom in atoms]
 
-        return Geometry(atoms, lat_vec, alat)
+        return Geometry(atoms, lat_vec)
 
 
     @classmethod
@@ -767,8 +748,6 @@ class Geometry:
 
             lat_vec = np.array(lat_vec) * Geometry.bohr_to_angstrom
 
-            alat = sqrt(np.sum(lat_vec[0,:] ** 2))
-
             atom_data = [next(cube).strip().split() for _ in range(num_atoms)]
 
             atoms = []
@@ -777,7 +756,7 @@ class Geometry:
                 coordinate = np.array(atom[2:5], dtype=float) * Geometry.bohr_to_angstrom
                 atoms.append(Atom(element, coordinate))
 
-        return Geometry(atoms, lat_vec, alat)
+        return Geometry(atoms, lat_vec)
 
 
     @classmethod
@@ -830,7 +809,7 @@ class Geometry:
                 ) for atom in atoms
             ]
 
-        return Geometry(atoms, lat_vec, alat)
+        return Geometry(atoms, lat_vec)
 
 
     def calc_principal_moments(self):
@@ -918,9 +897,7 @@ class Geometry:
     
 
     def __eq__(self, other: Geometry):
-        if self.alat != other.alat:
-            return False
-        elif not np.array_equal(self.lat_vec, other.lat_vec):
+        if not np.array_equal(self.lat_vec, other.lat_vec):
             return False
         else:
             for self_atom, other_atom in zip(self, other):
