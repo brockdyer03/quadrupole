@@ -146,13 +146,13 @@ class Geometry:
         self.alat    = float(alat) if alat is not None else None
 
 
-    def get_coords(self) -> npt.NDArray:
+    @property
+    def coordinates(self) -> npt.NDArray:
         return np.array([i.xyz for i in self.atoms])
 
-
-    def get_elements(self) -> list[Element]:
+    @property
+    def elements(self) -> list[Element]:
         return [i.element for i in self.atoms]
-
 
     @staticmethod
     def _gen_prim_lattice(
