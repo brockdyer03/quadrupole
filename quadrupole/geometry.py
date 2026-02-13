@@ -95,7 +95,7 @@ class Atom:
         )
 
     def __eq__(self, other: Atom):
-        return (self.element == other.element and (self.xyz == other.xyz).all())
+        return (self.element is other.element and (self.xyz == other.xyz).all())
 
 
 class Geometry:
@@ -900,3 +900,14 @@ class Geometry:
 
     def __getitem__(self, index):
         return self.atoms[index]
+    
+
+    def __eq__(self, other: Geometry):
+        if self.alat != other.alat:
+            return False
+        elif not np.array_equal(self.lat_vec, other.lat_vec):
+            return False
+        else:
+            for self_atom, other_atom in zip(self, other):
+                if self_atom != other_atom:
+                    return False
