@@ -185,7 +185,7 @@ class Quadrupole:
 
 
     @classmethod
-    def from_orca(cls, file: PathLike) -> tuple[Quadrupole]:
+    def from_orca(cls, file: PathLike):
         """Read an ORCA output and pull out the quadrupole moment(s).
 
         Returns
@@ -222,7 +222,7 @@ class Quadrupole:
             quad_matrices.append(quad_matrix)
 
         quads = tuple(
-            Quadrupole(quad, units="Buckingham") for quad in quad_matrices
+            cls(quad, units="Buckingham") for quad in quad_matrices
         )
 
         return quads
