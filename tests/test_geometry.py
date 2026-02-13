@@ -83,8 +83,8 @@ def test_inertia():
     assert(geometry[0] == atoms[0])
     assert(geometry[1] == atoms[1])
     assert(geometry[2] == atoms[2])
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
 
     ref_eigenvalues = np.array(
         [1261.1061354199865, -1.1368683772161603e-13, 1261.1061354199867],
@@ -122,7 +122,7 @@ def test_inertia():
 
     #np.testing.assert_allclose(eigenvectors, ref_eigenvectors, atol=1e-8)
 
-
+# region CellGen
 def test_simple_cubic():
     # Polonium
     ref_cell = np.array([
@@ -740,8 +740,8 @@ def test_qe_format_triclinic():
     )
 
     np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
-
-
+# endregion CellGen
+# region ClassMethods
 def test_from_list():
     elements = [
         Element.Hydrogen,
@@ -757,8 +757,8 @@ def test_from_list():
 
     geometry = Geometry.from_list(elements, xyzs)
 
-    assert(geometry.get_elements() == elements)
-    assert(np.all(geometry.get_coords() == xyzs))
+    assert(geometry.elements == elements)
+    assert(np.all(geometry.coordinates == xyzs))
 
 
 def test_from_xyz(tmp_path):
@@ -790,8 +790,8 @@ def test_from_xyz(tmp_path):
 
     geometry = Geometry.from_xyz(xyz_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
 
 
 def test_from_xsf(tmp_path):
@@ -837,8 +837,8 @@ def test_from_xsf(tmp_path):
 
     geometry = Geometry.from_xsf(xsf_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
     np.testing.assert_array_equal(geometry.lat_vec, lat_vec)
     assert(geometry.alat == alat)
 
@@ -862,8 +862,8 @@ def test_from_orca_opt():
 
     geometry = Geometry.from_orca(orca_output_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), final_xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, final_xyzs)
 
 
 def test_from_orca_scf():
@@ -885,8 +885,8 @@ def test_from_orca_scf():
 
     geometry = Geometry.from_orca(orca_output_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), final_xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, final_xyzs)
 
 
 def test_from_cube(tmp_path):
@@ -937,8 +937,8 @@ def test_from_cube(tmp_path):
 
     geometry = Geometry.from_cube(cube_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_allclose(geometry.get_coords(), xyzs, atol=1e-8)
+    assert(geometry.elements == elements)
+    np.testing.assert_allclose(geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(geometry.lat_vec, lat_vec, atol=1e-7)
     np.testing.assert_almost_equal(geometry.alat,  alat, decimal=8)
 
@@ -991,8 +991,8 @@ def test_from_qe_pp_ibrav(tmp_path):
 
     ibrav_geometry = Geometry.from_qe_pp(ibrav_path)
 
-    assert(ibrav_geometry.get_elements() == elements)
-    np.testing.assert_allclose(ibrav_geometry.get_coords(), xyzs, atol=1e-8)
+    assert(ibrav_geometry.elements == elements)
+    np.testing.assert_allclose(ibrav_geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(ibrav_geometry.lat_vec, lat_vec, atol=1e-7)
     np.testing.assert_almost_equal(ibrav_geometry.alat,  alat, decimal=8)
 
@@ -1048,11 +1048,11 @@ def test_from_qe_pp_cell(tmp_path):
 
     cell_geometry = Geometry.from_qe_pp(cell_path)
 
-    assert(cell_geometry.get_elements() == elements)
-    np.testing.assert_allclose(cell_geometry.get_coords(), xyzs, atol=1e-8)
+    assert(cell_geometry.elements == elements)
+    np.testing.assert_allclose(cell_geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(cell_geometry.lat_vec, lat_vec, atol=1e-7)
     np.testing.assert_almost_equal(cell_geometry.alat,  alat, decimal=8)
-
+# endregion ClassMethods
 
 def test_repr():
     ref_repr = (
