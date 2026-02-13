@@ -553,7 +553,7 @@ class Geometry:
 
 
     @classmethod
-    def from_xsf(cls, file: PathLike) -> Geometry:
+    def from_xsf(cls, file: PathLike):
         """Read in the crystallographic information from an XSF file."""
         with open(file, "r") as xsf:
 
@@ -570,11 +570,11 @@ class Geometry:
             atoms = [next(xsf).strip().split() for _ in range(num_atoms)]
             atoms = [Atom(element=atom[0], xyz=np.array([float(i) for i in atom[1:4]])) for atom in atoms]
 
-        return Geometry(atoms, lat_vec)
+        return cls(atoms, lat_vec)
 
 
     @classmethod
-    def from_xyz(cls, file: PathLike) -> Geometry:
+    def from_xyz(cls, file: PathLike):
         """Read in the geometry information from an XYZ file."""
 
         with open(file) as xyz:
@@ -610,11 +610,11 @@ class Geometry:
         for i, element in enumerate(elements):
             atoms.append(Atom(element, xyzs[i]))
 
-        return Geometry(atoms)
+        return cls(atoms)
 
 
     @classmethod
-    def from_list(cls, elements: list[ElementLike], xyzs: npt.ArrayLike) -> Geometry:
+    def from_list(cls, elements: list[ElementLike], xyzs: npt.ArrayLike):
         """Create a ``Geometry`` from a list of elements and an array
         of coordinates. Coordinates should be in Ångstrom.
         
@@ -635,11 +635,11 @@ class Geometry:
         for i, element in enumerate(elements):
             atoms.append(Atom(element, xyzs[i]))
 
-        return Geometry(atoms)
+        return cls(atoms)
 
 
     @classmethod
-    def from_orca(cls, file: PathLike) -> Geometry:
+    def from_orca(cls, file: PathLike):
         """Read in the geometry information from an ORCA output file."""
         xyz_data = []
         with open(file, "r") as orca_out:
@@ -713,11 +713,11 @@ class Geometry:
                         xyz_data.append(line.strip().split())
 
         atoms = [Atom(i[0], np.array(i[1:4])) for i in xyz_data]
-        return Geometry(atoms)
+        return cls(atoms)
 
 
     @classmethod
-    def from_cube(cls, file: PathLike) -> Geometry:
+    def from_cube(cls, file: PathLike):
         """Read in and interpret crystallographic information from a
         CUBE file.
 
@@ -756,11 +756,11 @@ class Geometry:
                 coordinate = np.array(atom[2:5], dtype=float) * Geometry.bohr_to_angstrom
                 atoms.append(Atom(element, coordinate))
 
-        return Geometry(atoms, lat_vec)
+        return cls(atoms, lat_vec)
 
 
     @classmethod
-    def from_qe_pp(cls, file: PathLike) -> Geometry:
+    def from_qe_pp(cls, file: PathLike):
         """Read in only the crystallographic information from a
         Quantum ESPRESSO post-processing file.
         (e.g. leaving the ``&PLOT`` blank and reading ``filplot``)
@@ -809,7 +809,7 @@ class Geometry:
                 ) for atom in atoms
             ]
 
-        return Geometry(atoms, lat_vec)
+        return cls(atoms, lat_vec)
 
 
     def calc_principal_moments(self):
