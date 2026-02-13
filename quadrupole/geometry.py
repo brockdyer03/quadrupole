@@ -148,10 +148,14 @@ class Geometry:
 
     @property
     def coordinates(self) -> npt.NDArray:
+        """Get an array of the coordinates with shape (``N``,3) where
+        `N` is the number of atoms (``len(self)``).
+        """
         return np.array([i.xyz for i in self.atoms])
 
     @property
     def elements(self) -> list[Element]:
+        """Get a list of each element in ``self``."""
         return [i.element for i in self.atoms]
 
     @staticmethod
