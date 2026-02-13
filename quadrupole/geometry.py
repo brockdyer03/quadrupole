@@ -160,7 +160,7 @@ class Geometry:
         cell_params: npt.ArrayLike,
     ) -> npt.NDArray:
         """Generate a primitive unit cell. FOR INTERNAL USE ONLY, USERS
-        SHOULD USE `generate_lattice()`!!
+        SHOULD USE ``generate_lattice()``!!
         """
         a = np.float64(cell_params[0])
         b = np.float64(cell_params[1])
@@ -405,9 +405,9 @@ class Geometry:
             Denote whether supplied cell parameters are for a primitive
             or a conventional unit cell.
         espresso_like : bool, default=False
-            If `cell_params` are provided in Quantum ESPRESSO format,
+            If ``cell_params`` are provided in Quantum ESPRESSO format,
             this should be set to ``True``.
-            Automatically sets `primitive` to ``True`` as well.
+            Automatically sets ``primitive`` to ``True`` as well.
 
         Notes
         -----
@@ -422,43 +422,44 @@ class Geometry:
         Bravais Indices
         ^^^^^^^^^^^^^^^
 
-        1 : Simple Cubic, cP
-
-        2 : Face-Centered Cubic, cF
-
-        3 : Body-Centered Cubic, cI
-
-        -3 : Body-Centered Cubic, cI, Higher Symmetry
-
-        4 : Simple Hexagonal, hP
-
-        5 : Rhombohedral, hR, 3-fold symmetry axis c
-
-        -5 : Rhombohedral, hR, 3-fold symmetry axis <111>
-
-        6 : Simple Tetragonal, tP
-
-        7 : Body-Centered Tetragonal, tI
-
-        8 : Simple Orthorhombic, oP
-
-        9 : Base-Centered Orthorhombic, oS, c-face
-
-        -9 : Base-Centered Orthorhombic, oS, alternate alignment
-
-        91 : Base-Centered Orthorhombic, oS, a-face
-
-        10 : Face-Centered Orthorhombic, oF
-
-        11 : Body-Centered Orthorhombic, oI
-
-        12 : Simple Monoclinic, mP, unique axis c
-
-        13 : Base-Centered Monoclinic, mS
-
-        -13 : Base-Centered Monoclinic, mS, unique axis b
-
-        14 : Simple Triclinic, aP
+        ``1``
+            Simple Cubic, cP
+        ``2``
+            Face-Centered Cubic, cF
+        ``3``
+            Body-Centered Cubic, cI
+        ``-3``
+            Body-Centered Cubic, cI, Higher Symmetry
+        ``4``
+            Simple Hexagonal, hP
+        ``5``
+            Rhombohedral, hR, 3-fold symmetry axis c
+        ``-5``
+            Rhombohedral, hR, 3-fold symmetry axis <111>
+        ``6``
+            Simple Tetragonal, tP
+        ``7``
+            Body-Centered Tetragonal, tI
+        ``8``
+            Simple Orthorhombic, oP
+        ``9``
+            Base-Centered Orthorhombic, oS, c-face
+        ``-9``
+            Base-Centered Orthorhombic, oS, alternate alignment
+        ``91``
+            Base-Centered Orthorhombic, oS, a-face
+        ``10``
+            Face-Centered Orthorhombic, oF
+        ``11``
+            Body-Centered Orthorhombic, oI
+        ``12``
+            Simple Monoclinic, mP, unique axis c
+        ``13``
+            Base-Centered Monoclinic, mS
+        ``-13``
+            Base-Centered Monoclinic, mS, unique axis b
+        ``14``
+            Simple Triclinic, aP
 
         """
 
@@ -589,7 +590,7 @@ class Geometry:
 
     @classmethod
     def from_xyz(cls, file: PathLike) -> Geometry:
-        """Read in XYZ file and return a `Geometry` object"""
+        """Read in the geometry information from an XYZ file."""
 
         with open(file) as xyz:
             num_atoms = xyz.readline()
@@ -629,6 +630,17 @@ class Geometry:
 
     @classmethod
     def from_list(cls, elements: list[ElementLike], xyzs: npt.ArrayLike) -> Geometry:
+        """Create a ``Geometry`` from a list of elements and an array
+        of coordinates. Coordinates should be in Ångstrom.
+        
+        Parameters
+        ----------
+        elements : list of ElementLike
+            A list of either ``Element`` members, atomic symbols, or
+            atomic numbers.
+        xyzs : arraylike of floats with shape (N,3)
+            An `N`-length sequence of [x, y, z] coordinates.
+        """
         if len(elements) != len(xyzs):
             raise ValueError(
                 "The list of elements and coordinates must be of the same size!"
@@ -643,6 +655,7 @@ class Geometry:
 
     @classmethod
     def from_orca(cls, file: PathLike) -> Geometry:
+        """Read in the geometry information from an ORCA output file."""
         xyz_data = []
         with open(file, "r") as orca_out:
             input_search = True
