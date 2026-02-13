@@ -75,7 +75,6 @@ def test_inertia():
     geometry = Geometry(
         atoms=atoms,
         lat_vec=None,
-        alat=None,
     )
 
     assert(len(geometry) == 3)
@@ -813,8 +812,6 @@ def test_from_xsf(tmp_path):
         [ 0.000000000,  0.000000000, 17.543876553],
     ], dtype=np.float64)
 
-    alat = 17.543876553
-
     xsf = (
         "CRYSTAL\n"
         "PRIMVEC\n"
@@ -840,7 +837,6 @@ def test_from_xsf(tmp_path):
     assert(geometry.elements == elements)
     np.testing.assert_array_equal(geometry.coordinates, xyzs)
     np.testing.assert_array_equal(geometry.lat_vec, lat_vec)
-    assert(geometry.alat == alat)
 
 
 def test_from_orca_opt():
@@ -908,8 +904,6 @@ def test_from_cube(tmp_path):
         [ 0.00000000,  0.00000000, 25.52039649],
     ], dtype=np.float64)
 
-    alat = 25.52039649
-
     cube = (
         " Cubefile created from PWScf calculation\n"
         "Contains the selected quantity on a FFT grid\n"
@@ -940,7 +934,6 @@ def test_from_cube(tmp_path):
     assert(geometry.elements == elements)
     np.testing.assert_allclose(geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(geometry.lat_vec, lat_vec, atol=1e-7)
-    np.testing.assert_almost_equal(geometry.alat,  alat, decimal=8)
 
 
 def test_from_qe_pp_ibrav(tmp_path):
@@ -962,8 +955,6 @@ def test_from_qe_pp_ibrav(tmp_path):
         [ 0.00000000, 25.52042192,  0.00000000],
         [ 0.00000000,  0.00000000, 25.52042192],
     ], dtype=np.float64)
-
-    alat = 25.520421921897817
 
     ibrav_pp = (
         "                                                                           \n"
@@ -994,7 +985,6 @@ def test_from_qe_pp_ibrav(tmp_path):
     assert(ibrav_geometry.elements == elements)
     np.testing.assert_allclose(ibrav_geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(ibrav_geometry.lat_vec, lat_vec, atol=1e-7)
-    np.testing.assert_almost_equal(ibrav_geometry.alat,  alat, decimal=8)
 
 
 def test_from_qe_pp_cell(tmp_path):
@@ -1016,8 +1006,6 @@ def test_from_qe_pp_cell(tmp_path):
         [ 0.00000000, 25.52042192,  0.00000000],
         [ 0.00000000,  0.00000000, 25.52042192],
     ], dtype=np.float64)
-
-    alat = 25.520421921897817
 
     cell_pp = (
         "                                                                           \n"
@@ -1051,7 +1039,6 @@ def test_from_qe_pp_cell(tmp_path):
     assert(cell_geometry.elements == elements)
     np.testing.assert_allclose(cell_geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(cell_geometry.lat_vec, lat_vec, atol=1e-7)
-    np.testing.assert_almost_equal(cell_geometry.alat,  alat, decimal=8)
 # endregion ClassMethods
 
 def test_repr():
@@ -1089,14 +1076,11 @@ def test_repr():
         [ 0.0,  0.0, 30.0],
     ], dtype=np.float64)
 
-    alat = 10.0
-
     geometry = Geometry(atoms)
     
     assert(geometry.__repr__() == ref_repr)
 
     geometry.lat_vec = lat_vec
-    geometry.alat = alat
 
     assert(geometry.__repr__() == ref_repr_crystal)
 
@@ -1114,10 +1098,8 @@ def test_eq():
         [ 0.0,  0.0, 30.0],
     ], dtype=np.float64)
 
-    alat = 10.0
-
-    geom_1 = Geometry(atoms, lat_vec, alat)
-    geom_2 = Geometry(atoms, lat_vec, alat)
+    geom_1 = Geometry(atoms, lat_vec)
+    geom_2 = Geometry(atoms, lat_vec)
 
     assert(geom_1 == geom_2)
 
@@ -1140,19 +1122,12 @@ def test_neq():
         [ 0.0,  0.0, 30.0],
     ], dtype=np.float64)
 
-    alat = 10.0
-
-    geom_1 = Geometry(atoms, lat_vec, alat)
-    geom_2 = Geometry(alt_atoms, lat_vec, alat)
+    geom_1 = Geometry(atoms, lat_vec)
+    geom_2 = Geometry(alt_atoms, lat_vec)
 
     assert not (geom_1 == geom_2)
 
-    geom_1 = Geometry(atoms, lat_vec, alat)
-    geom_2 = Geometry(atoms, lat_vec+1, alat)
-
-    assert not (geom_1 == geom_2)
-
-    geom_1 = Geometry(atoms, lat_vec, alat)
-    geom_2 = Geometry(atoms, lat_vec, alat+1)
+    geom_1 = Geometry(atoms, lat_vec)
+    geom_2 = Geometry(atoms, lat_vec+1)
 
     assert not (geom_1 == geom_2)
