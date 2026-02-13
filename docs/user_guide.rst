@@ -3,10 +3,6 @@
 User Guide
 ==========
 
-.. toctree::
-    :maxdepth: 1
-
-
 .. _installation:
 
 Installation
@@ -37,6 +33,8 @@ Getting Started
 
 Once you have everything installed, you can start using Quadrupole!
 
+.. _geometry-creation:
+
 Geometry Creation and IO
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -48,7 +46,7 @@ The primary focus of this package is to enable the efficient manipulation and co
 * Quantum ESPRESSO Post-Processing Format (``.pp``)
 * ORCA Outputs (``.out``)
 
-We additionally support creating :py:class:`Geometry` objects from a list of :ref:`elements <element-like>` and an array of coordinates. As an example, here we will look at reading in a molecular geometry, both with and without a unit cell.
+We additionally support creating :py:class:`Geometry` objects from a list of :ref:`elements <element>` and an array of coordinates. As an example, here we will look at reading in a molecular geometry, both with and without a unit cell.
 
 The simplest file format that we support is the `XYZ format <https://openbabel.org/docs/FileFormats/XYZ_cartesian_coordinates_format.html>`__:
 
@@ -93,6 +91,8 @@ For file formats that contain unit cell information, such as ``.xsf`` files, the
     H           8.000512   8.567493   8.771938
 
 Currently the functions for reading XSF files are limited to the most simple due to lack of available examples, but this will be updated in the future to include a wider range of options.
+
+.. _quadrupole-creation:
 
 Quadrupole Creation and IO
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -218,6 +218,7 @@ For :math:`\text{C}\times\text{m}^2` and :math:`\text{statC}\times\text{cm}^2` (
     Quadrupole (esu):      (xx)          (yy)          (zz)          (xy)          (xz)          (yz)         
                Total:  -4.54041e-26  -6.36728e-26  -7.87200e-26   6.96082e-29   0.00000e+00   0.00000e+00
 
+.. _quadrupole-analysis:
 
 Quadrupole Analysis
 ^^^^^^^^^^^^^^^^^^^

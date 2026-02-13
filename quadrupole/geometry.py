@@ -106,12 +106,9 @@ class Geometry:
     ----------
     atoms : list[Atom]
         The atoms in the geometry.
-
-    Optional Attributes
-    -------------------
-    lat_vec : ndarray of float with shape (3,3)
+    lat_vec : ndarray of float with shape (3,3), optional
         The primitive lattice vectors of the geometry,
-    alat : float
+    alat : float, optional
         The lattice parameter.
 
     Note
@@ -125,7 +122,7 @@ class Geometry:
     def __init__(
         self,
         atoms: list[Atom],
-        lat_vec: npt.NDArray | None = None,
+        lat_vec: npt.NDArray[np.float64] | None = None,
         alat: float | None = None,
     ):
         """Create a new `Geometry` object.
@@ -422,46 +419,47 @@ class Geometry:
         This function will cross-check all Bravais types against the
         provided cell parameters.
 
-        ## Bravais Indices
+        Bravais Indices
+        ^^^^^^^^^^^^^^^
 
-        1
-            Simple Cubic, cP
-        2
-            Face-Centered Cubic, cF
-        3
-            Body-Centered Cubic, cI
-        -3
-            Body-Centered Cubic, cI, Higher Symmetry
-        4
-            Simple Hexagonal, hP
-        5
-            Rhombohedral, hR, 3-fold symmetry axis c
-        -5
-            Rhombohedral, hR, 3-fold symmetry axis <111>
-        6
-            Simple Tetragonal, tP
-        7
-            Body-Centered Tetragonal, tI
-        8
-            Simple Orthorhombic, oP
-        9
-            Base-Centered Orthorhombic, oS, c-face
-        -9
-            Base-Centered Orthorhombic, oS, alternate alignment
-        91
-            Base-Centered Orthorhombic, oS, a-face
-        10
-            Face-Centered Orthorhombic, oF
-        11
-            Body-Centered Orthorhombic, oI
-        12
-            Simple Monoclinic, mP, unique axis c
-        13
-            Base-Centered Monoclinic, mS
-        -13
-            Base-Centered Monoclinic, mS, unique axis b
-        14
-            Simple Triclinic, aP
+        1 : Simple Cubic, cP
+
+        2 : Face-Centered Cubic, cF
+
+        3 : Body-Centered Cubic, cI
+
+        -3 : Body-Centered Cubic, cI, Higher Symmetry
+
+        4 : Simple Hexagonal, hP
+
+        5 : Rhombohedral, hR, 3-fold symmetry axis c
+
+        -5 : Rhombohedral, hR, 3-fold symmetry axis <111>
+
+        6 : Simple Tetragonal, tP
+
+        7 : Body-Centered Tetragonal, tI
+
+        8 : Simple Orthorhombic, oP
+
+        9 : Base-Centered Orthorhombic, oS, c-face
+
+        -9 : Base-Centered Orthorhombic, oS, alternate alignment
+
+        91 : Base-Centered Orthorhombic, oS, a-face
+
+        10 : Face-Centered Orthorhombic, oF
+
+        11 : Body-Centered Orthorhombic, oI
+
+        12 : Simple Monoclinic, mP, unique axis c
+
+        13 : Base-Centered Monoclinic, mS
+
+        -13 : Base-Centered Monoclinic, mS, unique axis b
+
+        14 : Simple Triclinic, aP
+
         """
 
         supported_indices = [

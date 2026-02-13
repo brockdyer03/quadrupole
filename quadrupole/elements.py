@@ -12,8 +12,98 @@ class ElementData:
 
 class Element(ElementData, Enum):
     """Enumeration of all elements on the periodic table.
-    All real element data here was taken from the 
-    International Union of Pure and Applied Chemistry (IUPAC).
+    All element data here was taken from the 
+    International Union of Pure and Applied Chemistry (IUPAC) [1]_.
+
+    Notes
+    -----
+    If you are going to use the ``Element`` enumeration in your own
+    project be aware that, as it inherits from ``Enum``, its members
+    are singletons [2]_. This means that performing comparisons
+    between elements should be done using ``is`` and not ``==``. The
+    comparison with ``==`` invokes the ``__eq__`` method of the object
+    which can take nearly twice as long as the identity comparison
+    with ``is``.
+
+    References
+    ----------
+    .. [1] https://iupac.qmul.ac.uk/AtWt/
+    .. [2] https://docs.python.org/3/howto/enum.html#enum-members-aka-instances
+
+    Examples
+    --------
+    Directly accessing an element can be done by name or symbol.
+    Programmatic access can be done by symbol (as ``str``) or
+    number (as ``int``).
+
+    >>> Element.Hydrogen is Element.H is Element("H") is Element(1)
+    True 
+
+    Element access by string is case-insensitive:
+
+    >>> Element.Ruthenium is Element("Ru") is Element("ru") is Element("rU") is Element("RU")
+    True 
+
+    You can use dot access to get an element's data:
+
+    >>> Element.Hydrogen
+    <Element.Hydrogen: symbol='H', number=1, mass=1.008>
+    >>> Element.Hydrogen.name
+    'Hydrogen'
+    >>> Element.Hydrogen.symbol
+    'H'
+    >>> Element.Hydrogen.number
+    1
+    >>> Element.Hydrogen.mass
+    1.008
+
+    A "zero" element is available as a placeholder:
+
+    >>> Element.Unknown is Element.Xx is Element("Xx") is Element(0)
+    True 
+    >>> Element.Xx.name
+    'Unknown'
+    >>> Element.Xx.symbol
+    'Xx'
+    >>> Element.Xx.number
+    0
+    >>> Element.Xx.mass
+    0.0
+
+    Printing an element directly calls its `__str__()` method, which
+    returns the atomic symbol.
+
+    >>> str(hydrogen)
+    'H'
+    >>> print(hydrogen)
+    H 
+
+    Since the ``ElementData`` dataclass is marked as frozen, you can
+    create unordered sets of elements:
+
+    >>> elem = [Element.H, Element.H, Element.C, Element.C, Element.N]
+    >>> elem_set = set(elem)
+    >>> len(elem_set)
+    3
+    >>> for e in elem_set:
+    ...     print(e)
+    C 
+    H 
+    N 
+
+    You can also iterate through all of the elements in order of their
+    atomic number:
+
+    >>> for elem in Element:
+    ...     print(elem)
+    Xx 
+    H 
+    He 
+    Li 
+    Be 
+    B 
+    C 
+    ...
     """
     def __new__(cls, symbol: str, number: int, mass: float):
         element = ElementData.__new__(cls)
@@ -151,4 +241,6 @@ class Element(ElementData, Enum):
     Oganesson     = "Og", 118, 294.0
 
 
+#: Union of all types that could be coerced into an Element.
+#: These afford programmatic access by calling ``Element(ElementLike)``.
 type ElementLike = Element | str | int
