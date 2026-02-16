@@ -19,23 +19,20 @@ sys.path.insert(0, str(Path("..").resolve()))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    # "sphinx.ext.napoleon",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
+    #"sphinx.ext.autodoc",
+    #"sphinx.ext.autosummary",
     "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
     "pydata_sphinx_theme",
     "sphinx_design",
-    "myst_parser",
     "numpydoc",
 ]
 
-napoleon_google_docstring = False
+numpydoc_class_members_toctree = False
 numpydoc_show_class_members = True
 
 source_suffix = {
-    ".rst": "restructuredtext",
-    ".md" : "markdown",
+    ".rst": "restructuredtext"
 }
 
 templates_path = ['_templates']
@@ -66,7 +63,6 @@ html_theme_options = {
             "name": "PyPI",
             "url": "https://pypi.org/project/quadrupole/",
             "icon": "fa-custom fa-pypi",
-            "type": "fontawesome",
         },
     ],
     "navbar_end": [

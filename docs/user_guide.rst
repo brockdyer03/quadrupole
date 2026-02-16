@@ -306,6 +306,10 @@ Some of you may have noticed that while the quadrupoles indeed do provide incred
 
 While this operation is trivial to recognize for a single molecule and a single quadrupole moment, if one wished to perform this operation for a dataset of even just a few dozen quadrupole moments the process could take hours. It is for this reason that we provide an alternate route through semi-empirical statistical analysis. The function :py:meth:`Quadrupole.compare()` accepts one argument (other than ``self``), ``expt_quad``, and compares 6 permutations of the calculated quadrupole matrix to the experimental matrix, then selects the permutation with the both the lowest overall deviation from the experimental quadrupole and with the lowest standard deviation. Additionally, if the signs of the quadrupole moments differ (e.g. one has the signs [+,-,-] and the other is [+,+,-]), the function will temporarily negative the calculated quadrupole for the comparison, then return it to normal before returning the best match.
 
+.. note::
+    
+    This function will ensure that the units of ``self`` and the units of ``expt`` are always the same before performing the comparison. The output of the function will always have the same units as ``expt``.
+
 Using this function with the above example, we get the following output:
 
 .. code-block:: python

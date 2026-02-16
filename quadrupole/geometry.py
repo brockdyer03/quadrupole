@@ -63,6 +63,13 @@ class LatticeError(Exception):
 class Atom:
     """Class containing the information of a single atom.
 
+    Parameters
+    ----------
+    element : ElementLike
+        A member of the `Element` enum, or the atomic symbol/number.
+    xyz : ArrayLike of float with length 3
+        The x-, y-, and z-coordinates of the atom in Ångstrom.
+
     Attributes
     ----------
     element : Element
@@ -76,15 +83,6 @@ class Atom:
         element: ElementLike,
         xyz: npt.ArrayLike,
     ):
-        """Class containing the information of a single atom.
-
-        Parameters
-        ----------
-        element : ElementLike
-            A member of the `Element` enum, or the atomic symbol/number.
-        xyz : ArrayLike
-            The x-, y-, and z-coordinates of the atom in Ångstrom.
-        """
         self.element = Element(element)
         self.xyz = np.array(xyz, dtype=np.float64)
 
@@ -102,11 +100,18 @@ class Geometry:
     """Class storing the geometric parameters of a molecular geometry or
     crystal structure. All quantities should be in Ångstrom.
 
+    Parameters
+    ----------
+    atoms : list[Atom]
+        The atoms in the geometry.
+    lat_vec : ArrayLike of float with shape (3,3), optional
+        The lattice vectors of the geometry.
+
     Attributes
     ----------
     atoms : list[Atom]
         The atoms in the geometry.
-    lat_vec : ndarray of float with shape (3,3), optional
+    lat_vec : NDArray of float with shape (3,3), optional
         The primitive lattice vectors of the geometry,
     """
 
@@ -117,15 +122,6 @@ class Geometry:
         atoms: list[Atom],
         lat_vec: npt.NDArray[np.float64] | None = None,
     ):
-        """Create a new `Geometry` object.
-
-        Parameters
-        ----------
-        atoms : list[Atom]
-            The atoms in the geometry.
-        lat_vec : ArrayLike of float with shape (3,3), optional
-            The primitive lattice vectors of the geometry,
-        """
         self.atoms   = atoms
         self.lat_vec = np.array(lat_vec, dtype=float) if lat_vec is not None else None
 
@@ -448,7 +444,6 @@ class Geometry:
             Base-Centered Monoclinic, mS, unique axis b
         ``14``
             Simple Triclinic, aP
-
         """
 
         supported_indices = [
@@ -721,8 +716,8 @@ class Geometry:
         """Read in and interpret crystallographic information from a
         CUBE file.
 
-        Note
-        ----
+        Notes
+        -----
         This function calculates the dimensions of the unit cell by
         taking the number of grid points and muliplying it by the
         spacing of the grid points. Due to rounding errors when an
