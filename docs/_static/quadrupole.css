@@ -1,0 +1,3 @@
+html[data-theme=dark] .sd-card img[src*='.svg'] {
+  background: #48566b;
+}

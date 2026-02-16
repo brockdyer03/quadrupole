@@ -1,8 +1,8 @@
 from __future__ import annotations
-import numpy as np
-import numpy.typing as npt
 from os import PathLike
 from pathlib import Path
+import numpy as np
+import numpy.typing as npt
 from .geometry import Geometry, FileFormatError
 
 
@@ -10,38 +10,51 @@ class Quadrupole:
     """Class containing data and functions required for analyzing a
     quadrupole moment.
 
-    Attributes
+    Parameters
     ----------
-    quadrupole : ndarray
-        Array containing the 3x3 quadrupole matrix, the diagonal
-        components of the quadrupole (shape 3x1, [xx, yy, zz]),
+    quadrupole : ArrayLike
+        Sequence containing the 3x3 quadrupole matrix, the diagonal
+        components of the quadrupole (shape 3x1, ``[aa, bb, cc]``),
         or the 6 independent elements of the quadrupole
-        (shape 6x1, in order, [xx, yy, zz, xy, xz, yz]).
+        (shape 6x1, in order, ``[aa, bb, cc, ab, ac, bc]``).
     units : {"au", "buckingham", "cm2", "esu"}, default="buckingham"
         Units of the quadrupole matrix (case insensitive).
 
-    Note
-    ----
+    Attributes
+    ----------
+    quadrupole : NDArray
+        3x3 array of floats.
+    units : {"au", "buckingham", "cm2", "esu"}
+        Units of the quadrupole matrix (case insensitive).
+
+    Methods
+    -------
+    as_unit(units)
+        Represent the quadrupole in a given unit.
+    from_orca(output_path)
+        Read all quadrupoles from an ORCA output.
+    inertialize(geometry)
+        Rotate a quadrupole into a molecule's inertial frame.
+    detrace()
+        Apply a detracing operator to a quadrupole
+    compare(expt)
+        Statistically compare two quadrupoles and return the best match.
+
+    Notes
+    -----
     The attributes specify that there are 6 independent elements of a
     quadrupole tensor. This is because a molecular quadrupole, by
     definition, is symmetric. It is worth noting however that a
     traceless quadrupole moment only has 5 independent elements as being
     traceless dictates that one of the diagonal components must be equal
     to the negative sum of the remaining two, i.e. it is required that
-    :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore :math:`Q_{cc}` depends
-    on :math:`Q_{aa}` and :math:`Q_{bb}`
+    :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore 
+    :math:`Q_{cc}` depends on :math:`Q_{aa}`
+    and :math:`Q_{bb}`.
     """
 
-    # https://physics.nist.gov/cgi-bin/cuu/Value?aueqm
     au_to_cm2_conversion   = 4.4865515185e-40
-
-    # Coulomb*m^2 to CGS statCoulomb*cm^2
-    # Factor of c * (100cm)^2/m^2
-    # c taken from https://physics.nist.gov/cgi-bin/cuu/Value?c
     cm2_to_esu_conversion  = 2.99792458e13
-
-    # Suggested by Peter J. W. Debye in 1963
-    # https://doi.org/10.1021/cen-v041n016.p040
     esu_to_buck_conversion = 1e-26
 
     def __init__(self, quadrupole: npt.ArrayLike, units: str = "buckingham"):
@@ -147,7 +160,34 @@ class Quadrupole:
     #-----------------------------------------------------------#
 
     def as_unit(self, units: str) -> Quadrupole:
-        """Return quadrupole as a specified unit"""
+        """Return quadrupole as a specified unit.
+        
+        Parameters
+        ----------
+        units : {"au", "buckingham", "cm2", "esu"}
+            Name of the desired units.
+
+        Notes
+        -----
+        au_to_cm2_conversion : 4.4865515185e-40
+            NIST CODATA [1]_.
+        cm2_to_esu_conversion : 2.99792458e13
+            Conversion from Coulomb•m² to statCoulomb•cm². Equal to a
+            factor of `c`•(100 cm)² / m². Value of `c` from the NIST
+            CODATA [2]_.
+        esu_to_buck_conversion : 1e-26
+            Suggested by Peter J. W. Debye in 1963 [3]_.
+
+        References
+        ----------
+        .. [1] CODATA Value: atomic unit of electric quadrupole moment.
+           https://physics.nist.gov/cgi-bin/cuu/Value?aueqm (accessed 2026-02-13).
+        .. [2] CODATA Value: speed of light in vacuum.
+           https://physics.nist.gov/cgi-bin/cuu/Value?c (accessed 2026-02-13).
+        .. [3] Birefringence Gives C02's Molecular Quadrupole Moment.
+           Chem. Eng. News Archive 1963, 41 (16), 40-43.
+           https://doi.org/10.1021/cen-v041n016.p040.
+        """
         self_units = self.units
         new_units = units.lower()
         if new_units not in ["au", "buckingham", "cm2", "esu"]:
@@ -195,8 +235,8 @@ class Quadrupole:
             Tuple containing quadrupoles. See Notes for explanation of 
             why this can return multiple matrices instead of just one.
 
-        Note
-        ----
+        Notes
+        -----
         For ORCA outputs with methods that produce multiple densities
         (post-HF methods usually), there can be multiple quadrupoles
         listed. In this case it is up to the user to pull the correct
@@ -218,6 +258,7 @@ class Quadrupole:
             )
 
         quad_matrices = []
+        # This list slice is a neat trick to only grab every other element.
         for quad in quadrupoles[::2]:
             quad_matrix = np.array(
                 [
@@ -247,26 +288,36 @@ class Quadrupole:
 
 
     def detrace(self) -> Quadrupole:
-        """Apply detracing operation to a quadrupole
+        """Apply detracing operation to a quadrupole.
 
         Notes
         -----
         This detracing operator subtracts out the average of the trace
         of the quadrupole matrix, then multiplies by 3/2. The factor of
         3/2 comes from the definition of the traceless quadrupole moment
-        from Buckingham (1959) (https://doi.org/10.1039/QR9591300183).
+        from Buckingham (1959) [1]_.
         This is also the form that the NIST CCCBDB reports quadrupole
         moments in.
 
         It is also important to note that while this is a common
         definition, there are arguments both for and against the use of
-        the traceless quadrupole moment.
-        See https://doi.org/10.1080/00268977500101151 for further
-        discussion.
+        the traceless quadrupole moment. See Raab (1974) for further
+        discussion [2]_.
 
         ORCA uses a similar definition but uses a factor of 3 instead
         of 3/2.
         Quantum ESPRESSO does not detrace the quadrupole moment.
+
+        References
+        ----------
+        .. [1] Buckingham, A. D. Molecular Quadrupole Moments. 
+           Q. Rev. Chem. Soc. 1959, 13 (3), 183-214. 
+           https://doi.org/10.1039/QR9591300183.
+
+        .. [2] Raab, R. E. Magnetic Multipole Moments.
+           Molecular Physics 1975, 29 (5), 1323-1331.
+           https://doi.org/10.1080/00268977500101151.
+
         """
         q = (
             (3 / 2)
@@ -285,7 +336,7 @@ class Quadrupole:
         Notes
         -----
         This function defaults to ensuring all units are those of
-        `expt` and will return a ``Quadrupole`` with those units.
+        ``expt`` and will return a ``Quadrupole`` with those units.
 
         This code does not guarantee a correct comparison, it simply
         uses statistical analysis to attempt to permute a calculated

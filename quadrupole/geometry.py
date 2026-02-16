@@ -42,7 +42,7 @@ class LatticeError(Exception):
         14 : "Simple Triclinic",
     }
 
-    def __init__(self, bravais_index: int, cell_params: npt.NDArray):
+    def __init__(self, bravais_index: int, cell_params: npt.NDArray[np.float64]):
         self.bravais_index = bravais_index
         self.cell_params = cell_params
 
@@ -63,6 +63,13 @@ class LatticeError(Exception):
 class Atom:
     """Class containing the information of a single atom.
 
+    Parameters
+    ----------
+    element : ElementLike
+        A member of the `Element` enum, or the atomic symbol/number.
+    xyz : ArrayLike of float with length 3
+        The x-, y-, and z-coordinates of the atom in Ångstrom.
+
     Attributes
     ----------
     element : Element
@@ -76,15 +83,6 @@ class Atom:
         element: ElementLike,
         xyz: npt.ArrayLike,
     ):
-        """Class containing the information of a single atom.
-
-        Parameters
-        ----------
-        element : ElementLike
-            A member of the `Element` enum, or the atomic symbol/number.
-        xyz : ArrayLike
-            The x-, y-, and z-coordinates of the atom in Ångstrom.
-        """
         self.element = Element(element)
         self.xyz = np.array(xyz, dtype=np.float64)
 
@@ -102,14 +100,18 @@ class Geometry:
     """Class storing the geometric parameters of a molecular geometry or
     crystal structure. All quantities should be in Ångstrom.
 
+    Parameters
+    ----------
+    atoms : list[Atom]
+        The atoms in the geometry.
+    lat_vec : ArrayLike of float with shape (3,3), optional
+        The lattice vectors of the geometry.
+
     Attributes
     ----------
     atoms : list[Atom]
         The atoms in the geometry.
-
-    Optional Attributes
-    -------------------
-    lat_vec : ndarray of float with shape (3,3)
+    lat_vec : NDArray of float with shape (3,3), optional
         The primitive lattice vectors of the geometry,
     """
 
@@ -118,27 +120,22 @@ class Geometry:
     def __init__(
         self,
         atoms: list[Atom],
-        lat_vec: npt.NDArray | None = None,
+        lat_vec: npt.NDArray[np.float64] | None = None,
     ):
-        """Create a new `Geometry` object.
-
-        Parameters
-        ----------
-        atoms : list[Atom]
-            The atoms in the geometry.
-        lat_vec : ArrayLike of float with shape (3,3), optional
-            The primitive lattice vectors of the geometry,
-        """
         self.atoms   = atoms
         self.lat_vec = np.array(lat_vec, dtype=float) if lat_vec is not None else None
 
 
     @property
     def coordinates(self) -> npt.NDArray:
+        """Get an array of the coordinates with shape (``N``,3) where
+        `N` is the number of atoms (``len(self)``).
+        """
         return np.array([i.xyz for i in self.atoms])
 
     @property
     def elements(self) -> list[Element]:
+        """Get a list of each element in ``self``."""
         return [i.element for i in self.atoms]
 
     @staticmethod
@@ -147,7 +144,7 @@ class Geometry:
         cell_params: npt.ArrayLike,
     ) -> npt.NDArray:
         """Generate a primitive unit cell. FOR INTERNAL USE ONLY, USERS
-        SHOULD USE `generate_lattice()`!!
+        SHOULD USE ``generate_lattice()``!!
         """
         a = np.float64(cell_params[0])
         b = np.float64(cell_params[1])
@@ -376,7 +373,7 @@ class Geometry:
         cell_params: npt.ArrayLike,
         primitive: bool = False,
         espresso_like: bool = False,
-    ) -> npt.NDArray:
+    ) -> npt.NDArray[np.float64]:
         """Generate a 3x3 unit cell matrix from a Bravais lattice index
         and a set of cell parameters.
 
@@ -385,67 +382,68 @@ class Geometry:
         bravais_index : {1, 2, 3, -3, 4, 5, -5, 6, 7, 8, 9, -9, 91, 10, 11, 12, -12, 13, -13, 14}
             Integer corresponding to the type of Bravais lattice.
             Described in ``Bravais Indices``.
-        cell_params : ArrayLike, dtype float, size 6
+        cell_params : ArrayLike of float with size 6
             ArrayLike of cell parameters, in order:
             (`a`, `b`, `c`, `α`, `β`, `γ`)
         primitive : bool, default=False
             Denote whether supplied cell parameters are for a primitive
             or a conventional unit cell.
         espresso_like : bool, default=False
-            If `cell_params` are provided in Quantum ESPRESSO format,
+            If ``cell_params`` are provided in Quantum ESPRESSO format,
             this should be set to ``True``.
-            Automatically sets `primitive` to ``True`` as well.
+            Automatically sets ``primitive`` to ``True`` as well.
 
         Notes
         -----
         Quantum ESPRESSO format is as follows:
-        ```
-        cell_params = (a, b/a, c/a, cos(α), cos(β), cos(γ))
-        ```
+
+        .. code-block::
+
+            cell_params = (a, b/a, c/a, cos(α), cos(β), cos(γ))
 
         This function will cross-check all Bravais types against the
         provided cell parameters.
 
         Bravais Indices
-        ---------------
+        ^^^^^^^^^^^^^^^
 
-        1
+        ``1``
             Simple Cubic, cP
-        2
+        ``2``
             Face-Centered Cubic, cF
-        3
+        ``3``
             Body-Centered Cubic, cI
-        -3
+        ``-3``
             Body-Centered Cubic, cI, Higher Symmetry
-        4
+        ``4``
             Simple Hexagonal, hP
-        5
+        ``5``
             Rhombohedral, hR, 3-fold symmetry axis c
-        -5
+        ``-5``
             Rhombohedral, hR, 3-fold symmetry axis <111>
-        6
+        ``6``
             Simple Tetragonal, tP
-        7
+        ``7``
             Body-Centered Tetragonal, tI
-        8
+        ``8``
             Simple Orthorhombic, oP
-        9
+        ``9``
             Base-Centered Orthorhombic, oS, c-face
-        -9
+        ``-9``
             Base-Centered Orthorhombic, oS, alternate alignment
-        91
+        ``91``
             Base-Centered Orthorhombic, oS, a-face
-        10
+        ``10``
             Face-Centered Orthorhombic, oF
-        11
+        ``11``
             Body-Centered Orthorhombic, oI
-        12
+        ``12``
             Simple Monoclinic, mP, unique axis c
-        13
+        ``13``
             Base-Centered Monoclinic, mS
-        -13
+        ``-13``
             Base-Centered Monoclinic, mS, unique axis b
-        14
+        ``14``
             Simple Triclinic, aP
         """
 
@@ -573,7 +571,7 @@ class Geometry:
 
     @classmethod
     def from_xyz(cls, file: PathLike):
-        """Read in XYZ file and return a `Geometry` object"""
+        """Read in the geometry information from an XYZ file."""
 
         with open(file) as xyz:
             num_atoms = xyz.readline()
@@ -613,6 +611,38 @@ class Geometry:
 
     @classmethod
     def from_list(cls, elements: list[ElementLike], xyzs: npt.ArrayLike):
+        """Create a ``Geometry`` from a list of elements and an array
+        of coordinates. Coordinates should be in Ångstrom.
+        
+        Parameters
+        ----------
+        elements : list of ElementLike
+            A list of either ``Element`` members, atomic symbols, or
+            atomic numbers.
+        xyzs : ArrayLike of floats with shape (N,3)
+            An `N`-length sequence of [x, y, z] coordinates.
+
+        Examples
+        --------
+
+        >>> elements = [
+        ...     Element.Hydrogen,
+        ...     Element.Ruthenium,
+        ...     Element.Bromine,
+        ... ]
+        >>> xyzs = np.array([
+        ...     [1.0, 2.0, 3.0],
+        ...     [4.0, 5.0, 6.0],
+        ...     [7.0, 8.0, 9.0],
+        ... ], dtype=np.float64)
+        >>> geom = Geometry.from_list()
+        >>> print(geom)
+        Element     X          Y          Z          
+        <BLANKLINE>
+        H           1.000000   2.000000   3.000000
+        Ru          4.000000   5.000000   6.000000
+        Br          7.000000   8.000000   9.000000
+        """
         if len(elements) != len(xyzs):
             raise ValueError(
                 "The list of elements and coordinates must be of the same size!"
@@ -627,6 +657,7 @@ class Geometry:
 
     @classmethod
     def from_orca(cls, file: PathLike):
+        """Read in the geometry information from an ORCA output file."""
         xyz_data = []
         with open(file, "r") as orca_out:
             input_search = True
@@ -707,8 +738,8 @@ class Geometry:
         """Read in and interpret crystallographic information from a
         CUBE file.
 
-        Note
-        ----
+        Notes
+        -----
         This function calculates the dimensions of the unit cell by
         taking the number of grid points and muliplying it by the
         spacing of the grid points. Due to rounding errors when an
@@ -803,9 +834,9 @@ class Geometry:
 
         Returns
         -------
-        eigenvalues : ndarray
+        eigenvalues : NDArray
             First output of numpy.linalg.eig(inertia_tensor)
-        eigenvectors : ndarray
+        eigenvectors : NDArray
             Second output of numpy.linalg.eig(inertia_tensor)
         """
         center_of_mass = np.zeros(3, dtype=float)

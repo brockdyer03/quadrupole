@@ -1,6 +1,6 @@
 [project]
 name = "quadrupole"
-version = "0.2.1"
+version = "0.3.0"
 description = "Classes for reading and manipulating molecular quadrupole moments."
 readme = "PyPI_README.md"
 license = "BSD-3-Clause"
@@ -20,10 +20,16 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",
-    "pydata-sphinx-theme>=0.16.1",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.14.10",
+]
+docs = [
+    "sphinx>=9.1.0",
+    "pydata-sphinx-theme>=0.16.1",
+    "myst-parser>=5.0.0",
+    "numpydoc>=1.10.0",
+    "sphinx-design>=0.7.0",
 ]
 
 [project.urls]
