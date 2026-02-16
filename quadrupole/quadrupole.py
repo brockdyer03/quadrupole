@@ -2,7 +2,8 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 from os import PathLike
-from .geometry import Geometry
+from pathlib import Path
+from .geometry import Geometry, FileFormatError
 
 
 class Quadrupole:
@@ -209,6 +210,12 @@ class Quadrupole:
             for line in output:
                 if line.strip().endswith("(Buckingham)"):
                     quadrupoles.append(line.strip().split()[:-1])
+
+        if len(quadrupoles) == 0:
+            raise FileFormatError(
+                "Could not locate a quadrupole moment in output "
+               f"{Path(file).resolve()}"
+            )
 
         quad_matrices = []
         for quad in quadrupoles[::2]:
