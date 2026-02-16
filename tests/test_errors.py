@@ -5,9 +5,8 @@ from quadrupole import (
     Element,
     Geometry,
     Quadrupole,
-    FileFormatError,
-    LatticeError,
 )
+from quadrupole.geometry import FileFormatError, LatticeError
 
 
 @pytest.mark.xfail(
@@ -260,3 +259,16 @@ def test_invalid_quadrupole_units():
 def test_invalid_quadrupole_as_unit():
     quadrupole = Quadrupole([1.0, 2.0, 3.0], units="buckingham")
     quadrupole.as_unit("bananas")
+
+
+@pytest.mark.xfail(
+    reason="Try to read a quadrupole from an ORCA output that has no quadrupole.",
+    raises=FileFormatError,
+)
+def test_quadrupole_from_orca_no_quadrupole():
+
+    orca_output_path = Path(
+        __file__ + "/../files/water_scf_improper.out"
+    ).resolve()
+
+    Quadrupole.from_orca(orca_output_path)

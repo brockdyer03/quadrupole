@@ -8,6 +8,7 @@ def test_element():
     hydrogen = Element.Hydrogen
     assert(hydrogen == Element.H)
     assert(hydrogen == Element("H"))
+    assert(hydrogen == Element("h"))
     assert(hydrogen == Element(1))
     assert(hydrogen.name == "Hydrogen")
     assert(hydrogen.symbol == "H")
@@ -18,6 +19,9 @@ def test_element():
     ruthenium = Element.Ruthenium
     assert(ruthenium == Element.Ru)
     assert(ruthenium == Element("Ru"))
+    assert(ruthenium == Element("ru"))
+    assert(ruthenium == Element("RU"))
+    assert(ruthenium == Element("rU"))
     assert(ruthenium == Element(44))
     assert(ruthenium.name == "Ruthenium")
     assert(ruthenium.symbol == "Ru")
@@ -71,7 +75,6 @@ def test_inertia():
     geometry = Geometry(
         atoms=atoms,
         lat_vec=None,
-        alat=None,
     )
 
     assert(len(geometry) == 3)
@@ -79,8 +82,8 @@ def test_inertia():
     assert(geometry[0] == atoms[0])
     assert(geometry[1] == atoms[1])
     assert(geometry[2] == atoms[2])
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
 
     ref_eigenvalues = np.array(
         [1261.1061354199865, -1.1368683772161603e-13, 1261.1061354199867],
@@ -118,7 +121,7 @@ def test_inertia():
 
     #np.testing.assert_allclose(eigenvectors, ref_eigenvectors, atol=1e-8)
 
-
+# region CellGen
 def test_simple_cubic():
     # Polonium
     ref_cell = np.array([
@@ -736,8 +739,8 @@ def test_qe_format_triclinic():
     )
 
     np.testing.assert_array_almost_equal(gen_cell, ref_cell, decimal=5)
-
-
+# endregion CellGen
+# region ClassMethods
 def test_from_list():
     elements = [
         Element.Hydrogen,
@@ -753,8 +756,8 @@ def test_from_list():
 
     geometry = Geometry.from_list(elements, xyzs)
 
-    assert(geometry.get_elements() == elements)
-    assert(np.all(geometry.get_coords() == xyzs))
+    assert(geometry.elements == elements)
+    assert(np.all(geometry.coordinates == xyzs))
 
 
 def test_from_xyz(tmp_path):
@@ -786,8 +789,8 @@ def test_from_xyz(tmp_path):
 
     geometry = Geometry.from_xyz(xyz_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
 
 
 def test_from_xsf(tmp_path):
@@ -808,8 +811,6 @@ def test_from_xsf(tmp_path):
         [ 0.000000000, 17.543876553,  0.000000000],
         [ 0.000000000,  0.000000000, 17.543876553],
     ], dtype=np.float64)
-
-    alat = 17.543876553
 
     xsf = (
         "CRYSTAL\n"
@@ -833,10 +834,9 @@ def test_from_xsf(tmp_path):
 
     geometry = Geometry.from_xsf(xsf_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
     np.testing.assert_array_equal(geometry.lat_vec, lat_vec)
-    assert(geometry.alat == alat)
 
 
 def test_from_orca_opt():
@@ -858,8 +858,8 @@ def test_from_orca_opt():
 
     geometry = Geometry.from_orca(orca_output_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), final_xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, final_xyzs)
 
 
 def test_from_orca_scf():
@@ -881,8 +881,8 @@ def test_from_orca_scf():
 
     geometry = Geometry.from_orca(orca_output_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_array_equal(geometry.get_coords(), final_xyzs)
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, final_xyzs)
 
 
 def test_from_cube(tmp_path):
@@ -903,8 +903,6 @@ def test_from_cube(tmp_path):
         [ 0.00000000, 25.52039649,  0.00000000],
         [ 0.00000000,  0.00000000, 25.52039649],
     ], dtype=np.float64)
-
-    alat = 25.52039649
 
     cube = (
         " Cubefile created from PWScf calculation\n"
@@ -933,10 +931,9 @@ def test_from_cube(tmp_path):
 
     geometry = Geometry.from_cube(cube_path)
 
-    assert(geometry.get_elements() == elements)
-    np.testing.assert_allclose(geometry.get_coords(), xyzs, atol=1e-8)
+    assert(geometry.elements == elements)
+    np.testing.assert_allclose(geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(geometry.lat_vec, lat_vec, atol=1e-7)
-    np.testing.assert_almost_equal(geometry.alat,  alat, decimal=8)
 
 
 def test_from_qe_pp_ibrav(tmp_path):
@@ -958,8 +955,6 @@ def test_from_qe_pp_ibrav(tmp_path):
         [ 0.00000000, 25.52042192,  0.00000000],
         [ 0.00000000,  0.00000000, 25.52042192],
     ], dtype=np.float64)
-
-    alat = 25.520421921897817
 
     ibrav_pp = (
         "                                                                           \n"
@@ -987,10 +982,9 @@ def test_from_qe_pp_ibrav(tmp_path):
 
     ibrav_geometry = Geometry.from_qe_pp(ibrav_path)
 
-    assert(ibrav_geometry.get_elements() == elements)
-    np.testing.assert_allclose(ibrav_geometry.get_coords(), xyzs, atol=1e-8)
+    assert(ibrav_geometry.elements == elements)
+    np.testing.assert_allclose(ibrav_geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(ibrav_geometry.lat_vec, lat_vec, atol=1e-7)
-    np.testing.assert_almost_equal(ibrav_geometry.alat,  alat, decimal=8)
 
 
 def test_from_qe_pp_cell(tmp_path):
@@ -1012,8 +1006,6 @@ def test_from_qe_pp_cell(tmp_path):
         [ 0.00000000, 25.52042192,  0.00000000],
         [ 0.00000000,  0.00000000, 25.52042192],
     ], dtype=np.float64)
-
-    alat = 25.520421921897817
 
     cell_pp = (
         "                                                                           \n"
@@ -1044,11 +1036,10 @@ def test_from_qe_pp_cell(tmp_path):
 
     cell_geometry = Geometry.from_qe_pp(cell_path)
 
-    assert(cell_geometry.get_elements() == elements)
-    np.testing.assert_allclose(cell_geometry.get_coords(), xyzs, atol=1e-8)
+    assert(cell_geometry.elements == elements)
+    np.testing.assert_allclose(cell_geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(cell_geometry.lat_vec, lat_vec, atol=1e-7)
-    np.testing.assert_almost_equal(cell_geometry.alat,  alat, decimal=8)
-
+# endregion ClassMethods
 
 def test_repr():
     ref_repr = (
@@ -1085,13 +1076,58 @@ def test_repr():
         [ 0.0,  0.0, 30.0],
     ], dtype=np.float64)
 
-    alat = 10.0
-
     geometry = Geometry(atoms)
     
     assert(geometry.__repr__() == ref_repr)
 
     geometry.lat_vec = lat_vec
-    geometry.alat = alat
 
     assert(geometry.__repr__() == ref_repr_crystal)
+
+
+def test_eq():
+    atoms = [
+        Atom(Element.Hydrogen, [1.0, 2.0, 3.0]),
+        Atom(Element.Ruthenium, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+
+    lat_vec = np.array([
+        [10.0,  0.0,  0.0],
+        [ 0.0, 20.0,  0.0],
+        [ 0.0,  0.0, 30.0],
+    ], dtype=np.float64)
+
+    geom_1 = Geometry(atoms, lat_vec)
+    geom_2 = Geometry(atoms, lat_vec)
+
+    assert(geom_1 == geom_2)
+
+
+def test_neq():
+    atoms = [
+        Atom(Element.Hydrogen, [1.0, 2.0, 3.0]),
+        Atom(Element.Ruthenium, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+    alt_atoms = [
+        Atom(Element.Ruthenium, [1.0, 2.0, 3.0]),
+        Atom(Element.Hydrogen, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+
+    lat_vec = np.array([
+        [10.0,  0.0,  0.0],
+        [ 0.0, 20.0,  0.0],
+        [ 0.0,  0.0, 30.0],
+    ], dtype=np.float64)
+
+    geom_1 = Geometry(atoms, lat_vec)
+    geom_2 = Geometry(alt_atoms, lat_vec)
+
+    assert not (geom_1 == geom_2)
+
+    geom_1 = Geometry(atoms, lat_vec)
+    geom_2 = Geometry(atoms, lat_vec+1)
+
+    assert not (geom_1 == geom_2)
