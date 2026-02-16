@@ -1,4 +1,4 @@
-name: Test Quadrupole Functions
+name: Tests
 
 on:
   push:
