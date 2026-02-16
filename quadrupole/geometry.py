@@ -42,7 +42,7 @@ class LatticeError(Exception):
         14 : "Simple Triclinic",
     }
 
-    def __init__(self, bravais_index: int, cell_params: npt.NDArray):
+    def __init__(self, bravais_index: int, cell_params: npt.NDArray[np.float64]):
         self.bravais_index = bravais_index
         self.cell_params = cell_params
 
@@ -373,7 +373,7 @@ class Geometry:
         cell_params: npt.ArrayLike,
         primitive: bool = False,
         espresso_like: bool = False,
-    ) -> npt.NDArray:
+    ) -> npt.NDArray[np.float64]:
         """Generate a 3x3 unit cell matrix from a Bravais lattice index
         and a set of cell parameters.
 
@@ -382,7 +382,7 @@ class Geometry:
         bravais_index : {1, 2, 3, -3, 4, 5, -5, 6, 7, 8, 9, -9, 91, 10, 11, 12, -12, 13, -13, 14}
             Integer corresponding to the type of Bravais lattice.
             Described in ``Bravais Indices``.
-        cell_params : ArrayLike, dtype float, size 6
+        cell_params : ArrayLike of float with size 6
             ArrayLike of cell parameters, in order:
             (`a`, `b`, `c`, `α`, `β`, `γ`)
         primitive : bool, default=False
@@ -396,9 +396,10 @@ class Geometry:
         Notes
         -----
         Quantum ESPRESSO format is as follows:
-        ```
-        cell_params = (a, b/a, c/a, cos(α), cos(β), cos(γ))
-        ```
+
+        .. code-block::
+
+            cell_params = (a, b/a, c/a, cos(α), cos(β), cos(γ))
 
         This function will cross-check all Bravais types against the
         provided cell parameters.
@@ -618,8 +619,29 @@ class Geometry:
         elements : list of ElementLike
             A list of either ``Element`` members, atomic symbols, or
             atomic numbers.
-        xyzs : arraylike of floats with shape (N,3)
+        xyzs : ArrayLike of floats with shape (N,3)
             An `N`-length sequence of [x, y, z] coordinates.
+
+        Examples
+        --------
+
+        >>> elements = [
+        ...     Element.Hydrogen,
+        ...     Element.Ruthenium,
+        ...     Element.Bromine,
+        ... ]
+        >>> xyzs = np.array([
+        ...     [1.0, 2.0, 3.0],
+        ...     [4.0, 5.0, 6.0],
+        ...     [7.0, 8.0, 9.0],
+        ... ], dtype=np.float64)
+        >>> geom = Geometry.from_list()
+        >>> print(geom)
+        Element     X          Y          Z          
+        <BLANKLINE>
+        H           1.000000   2.000000   3.000000
+        Ru          4.000000   5.000000   6.000000
+        Br          7.000000   8.000000   9.000000
         """
         if len(elements) != len(xyzs):
             raise ValueError(
@@ -812,9 +834,9 @@ class Geometry:
 
         Returns
         -------
-        eigenvalues : ndarray
+        eigenvalues : NDArray
             First output of numpy.linalg.eig(inertia_tensor)
-        eigenvectors : ndarray
+        eigenvectors : NDArray
             Second output of numpy.linalg.eig(inertia_tensor)
         """
         center_of_mass = np.zeros(3, dtype=float)

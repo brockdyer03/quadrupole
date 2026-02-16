@@ -8,7 +8,7 @@ User Guide
 Installation
 ------------
 
-This package can be installed with any package manager that has access to the `Python Package Index <https://pypi.org/>`__. We recommend using `uv <https://docs.astral.sh/uv/>`__ to install, either in a virtual environment:
+This package can be installed with any package manager that has access to the `Python Package Index <https://pypi.org/>`__, such as ``pip``. Development of this package is done using `uv <https://docs.astral.sh/uv/>`__, and is recommended for most users. You can either install Quadrupole in a virtual environment:
 
 .. code-block:: bash
 
@@ -17,7 +17,7 @@ This package can be installed with any package manager that has access to the `P
     > source .venv/bin/activate
     > uv pip install quadrupole
 
-or adding to a project:
+or add it to a project:
 
 .. code-block:: bash
 
@@ -46,7 +46,7 @@ The primary focus of this package is to enable the efficient manipulation and co
 * Quantum ESPRESSO Post-Processing Format (``.pp``)
 * ORCA Outputs (``.out``)
 
-We additionally support creating :py:class:`Geometry` objects from a list of :ref:`elements <element>` and an array of coordinates. As an example, here we will look at reading in a molecular geometry, both with and without a unit cell.
+We additionally support creating :py:class:`Geometry` objects from a list of :ref:`elements <element>` and an array of coordinates. Here we will look at reading in a molecular geometry, both with and without a unit cell.
 
 The simplest file format that we support is the `XYZ format <https://openbabel.org/docs/FileFormats/XYZ_cartesian_coordinates_format.html>`__:
 
@@ -90,7 +90,7 @@ For file formats that contain unit cell information, such as ``.xsf`` files, the
     H           9.544851   8.573414   8.771938
     H           8.000512   8.567493   8.771938
 
-Currently the functions for reading XSF files are limited to the most simple due to lack of available examples, but this will be updated in the future to include a wider range of options.
+Currently the functions for reading XSF files are limited to files with just one geometry and no comments due to lack of available examples, but this will be updated in the future to include a wider range of options.
 
 .. _quadrupole-creation:
 
@@ -127,7 +127,7 @@ Here you can see that by supplying a sequence with length 3 the :py:class:`Quadr
      [4. 2. 6.]
      [5. 6. 3.]]
 
-Here you will notice that not only has the function populated the upper right triangular portion of the matrix, but also the lower left portion. This is because the quadrupole tensor has, by definition, guaranteed transposition symmetry, therefore the :math:`xy` component will always be equal to the :math:`yx` component.
+Here you will notice that the function has not only populated the upper right triangular portion of the matrix, but also the lower left portion. This is because the quadrupole tensor has, by definition, guaranteed transposition symmetry, therefore the :math:`xy` component will always be equal to the :math:`yx` component.
 
 .. note::
 
@@ -267,7 +267,7 @@ This quadrupole moment is, however, not able to be compared directly to experime
 
     The detracing operation is not reversible, while all other provided operations can be reversed. If you are going to serialize quadrupole data, it is strongly recommended to not detrace your quadrupoles before serializing the data, as you can not recover the original matrix!
 
-Now that the quadrupole moment is both inertialized and traceless, it is suitable for comparison to literature. Using the value from `Flygare and Benson (1971) <https://doi.org/10.1080/00268977100100221>`__, we get a rather startling discrepancy:
+Now that the quadrupole moment is both inertialized and traceless, it is suitable for comparison to literature. However, using the value from `Flygare and Benson (1971) <https://doi.org/10.1080/00268977100100221>`__, we get a rather startling discrepancy:
 
 .. code-block:: python
 
@@ -287,7 +287,7 @@ Now that the quadrupole moment is both inertialized and traceless, it is suitabl
 
 It looks like our quadrupole is nowhere near the experimental value, but how is this possible?
 
-Some of you may have noticed that while the quadrupoles indeed do provide incredibly high deviations on direct subtraction, if we simply permuted the quadrupole such that :math:`xx \rightarrow yy \rightarrow zz`, we would be in a much better situation. Indeed, if we perform this permutation and attempt our subtraction again, we get a much more reasonable deviation:
+Some of you may have noticed that while the quadrupoles indeed do provide incredibly high deviations on direct subtraction, if we simply permuted the calculated quadrupole such that :math:`xx \rightarrow yy \rightarrow zz`, we would be in a much better situation. Indeed, if we perform this permutation and attempt our subtraction again, we get a much more reasonable deviation:
 
 .. code-block:: python
 
@@ -304,7 +304,7 @@ Some of you may have noticed that while the quadrupoles indeed do provide incred
     Quadrupole (au):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      
               Total:   -0.01783   -0.02930    0.04713    0.00000    0.00000    0.00000
 
-While this operation is trivial to recognize for a single molecule and a single quadrupole moment, if one wished to perform this operation for a dataset of even just a few dozen quadrupole moments the process could take hours. It is for this reason that we provide an alternate route through semi-empirical statistical analysis. The function :py:meth:`Quadrupole.compare()` accepts one argument (other than ``self``), ``expt_quad``, and compares 6 permutations of the calculated quadrupole matrix to the experimental matrix, then selects the permutation with the both the lowest overall deviation from the experimental quadrupole and with the lowest standard deviation. Additionally, if the signs of the quadrupole moments differ (e.g. one has the signs [+,-,-] and the other is [+,+,-]), the function will temporarily negative the calculated quadrupole for the comparison, then return it to normal before returning the best match.
+While this operation is trivial to recognize for a single molecule and a single quadrupole moment, if one wished to perform this operation for a dataset of even just a few dozen quadrupole moments the process could take hours. It is for this reason that we provide an alternate route through empirical statistical analysis. The function :py:meth:`Quadrupole.compare()` accepts one argument (other than ``self``), ``expt_quad``, and compares 6 permutations of the calculated quadrupole matrix to the experimental matrix, then selects the permutation with the both the lowest overall deviation from the experimental quadrupole and with the lowest standard deviation. Additionally, if the signs of the quadrupole moments differ (e.g. one has the signs [+,-,-] and the other is [+,+,-]), the function will temporarily negative the calculated quadrupole for the comparison, then return it to normal before returning the best match.
 
 .. note::
     

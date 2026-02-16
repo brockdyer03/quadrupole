@@ -4,8 +4,6 @@
 Theory
 ######
 
-In this document I describe some aspects of the theory of multipole moments and the math behind some of the functions in this package.
-
 .. _multipole-expansion:
 
 Multipole Expansion
