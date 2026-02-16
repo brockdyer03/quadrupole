@@ -35,4 +35,6 @@ docs = [
 ]
 
 [project.urls]
-Repository = "https://github.com/brockdyer03/quadrupole"
+source = "https://github.com/brockdyer03/quadrupole"
+docs = "https://quadrupole.readthedocs.io/en/latest/index.html"
+issues = "https://github.com/brockdyer03/quadrupole/issues"
