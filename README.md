@@ -143,16 +143,16 @@ There is a significant challenge when it comes to comparing literature quadrupol
 
 For example, consider the following diagram from [a paper on the molecular Zeeman effect](https://doi.org/10.1080/00268977100100221) (Table 4, Journal page 246, PDF page 24):
 
-![Reference Axes](/notebook/images/ref_axes.png)
-![Reference Data for Water](/notebook/images/water_ref.png)
+![Reference Axes](/docs/_static/readme_images/ref_axes.png)
+![Reference Data for Water](/docs/_static/readme_images/water_ref.png)
 
 Clearly the authors have aligned the H2O molecule to be in the XY plane, with the oxygen pointing in the +X direction. If this alignment is used in a calculation (see `water_aligned.out`):
 
-![Alignment of water molecule in XY plane](/notebook/images/water_xy.png)
+![Alignment of water molecule in XY plane](/docs/_static/readme_images/water_xy.png)
 
 the quadrupole moment (at the ωB97M-V/def2-QZVPPD level of theory) is [-0.15, 2.59, -2.44]. Clearly, when comparing this to the literature value of [-0.13, 2.63, -2.50], the product is a sensible difference of [-0.02, -0.04, 0.06]. However, if instead the calculation is run using a rotation that aligns the molecule in the XZ plane (see `water_xz_plane.out`): 
 
-![Alignment of water molecule in XZ plane](/notebook/images/water_xz.png)
+![Alignment of water molecule in XZ plane](/docs/_static/readme_images/water_xz.png)
 
 the exact same method for acquiring the quadrupole moment would yield [2.59, -2.44, -0.15], which provides a difference of [2.72, -5.07, -2.35] when compared to the literature. One may attempt to align the largest inertial axis with the Z axis, as is occasionally suggested in the literature, however there are no rules for how one may align the remaining inertial axes. Therefore without visually inspecting the paper's diagram (should it exist), there is no *a priori* way to guarantee the alignment of the quadrupole moment.
 
