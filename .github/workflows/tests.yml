@@ -1,4 +1,4 @@
-name: Test Geometry Functions
+name: Test Quadrupole Functions
 
 on:
   push:
@@ -22,9 +22,15 @@ jobs:
       with:
         version: "0.9.24"
         python-version: ${{ matrix.python-version }}
-        
+
     - name: Install project and all dependencies
       run: uv sync --locked --all-extras --dev
 
-    - name: Run tests with pytest
+    - name: Run quadrupole tests
+      run: uv run pytest tests/test_quadrupole.py
+
+    - name: Run geometry tests
       run: uv run pytest tests/test_geometry.py
+
+    - name: Run error handling tests
+      run: uv run pytest tests/test_errors.py
