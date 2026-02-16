@@ -9,7 +9,7 @@
 project = 'quadrupole'
 copyright = '2026, Brock Dyer'
 author = 'Brock Dyer'
-release = '0.2.1'
+release = '0.3.0'
 
 import sys
 from pathlib import Path
