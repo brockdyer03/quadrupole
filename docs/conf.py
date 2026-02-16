@@ -19,8 +19,6 @@ sys.path.insert(0, str(Path("..").resolve()))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    #"sphinx.ext.autodoc",
-    #"sphinx.ext.autosummary",
     "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
     "pydata_sphinx_theme",
@@ -76,6 +74,7 @@ html_theme_options = {
 html_favicon = "_static/quadrupole_dark_favicon.svg"
 html_sidebars = {
     "user_guide": [],
+    "theory": [],
 }
 
 html_context = {"default_mode": "auto"}

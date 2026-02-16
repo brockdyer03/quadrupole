@@ -5,19 +5,19 @@ Quadrupole Class
 
 .. note::
 
-   In this document we will refer to the components of the quadrupole tensor :math:`\Theta_{\alpha\beta}` using the following shorthand
+   In this document we will refer to the components of the quadrupole tensor :math:`Q_{\alpha\beta}` using the following shorthand
 
-   - :math:`\Theta_{aa} \rightarrow` aa
+   - :math:`Q_{aa} \rightarrow` aa
 
-   - :math:`\Theta_{cc} \rightarrow` cc
+   - :math:`Q_{cc} \rightarrow` cc
 
-   - :math:`\Theta_{bb} \rightarrow` bb
+   - :math:`Q_{bb} \rightarrow` bb
 
-   - :math:`\Theta_{ab} \rightarrow` ab
+   - :math:`Q_{ab} \rightarrow` ab
 
-   - :math:`\Theta_{ac} \rightarrow` ac
+   - :math:`Q_{ac} \rightarrow` ac
 
-   - :math:`\Theta_{bc} \rightarrow` bc
+   - :math:`Q_{bc} \rightarrow` bc
 
 
 .. autoclass:: quadrupole.quadrupole.Quadrupole

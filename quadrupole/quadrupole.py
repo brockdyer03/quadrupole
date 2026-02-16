@@ -14,9 +14,9 @@ class Quadrupole:
     ----------
     quadrupole : ArrayLike
         Sequence containing the 3x3 quadrupole matrix, the diagonal
-        components of the quadrupole (shape 3x1, [aa, bb, cc]),
+        components of the quadrupole (shape 3x1, ``[aa, bb, cc]``),
         or the 6 independent elements of the quadrupole
-        (shape 6x1, in order, [aa, bb, cc, ab, ac, bc]).
+        (shape 6x1, in order, ``[aa, bb, cc, ab, ac, bc]``).
     units : {"au", "buckingham", "cm2", "esu"}, default="buckingham"
         Units of the quadrupole matrix (case insensitive).
 
@@ -48,9 +48,9 @@ class Quadrupole:
     traceless quadrupole moment only has 5 independent elements as being
     traceless dictates that one of the diagonal components must be equal
     to the negative sum of the remaining two, i.e. it is required that
-    :math:`\\Theta_{aa} + \\Theta_{bb} = -2\\Theta_{cc}`, therefore 
-    :math:`\\Theta_{cc}` depends on :math:`\\Theta_{aa}`
-    and :math:`\\Theta_{bb}`.
+    :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore 
+    :math:`Q_{cc}` depends on :math:`Q_{aa}`
+    and :math:`Q_{bb}`.
     """
 
     au_to_cm2_conversion   = 4.4865515185e-40
@@ -173,7 +173,7 @@ class Quadrupole:
             NIST CODATA [1]_.
         cm2_to_esu_conversion : 2.99792458e13
             Conversion from Coulomb•m² to statCoulomb•cm². Equal to a
-            factor of `c` • (100 cm)² / m². Value of `c` from the NIST
+            factor of `c`•(100 cm)² / m². Value of `c` from the NIST
             CODATA [2]_.
         esu_to_buck_conversion : 1e-26
             Suggested by Peter J. W. Debye in 1963 [3]_.
