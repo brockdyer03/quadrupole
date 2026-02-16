@@ -853,7 +853,7 @@ def test_from_orca_opt():
     ], dtype=np.float64)
 
     orca_output_path = Path(
-        __file__ + "/../../notebook/example_outputs/water_random_rotation.out"
+        __file__ + "/../files/water_random_rotation.out"
     ).resolve()
 
     geometry = Geometry.from_orca(orca_output_path)
