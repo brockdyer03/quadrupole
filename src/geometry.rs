@@ -1,5 +1,3 @@
-
-
 use std::str::FromStr;
 
 use std::{
@@ -21,17 +19,8 @@ use std::{
 
 use crate::elements::Element;
 
-use ndarray::{self, Array2, arr2};
 
-
-#[derive(Debug, PartialEq)]
-pub struct Tensor3x3(Array2<f64>);
-
-impl Tensor3x3 {
-    pub fn new(array: [[f64; 3]; 3]) -> Tensor3x3 {
-        Tensor3x3(arr2(&array))
-    }
-}
+use nalgebra::Matrix3;
 
 
 #[derive(Debug, Copy, Clone)]
@@ -242,14 +231,14 @@ impl Rem for &Coordinate {
 }
 
 impl Coordinate {
-    pub fn outer_product(&self, rhs: &Coordinate) -> Tensor3x3 {
-        let mut outer: [[f64; 3]; 3] = [[0.0; 3]; 3];
+    pub fn outer_product(&self, rhs: &Coordinate) -> Matrix3<f64> {
+        let mut outer: Matrix3<f64> = Matrix3::zeros();
         for i in 0..3 {
             for j in 0..3 {
-                outer[i][j] = self[i] * rhs[j]
+                outer[(i, j)] = self[i] * rhs[j]
             }
         }
-        Tensor3x3::new(outer)
+        return outer;
     }
 
     pub fn nearest_int(&self) -> Coordinate {

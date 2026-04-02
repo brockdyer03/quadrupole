@@ -1,13 +1,14 @@
 pub mod geometry;
 pub mod elements;
+pub mod quadrupole;
 
 pub use crate::elements::Element;
 pub use crate::geometry::{
-    Tensor3x3,
     Coordinate,
     Atom,
     Geometry,
 };
+pub use crate::quadrupole::Quadrupole;
 
 #[allow(unused_imports)]
 use std::{
@@ -20,6 +21,7 @@ use std::{
 mod tests {
     use super::*;
 
+    use nalgebra::Matrix3;
 
     #[test]
     fn get_element_symbol() {
@@ -87,11 +89,11 @@ mod tests {
     fn coordinate_outer_product() {
         let coord = Coordinate::new(1.0, 2.0, 3.0);
         let outer = coord.outer_product(&coord);
-        assert_eq!(outer, Tensor3x3::new([
-            [1.0, 2.0, 3.0],
-            [2.0, 4.0, 6.0],
-            [3.0, 6.0, 9.0]
-        ]));
+        assert_eq!(outer, Matrix3::new(
+            1.0, 2.0, 3.0,
+            2.0, 4.0, 6.0,
+            3.0, 6.0, 9.0
+        ));
     }
 
     #[test]
