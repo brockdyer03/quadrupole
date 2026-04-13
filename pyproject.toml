@@ -12,6 +12,14 @@ requires-python = ">=3.13"
 dependencies = [
     "numpy>=2.0.0",
 ]
+classifiers = [
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -24,12 +32,9 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.14.10",
 ]
-
-[project.optional-dependencies]
 docs = [
     "sphinx>=9.1.0",
     "pydata-sphinx-theme>=0.16.1",
-    "myst-parser>=5.0.0",
     "numpydoc>=1.10.0",
     "sphinx-design>=0.7.0",
 ]
