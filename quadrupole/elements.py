@@ -118,7 +118,10 @@ class Element(ElementData, Enum):
     
     @classmethod
     def _missing_(cls, value: str):
-        return cls(value.title())
+        if value.title() in cls.__members__:
+            return cls.__members__[value.title()]
+        else:
+            return None
 
     Unknown       = "Xx", 0,   0.0
     Hydrogen      = "H",  1,   1.0080
