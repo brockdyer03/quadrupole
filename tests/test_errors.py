@@ -10,6 +10,14 @@ from quadrupole.geometry import FileFormatError, LatticeError
 
 
 @pytest.mark.xfail(
+    reason="Invalid Element Symbol",
+    raises=ValueError,
+)
+def test_invalid_symbol():
+    Element("bean")
+
+
+@pytest.mark.xfail(
     reason="Too many atoms specified at top of file",
     raises=FileFormatError,
 )

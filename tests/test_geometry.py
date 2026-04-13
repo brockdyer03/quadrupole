@@ -6,10 +6,10 @@ from quadrupole import Element, Atom, Geometry
 
 def test_element():
     hydrogen = Element.Hydrogen
-    assert(hydrogen == Element.H)
-    assert(hydrogen == Element("H"))
-    assert(hydrogen == Element("h"))
-    assert(hydrogen == Element(1))
+    assert(hydrogen is Element.H)
+    assert(hydrogen is Element("H"))
+    assert(hydrogen is Element("h"))
+    assert(hydrogen is Element(1))
     assert(hydrogen.name == "Hydrogen")
     assert(hydrogen.symbol == "H")
     assert(hydrogen.number == 1)
@@ -17,12 +17,12 @@ def test_element():
     assert(str(hydrogen) == "H")
 
     ruthenium = Element.Ruthenium
-    assert(ruthenium == Element.Ru)
-    assert(ruthenium == Element("Ru"))
-    assert(ruthenium == Element("ru"))
-    assert(ruthenium == Element("RU"))
-    assert(ruthenium == Element("rU"))
-    assert(ruthenium == Element(44))
+    assert(ruthenium is Element.Ru)
+    assert(ruthenium is Element("Ru"))
+    assert(ruthenium is Element("ru"))
+    assert(ruthenium is Element("RU"))
+    assert(ruthenium is Element("rU"))
+    assert(ruthenium is Element(44))
     assert(ruthenium.name == "Ruthenium")
     assert(ruthenium.symbol == "Ru")
     assert(ruthenium.number == 44)
@@ -44,8 +44,8 @@ def test_atom():
     assert(atom == Atom(element, [3.14, 42.0, 137.0]))
     assert(atom == Atom(element, [3.14, 42, 137]))
 
-    assert(atom.element == Element.Hydrogen)
-    assert(atom.element == Element.H)
+    assert(atom.element is Element.Hydrogen)
+    assert(atom.element is Element.H)
 
     assert(np.all(atom.xyz == np.array([3.14, 42.0, 137.0], dtype=np.float64)))
 
