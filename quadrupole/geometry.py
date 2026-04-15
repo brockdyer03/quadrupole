@@ -617,8 +617,7 @@ class Geometry:
 
             xyz.readline() # Skip comment line
 
-            elements = []
-            xyzs = []
+            atoms = []
             for i in range(num_atoms):
                 line = xyz.readline()
                 if line == "":
@@ -631,12 +630,9 @@ class Geometry:
                     )
                 else:
                     line = line.strip().split()
-                    elements.append(line[0])
-                    xyzs.append(line[1:4])
-
-        atoms = []
-        for i, element in enumerate(elements):
-            atoms.append(Atom(element, xyzs[i]))
+                    atoms.append(
+                        Atom(line[0], np.array(line[1:4], dtype=np.float64))
+                    )
 
         return cls(atoms)
 
@@ -685,11 +681,7 @@ class Geometry:
                 "The list of elements and coordinates must be of the same size!"
             )
 
-        atoms = []
-        for i, element in enumerate(elements):
-            atoms.append(Atom(element, xyzs[i]))
-
-        return cls(atoms, lat_vec)
+        return cls(list(map(Atom, elements, xyzs)), lat_vec)
 
 
     @classmethod
@@ -766,7 +758,7 @@ class Geometry:
                     else:
                         xyz_data.append(line.strip().split())
 
-        atoms = [Atom(i[0], np.array(i[1:4])) for i in xyz_data]
+        atoms = [Atom(i[0], np.array(i[1:4], dtype=np.float64)) for i in xyz_data]
         return cls(atoms)
 
 
@@ -807,7 +799,7 @@ class Geometry:
             atoms = []
             for atom in atom_data:
                 element = int(atom[0])
-                coordinate = np.array(atom[2:5], dtype=float) * Geometry.bohr_to_angstrom
+                coordinate = np.array(atom[2:5], dtype=np.float64) * Geometry.bohr_to_angstrom
                 atoms.append(Atom(element, coordinate))
 
         return cls(atoms, lat_vec)
@@ -961,17 +953,17 @@ class Geometry:
         if self.lat_vec is not None:
 
             self_repr += f"{"Lattice":12}{"X":11}{"Y":11}{"Z":11}\n{"Vectors":11}\n"
-            self_repr += f"{"":9}{self.lat_vec[0][0]:11.6f}{self.lat_vec[0][1]:11.6f}{self.lat_vec[0][2]:11.6f}\n"
-            self_repr += f"{"":9}{self.lat_vec[1][0]:11.6f}{self.lat_vec[1][1]:11.6f}{self.lat_vec[1][2]:11.6f}\n"
-            self_repr += f"{"":9}{self.lat_vec[2][0]:11.6f}{self.lat_vec[2][1]:11.6f}{self.lat_vec[2][2]:11.6f}\n\n"
+            for i in range(3):
+                self_repr += "{0:9}{1:11.6f}{2:11.6f}{3:11.6f}\n".format(
+                    "", self.lat_vec[i][0], self.lat_vec[i][1], self.lat_vec[i][2]
+                )
+            self_repr += "\n"
 
-            self_repr += f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n\n"
-            for i in self.atoms:
-                self_repr += f"{i.element:9}{i.xyz[0]:11.6f}{i.xyz[1]:11.6f}{i.xyz[2]:11.6f}\n"
-        else:
-            self_repr += f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n\n"
-            for i in self.atoms:
-                self_repr += f"{i.element:9}{i.xyz[0]:11.6f}{i.xyz[1]:11.6f}{i.xyz[2]:11.6f}\n"
+        self_repr += f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n\n"
+        for at in self.atoms:
+            self_repr += "{0:9}{1:11.6f}{2:11.6f}{3:11.6f}\n".format(
+                at.element, at.xyz[0], at.xyz[1], at.xyz[2]
+            )
         return self_repr
 
 
