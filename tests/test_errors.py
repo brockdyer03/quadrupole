@@ -5,6 +5,7 @@ from quadrupole import (
     Element,
     Geometry,
     Quadrupole,
+    Atom,
 )
 from quadrupole.geometry import FileFormatError, LatticeError
 
@@ -15,6 +16,70 @@ from quadrupole.geometry import FileFormatError, LatticeError
 )
 def test_invalid_symbol():
     Element("bean")
+
+
+@pytest.mark.xfail(
+    reason="Too many elements in the new element list",
+    raises=ValueError,
+)
+def test_geometry_element_setter_too_many_elements():
+    initial_elements = [
+        Element.Hydrogen,
+        Element.Ruthenium,
+        Element.Bromine,
+    ]
+
+    xyzs = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0],
+    ], dtype=np.float64)
+
+    geometry = Geometry(list(map(Atom, initial_elements, xyzs)))
+
+    assert(geometry.elements == initial_elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
+
+    new_elements = [
+        Element.Carbon,
+        Element.Titanium,
+        Element.Francium,
+        Element.Francium,
+    ]
+
+    geometry.elements = new_elements
+
+
+@pytest.mark.xfail(
+    reason="Too many coordinates in the new coordinate array",
+    raises=ValueError,
+)
+def test_geometry_coordinate_setter_too_many_coordinates():
+    elements = [
+        Element.Hydrogen,
+        Element.Ruthenium,
+        Element.Bromine,
+    ]
+
+    initial_xyzs = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0],
+    ], dtype=np.float64)
+
+    geometry = Geometry(list(map(Atom, elements, initial_xyzs)))
+
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, initial_xyzs)
+
+    new_xyzs = np.array([
+        [10.0, 11.0, 12.0],
+        [13.0, 14.0, 15.0],
+        [16.0, 17.0, 18.0],
+        [19.0, 20.0, 21.0],
+    ], dtype=np.float64)
+
+    geometry.coordinates = new_xyzs
 
 
 @pytest.mark.xfail(
@@ -258,7 +323,6 @@ def test_cjson_no_atoms():
 
 
 def test_cjson_unknown_version():
-
     cjson_path = Path(
         __file__ + "/../files/wrong_version.cjson"
     ).resolve()

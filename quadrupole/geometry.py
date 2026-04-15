@@ -11,7 +11,7 @@ from .elements import Element, ElementLike
 
 
 class FileFormatError(Exception):
-    """Exception raised when a file is improperly formatted"""
+    """Exception raised when a file is improperly formatted."""
 
     def __init__(self, message: str):
         self.message = message
@@ -22,7 +22,8 @@ class FileFormatError(Exception):
 
 class LatticeError(Exception):
     """Exception raised when trying to generate lattices with
-    incompatible lattice type and cell parameters."""
+    incompatible lattice type and cell parameters.
+    """
 
     lattice_names = {
         1  : "Simple Cubic",
@@ -101,7 +102,9 @@ class Atom:
 
 class Geometry:
     """Class storing the geometric parameters of a molecular geometry or
-    crystal structure. All quantities should be in Ångstrom.
+    crystal structure.
+
+    All quantities should be in Ångstrom.
 
     Parameters
     ----------
@@ -135,11 +138,37 @@ class Geometry:
         `N` is the number of atoms (``len(self)``).
         """
         return np.array([i.xyz for i in self.atoms])
+    
+    @coordinates.setter
+    def coordinates(self, value: npt.ArrayLike) -> None:
+        value = np.array(value, dtype=np.float64)
+        if value.shape == (len(self), 3):
+            pass
+        elif value.shape == (len(self)*3,):
+            value = value.reshape(-1,3)
+        else:
+            raise ValueError(
+                f"Can not set coordinates with shape {value.shape} for geometry with {len(self)} atoms!"
+            )
+
+        for atom, new_xyz in zip(self, value):
+            atom.xyz = new_xyz
 
     @property
     def elements(self) -> list[Element]:
         """Get a list of each element in ``self``."""
         return [i.element for i in self.atoms]
+
+    @elements.setter
+    def elements(self, value: list[ElementLike]) -> None:
+        if len(value) != len(self):
+            raise ValueError(
+                f"Can not use list of length {len(value)} for a geometry of {len(self)} atoms!"
+            )
+        else:
+            for atom, elem in zip(self, value):
+                atom.element = Element(elem)
+
 
     @staticmethod
     def _gen_prim_lattice(

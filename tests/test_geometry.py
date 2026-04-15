@@ -121,6 +121,104 @@ def test_inertia():
 
     #np.testing.assert_allclose(eigenvectors, ref_eigenvectors, atol=1e-8)
 
+
+def test_geometry_element_setter():
+    initial_elements = [
+        Element.Hydrogen,
+        Element.Ruthenium,
+        Element.Bromine,
+    ]
+
+    xyzs = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0],
+    ], dtype=np.float64)
+
+    geometry = Geometry(list(map(Atom, initial_elements, xyzs)))
+
+    assert(geometry.elements == initial_elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
+
+    new_elements = [
+        Element.Carbon,
+        Element.Titanium,
+        Element.Francium,
+    ]
+
+    geometry.elements = new_elements
+
+    assert(geometry.elements == new_elements)
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
+
+
+def test_geometry_coordinate_setter():
+    elements = [
+        Element.Hydrogen,
+        Element.Ruthenium,
+        Element.Bromine,
+    ]
+
+    initial_xyzs = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0],
+    ], dtype=np.float64)
+
+    geometry = Geometry(list(map(Atom, elements, initial_xyzs)))
+
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, initial_xyzs)
+
+    new_xyzs = np.array([
+        [10.0, 11.0, 12.0],
+        [13.0, 14.0, 15.0],
+        [16.0, 17.0, 18.0],
+    ], dtype=np.float64)
+
+    geometry.coordinates = new_xyzs
+
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, new_xyzs)
+
+
+def test_geometry_coordinate_setter_reshape():
+    elements = [
+        Element.Hydrogen,
+        Element.Ruthenium,
+        Element.Bromine,
+    ]
+
+    initial_xyzs = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0],
+    ], dtype=np.float64)
+
+    geometry = Geometry(list(map(Atom, elements, initial_xyzs)))
+
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, initial_xyzs)
+
+    # 9x1 array. Can be coerced into 3x3 required for coordinates
+    new_xyzs = np.array([
+        10.0,
+        11.0,
+        12.0,
+        13.0,
+        14.0,
+        15.0,
+        16.0,
+        17.0,
+        18.0,
+    ], dtype=np.float64)
+
+    geometry.coordinates = new_xyzs
+
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, new_xyzs.reshape(3,3))
+
+
 # region CellGen
 def test_simple_cubic():
     # Polonium
