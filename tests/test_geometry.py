@@ -754,10 +754,22 @@ def test_from_list():
         [7.0, 8.0, 9.0],
     ], dtype=np.float64)
 
+    lat_vec = np.array([
+        [1.0, 0.0, 0.0],
+        [0.0, 2.0, 0.0],
+        [0.0, 0.0, 3.0],
+    ], dtype=np.float64)
+
     geometry = Geometry.from_list(elements, xyzs)
 
     assert(geometry.elements == elements)
     assert(np.all(geometry.coordinates == xyzs))
+
+    geometry = Geometry.from_list(elements, xyzs, lat_vec)
+
+    assert(geometry.elements == elements)
+    assert(np.all(geometry.coordinates == xyzs))
+    assert(np.all(geometry.lat_vec == lat_vec))
 
 
 def test_from_xyz(tmp_path):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from os import PathLike
 from pathlib import Path
+from typing import Self
 import numpy as np
 import numpy.typing as npt
 from numpy import sin, cos, sqrt
@@ -549,7 +550,7 @@ class Geometry:
 
 
     @classmethod
-    def from_xsf(cls, file: PathLike):
+    def from_xsf(cls, file: PathLike) -> Self:
         """Read in the crystallographic information from an XSF file."""
         with open(file, "r") as xsf:
 
@@ -570,7 +571,7 @@ class Geometry:
 
 
     @classmethod
-    def from_xyz(cls, file: PathLike):
+    def from_xyz(cls, file: PathLike) -> Self:
         """Read in the geometry information from an XYZ file."""
 
         with open(file) as xyz:
@@ -610,7 +611,12 @@ class Geometry:
 
 
     @classmethod
-    def from_list(cls, elements: list[ElementLike], xyzs: npt.ArrayLike):
+    def from_list(
+        cls,
+        elements: list[ElementLike],
+        xyzs: npt.ArrayLike,
+        lat_vec: npt.ArrayLike | None = None,
+    ) -> Self:
         """Create a ``Geometry`` from a list of elements and an array
         of coordinates. Coordinates should be in Ångstrom.
         
@@ -652,11 +658,11 @@ class Geometry:
         for i, element in enumerate(elements):
             atoms.append(Atom(element, xyzs[i]))
 
-        return cls(atoms)
+        return cls(atoms, lat_vec)
 
 
     @classmethod
-    def from_orca(cls, file: PathLike):
+    def from_orca(cls, file: PathLike) -> Self:
         """Read in the geometry information from an ORCA output file."""
         xyz_data = []
         with open(file, "r") as orca_out:
@@ -734,7 +740,7 @@ class Geometry:
 
 
     @classmethod
-    def from_cube(cls, file: PathLike):
+    def from_cube(cls, file: PathLike) -> Self:
         """Read in and interpret crystallographic information from a
         CUBE file.
 
@@ -777,7 +783,7 @@ class Geometry:
 
 
     @classmethod
-    def from_qe_pp(cls, file: PathLike):
+    def from_qe_pp(cls, file: PathLike) -> Self:
         """Read in only the crystallographic information from a
         Quantum ESPRESSO post-processing file.
         (e.g. leaving the ``&PLOT`` blank and reading ``filplot``)
