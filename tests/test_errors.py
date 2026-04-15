@@ -245,6 +245,29 @@ def test_request_non_primitive_lattice():
 
 
 @pytest.mark.xfail(
+    reason="No atoms in CJSON",
+    raises=FileFormatError,
+)
+def test_cjson_no_atoms():
+
+    cjson_path = Path(
+        __file__ + "/../files/missing_atoms.cjson"
+    ).resolve()
+
+    Geometry.from_cjson(cjson_path)
+
+
+def test_cjson_unknown_version():
+
+    cjson_path = Path(
+        __file__ + "/../files/wrong_version.cjson"
+    ).resolve()
+
+    with pytest.warns(UserWarning):
+        Geometry.from_cjson(cjson_path)
+
+
+@pytest.mark.xfail(
     reason="Can't convert array of incorrect shape to Quadrupole object",
     raises=ValueError,
 )

@@ -1,0 +1,160 @@
+{
+    "chemicalJson": 1,
+    "properties": {
+        "modelView": [
+            [
+                0.9473546147346497,
+                -0.07968062907457352,
+                -0.3101056218147278,
+                0.9831445813179016
+            ],
+            [
+                0.05969667807221413,
+                0.9955114126205444,
+                -0.07342276722192764,
+                -0.44074153900146484
+            ],
+            [
+                0.31456464529037476,
+                0.05104617401957512,
+                0.947860836982727,
+                -14.531108856201172
+            ],
+            [
+                0,
+                0,
+                0,
+                1
+            ]
+        ],
+        "projection": [
+            [
+                1.192204236984253,
+                0,
+                0,
+                0
+            ],
+            [
+                0,
+                2,
+                0,
+                0
+            ],
+            [
+                0,
+                0,
+                -1.2385824918746948,
+                -4.4771647453308105
+            ],
+            [
+                0,
+                0,
+                -1,
+                0
+            ]
+        ],
+        "totalCharge": 0,
+        "totalSpinMultiplicity": 1
+    },
+    "unitCell": {
+        "a": 3,
+        "alpha": 90,
+        "b": 3,
+        "beta": 90,
+        "c": 3,
+        "cellVectors": [
+            3,
+            0,
+            0,
+            1.8369701987210297e-16,
+            3,
+            0,
+            1.8369701987210297e-16,
+            1.8369701987210297e-16,
+            3
+        ],
+        "gamma": 90,
+        "hallNumber": 0,
+        "spaceGroup": ""
+    },
+    "bonds": {
+        "connections": {
+            "index": [
+                0,
+                1,
+                0,
+                2,
+                0,
+                3,
+                0,
+                4
+            ]
+        },
+        "order": [
+            1,
+            1,
+            1,
+            1
+        ]
+    },
+    "layer": {
+        "enable": {
+            "Ball and Stick": [
+                true
+            ],
+            "Cartoons": [
+                true
+            ],
+            "Close Contacts": [
+                false
+            ],
+            "Crystal Lattice": [
+                true
+            ],
+            "Dipole Moment": [
+                false
+            ],
+            "Force": [
+                false
+            ],
+            "Labels": [
+                false
+            ],
+            "Licorice": [
+                false
+            ],
+            "Non-Covalent": [
+                false
+            ],
+            "QTAIM": [
+                false
+            ],
+            "Reference Axes": [
+                true
+            ],
+            "Surfaces": [
+                true
+            ],
+            "Van der Waals": [
+                false
+            ],
+            "Wireframe": [
+                false
+            ]
+        },
+        "locked": [
+            false
+        ],
+        "settings": {
+            "Ball and Stick": [
+                "true true 0.300000 0.100000 1.000000"
+            ],
+            "Cartoons": [
+                "false false false false false true false"
+            ]
+        },
+        "visible": [
+            true
+        ]
+    }
+}

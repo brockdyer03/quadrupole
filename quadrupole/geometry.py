@@ -2,6 +2,8 @@ from __future__ import annotations
 from os import PathLike
 from pathlib import Path
 from typing import Self
+import json
+from warnings import warn
 import numpy as np
 import numpy.typing as npt
 from numpy import sin, cos, sqrt
@@ -619,7 +621,7 @@ class Geometry:
     ) -> Self:
         """Create a ``Geometry`` from a list of elements and an array
         of coordinates. Coordinates should be in Ångstrom.
-        
+
         Parameters
         ----------
         elements : list of ElementLike
@@ -643,7 +645,7 @@ class Geometry:
         ... ], dtype=np.float64)
         >>> geom = Geometry.from_list()
         >>> print(geom)
-        Element     X          Y          Z          
+        Element     X          Y          Z
         <BLANKLINE>
         H           1.000000   2.000000   3.000000
         Ru          4.000000   5.000000   6.000000
@@ -835,6 +837,43 @@ class Geometry:
         return cls(atoms, lat_vec)
 
 
+    @classmethod
+    def from_cjson(cls, file: PathLike) -> Self:
+        """Read in atoms and potentially crystallographic information
+        from a ``.cjson`` file.
+        """
+        file = Path(file).resolve()
+        with open(file, "r") as f:
+            cjson = json.load(f)
+
+        if cjson["chemicalJson"] != 1:
+            warn(
+               f"This file ({file!s}) is CJSON version {cjson["chemicalJson"]} "
+                "however we only guarantee support for version 1.\n"
+                "Please double-check the output to ensure it is as expected!"
+            )
+
+        atoms = cjson.get("atoms", None)
+        if atoms is None:
+            raise FileFormatError(
+                'Expected "atoms" field in CJSON file, but did not find any!\n'
+               f"({file})"
+            )
+        else:
+            xyzs = np.array(atoms["coords"]["3d"], dtype=np.float64).reshape(-1,3)
+            elems = list(map(Element, atoms["elements"]["number"]))
+
+        atoms = list(map(Atom, elems, xyzs))
+
+        unit_cell = cjson.get("unitCell", None)
+        if unit_cell is None:
+            lat_vec = unit_cell
+        else:
+            lat_vec = np.array(unit_cell["cellVectors"], dtype=np.float64).reshape(-1,3)
+
+        return cls(atoms, lat_vec)
+
+
     def calc_principal_moments(self):
         """Calculate the principal inertial axes for a given geometry.
 
@@ -917,7 +956,7 @@ class Geometry:
 
     def __getitem__(self, index):
         return self.atoms[index]
-    
+
 
     def __eq__(self, other: Geometry):
         if not np.array_equal(self.lat_vec, other.lat_vec):

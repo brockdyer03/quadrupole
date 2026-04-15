@@ -1051,6 +1051,68 @@ def test_from_qe_pp_cell(tmp_path):
     assert(cell_geometry.elements == elements)
     np.testing.assert_allclose(cell_geometry.coordinates, xyzs, atol=1e-8)
     np.testing.assert_allclose(cell_geometry.lat_vec, lat_vec, atol=1e-7)
+
+
+def test_from_cjson_with_cell():
+    elements = [
+        Element.Carbon,
+        Element.Hydrogen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+    ]
+
+    final_xyzs = np.array([
+        [1.608112283051014,  1.412628136575222,  1.4155217185616493],
+        [2.4081087588738033, 1.1642555996766673, 2.08126704061293  ],
+        [1.930710955669625,  2.1769596621767433, 0.7397795135427301],
+        [1.322821306976417,  0.5432833480373747, 0.8607705943086573],
+        [0.7708081106842106, 1.766013936410103,  1.9802697257822803],
+    ], dtype=np.float64)
+
+    lat_vec = np.array([
+        [3.0,                    0.0,                    0.0],
+        [1.8369701987210297e-16, 3.0,                    0.0],
+        [1.8369701987210297e-16, 1.8369701987210297e-16, 3.0],
+    ], dtype=np.float64)
+
+    cjson_path = Path(
+        __file__ + "/../files/simple_cell.cjson"
+    ).resolve()
+
+    geometry = Geometry.from_cjson(cjson_path)
+
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, final_xyzs)
+    np.testing.assert_allclose(geometry.lat_vec, lat_vec)
+
+
+def test_from_cjson_no_cell():
+    elements = [
+        Element.Carbon,
+        Element.Hydrogen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+        Element.Hydrogen,
+    ]
+
+    final_xyzs = np.array([
+        [1.608112283051014,  1.412628136575222,  1.4155217185616493],
+        [2.4081087588738033, 1.1642555996766673, 2.08126704061293  ],
+        [1.930710955669625,  2.1769596621767433, 0.7397795135427301],
+        [1.322821306976417,  0.5432833480373747, 0.8607705943086573],
+        [0.7708081106842106, 1.766013936410103,  1.9802697257822803],
+    ], dtype=np.float64)
+
+    cjson_path = Path(
+        __file__ + "/../files/no_cell.cjson"
+    ).resolve()
+
+    geometry = Geometry.from_cjson(cjson_path)
+
+    assert(geometry.elements == elements)
+    np.testing.assert_array_equal(geometry.coordinates, final_xyzs)
+
 # endregion ClassMethods
 
 def test_repr():
@@ -1137,9 +1199,9 @@ def test_neq():
     geom_1 = Geometry(atoms, lat_vec)
     geom_2 = Geometry(alt_atoms, lat_vec)
 
-    assert not (geom_1 == geom_2)
+    assert(geom_1 != geom_2)
 
     geom_1 = Geometry(atoms, lat_vec)
     geom_2 = Geometry(atoms, lat_vec+1)
 
-    assert not (geom_1 == geom_2)
+    assert(geom_1 != geom_2)
