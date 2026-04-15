@@ -45,6 +45,7 @@ The primary focus of this package is to enable the efficient manipulation and co
 * Gaussian Cube (``.cube``)
 * Quantum ESPRESSO Post-Processing Format (``.pp``)
 * ORCA Outputs (``.out``)
+* Chemical JSON (``.cjson``)
 
 We additionally support creating :py:class:`Geometry` objects from a list of :ref:`elements <element>` and an array of coordinates. Here we will look at reading in a molecular geometry, both with and without a unit cell.
 
