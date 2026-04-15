@@ -47,7 +47,7 @@ def test_atom():
     assert(atom.element is Element.Hydrogen)
     assert(atom.element is Element.H)
 
-    assert(np.all(atom.xyz == np.array([3.14, 42.0, 137.0], dtype=np.float64)))
+    np.testing.assert_array_equal(atom.xyz, np.array([3.14, 42.0, 137.0], dtype=np.float64))
 
     atom_repr = (
         "Element     X          Y          Z          \n"
@@ -861,13 +861,13 @@ def test_from_list():
     geometry = Geometry.from_list(elements, xyzs)
 
     assert(geometry.elements == elements)
-    assert(np.all(geometry.coordinates == xyzs))
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
 
     geometry = Geometry.from_list(elements, xyzs, lat_vec)
 
     assert(geometry.elements == elements)
-    assert(np.all(geometry.coordinates == xyzs))
-    assert(np.all(geometry.lat_vec == lat_vec))
+    np.testing.assert_array_equal(geometry.coordinates, xyzs)
+    np.testing.assert_array_equal(geometry.lat_vec, lat_vec)
 
 
 def test_from_xyz(tmp_path):
