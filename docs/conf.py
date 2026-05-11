@@ -6,20 +6,25 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path("..").resolve()))
+
+from intersphinx_registry import get_intersphinx_mapping
+
 project = 'quadrupole'
 copyright = '2026, Brock Dyer'
 author = 'Brock Dyer'
 release = '0.4.0'
 
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path("..").resolve()))
-
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
+    "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
     "pydata_sphinx_theme",
     "sphinx_design",
@@ -28,6 +33,15 @@ extensions = [
 
 numpydoc_class_members_toctree = False
 numpydoc_show_class_members = True
+numpydoc_xref_ignore = {"optional", "type_without_description"}
+numpydoc_xref_param_type = True
+numpydoc_xref_aliases = {
+    "ArrayLike": "numpy.typing.ArrayLike",
+    "NDArray": "numpy.typing.NDArray",
+    "ElementLike": "quadrupole.elements.ElementLike",
+    "ElementData": "quadrupole.elements.ElementData",
+    "Element": "quadrupole.elements.Element",
+}
 
 source_suffix = {
     ".rst": "restructuredtext"
@@ -79,5 +93,5 @@ html_sidebars = {
 
 html_context = {"default_mode": "auto"}
 
-
+intersphinx_mapping = get_intersphinx_mapping(packages=["python", "numpy"])
 

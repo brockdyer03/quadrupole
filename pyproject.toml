@@ -38,6 +38,7 @@ docs = [
     "pydata-sphinx-theme>=0.16.1, <0.17.0", # https://github.com/pydata/pydata-sphinx-theme/issues/2349
     "numpydoc>=1.10.0",
     "sphinx-design>=0.7.0",
+    "intersphinx-registry>=0.2605.27",
 ]
 
 [project.urls]

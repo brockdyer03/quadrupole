@@ -3,6 +3,8 @@
 Elements
 ========
 
+.. currentmodule:: quadrupole.elements
+
 .. autotype:: quadrupole.elements.ElementLike
 
 .. autoclass:: quadrupole.elements.ElementData
