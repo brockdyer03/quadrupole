@@ -84,6 +84,8 @@ html_theme_options = {
     ],
     "show_toc_level": 3,
     "secondary_sidebar_items": ["page-toc"],
+    "pygments_light_style": "default",
+    "pygments_dark_style": "monokai",
 }
 html_favicon = "_static/quadrupole_dark_favicon.svg"
 html_sidebars = {
