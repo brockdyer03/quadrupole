@@ -45,6 +45,11 @@ numpydoc_xref_aliases = {
     "Geometry": "quadrupole.geometry.Geometry",
     "Quadrupole": "quadrupole.quadrupole.Quadrupole",
 }
+numpydoc_template_file = Path(__file__).parent / "_static/numpydoc_template.rst"
+numpydoc_extra_sections = {
+    "Note": "notes",
+    "Members": "member_list",
+}
 
 source_suffix = {
     ".rst": "restructuredtext"
