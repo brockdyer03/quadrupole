@@ -41,6 +41,9 @@ numpydoc_xref_aliases = {
     "ElementLike": "quadrupole.elements.ElementLike",
     "ElementData": "quadrupole.elements.ElementData",
     "Element": "quadrupole.elements.Element",
+    "Atom": "quadrupole.geometry.Atom",
+    "Geometry": "quadrupole.geometry.Geometry",
+    "Quadrupole": "quadrupole.quadrupole.Quadrupole",
 }
 
 source_suffix = {
@@ -80,7 +83,7 @@ html_theme_options = {
     "navbar_end": [
         "search-button",
         "theme-switcher",
-        "navbar-icon-links"
+        "navbar-icon-links",
     ],
     "show_toc_level": 3,
     "secondary_sidebar_items": ["page-toc"],
@@ -96,4 +99,3 @@ html_sidebars = {
 html_context = {"default_mode": "auto"}
 
 intersphinx_mapping = get_intersphinx_mapping(packages=["python", "numpy"])
-
