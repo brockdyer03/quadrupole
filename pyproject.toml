@@ -39,6 +39,7 @@ docs = [
     "numpydoc>=1.10.0",
     "sphinx-design>=0.7.0",
     "intersphinx-registry>=0.2605.27",
+    "sphinx-copybutton>=0.5.2",
 ]
 
 [tool.uv.sources]

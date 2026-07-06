@@ -28,8 +28,10 @@ extensions = [
     "sphinx.ext.mathjax",
     "pydata_sphinx_theme",
     "sphinx_design",
+    "sphinx_copybutton",
     "numpydoc",
 ]
+copybutton_exclude = '.linenos, .gp, .go'
 
 numpydoc_class_members_toctree = False
 numpydoc_show_class_members = True
@@ -48,6 +50,7 @@ numpydoc_xref_aliases = {
 numpydoc_template_file = Path(__file__).parent / "_static/numpydoc_template.rst"
 numpydoc_extra_sections = {
     "Note": "notes",
+    "Custom Section": "notes",
 }
 
 source_suffix = {

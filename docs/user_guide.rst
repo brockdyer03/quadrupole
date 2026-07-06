@@ -10,7 +10,7 @@ Installation
 
 This package can be installed with any package manager that has access to the `Python Package Index <https://pypi.org/>`__, such as ``pip``. Development of this package is done using `uv <https://docs.astral.sh/uv/>`__, and is recommended for most users. You can either install Quadrupole in a virtual environment:
 
-.. code-block:: shell
+.. code-block:: console
 
     > uv venv
     ...
@@ -19,7 +19,7 @@ This package can be installed with any package manager that has access to the `P
 
 or add it to a project:
 
-.. code-block:: shell
+.. code-block:: console
 
     > uv init
     ...

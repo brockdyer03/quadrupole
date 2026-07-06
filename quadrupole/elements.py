@@ -30,6 +30,12 @@ class Element(ElementData, Enum):
     .. [1] https://iupac.qmul.ac.uk/AtWt/
     .. [2] https://docs.python.org/3/howto/enum.html#enum-members-aka-instances
 
+    Custom Section
+    --------------
+    This is a custom section.
+
+    It has custom words.
+
     Examples
     --------
     Directly accessing an element can be done by name or symbol.

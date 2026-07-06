@@ -14,5 +14,6 @@
 {{see_also}}
 {{notes}}
 {{note}}
+{{custom_section}}
 {{references}}
 {{examples}}
