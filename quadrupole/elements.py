@@ -15,8 +15,8 @@ class Element(ElementData, Enum):
     All element data here was taken from the 
     International Union of Pure and Applied Chemistry (IUPAC) [1]_.
 
-    Note
-    ----
+    Notes
+    -----
     If you are going to use the ``Element`` enumeration in your own
     project be aware that, as it inherits from ``Enum``, its members
     are singletons [2]_. This means that performing comparisons
@@ -29,12 +29,6 @@ class Element(ElementData, Enum):
     ----------
     .. [1] https://iupac.qmul.ac.uk/AtWt/
     .. [2] https://docs.python.org/3/howto/enum.html#enum-members-aka-instances
-
-    Custom Section
-    --------------
-    This is a custom section.
-
-    It has custom words.
 
     Examples
     --------

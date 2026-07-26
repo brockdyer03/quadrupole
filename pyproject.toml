@@ -42,9 +42,6 @@ docs = [
     "sphinx-copybutton>=0.5.2",
 ]
 
-[tool.uv.sources]
-numpydoc = { git = "https://github.com/brockdyer03/numpydoc", branch = "custom-sections" }
-
 [project.urls]
 source = "https://github.com/brockdyer03/quadrupole"
 docs = "https://quadrupole.readthedocs.io/en/latest/index.html"
