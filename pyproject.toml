@@ -44,3 +44,71 @@ docs = [
 source = "https://github.com/brockdyer03/quadrupole"
 docs = "https://quadrupole.readthedocs.io/en/latest/index.html"
 issues = "https://github.com/brockdyer03/quadrupole/issues"
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.format]
+docstring-code-format = false
+
+[tool.ruff.lint]
+select = [
+    "YTT",
+    "BLE001",
+    "FBT",
+    "B",
+    "A",
+    "FA",
+    "ISC",
+    "I",
+    "PT",
+    "Q003",
+    "RET",
+    "SIM",
+    "ARG",
+    "NPY001",
+    "E101",
+    "E401",
+    "E501",
+    "E701",
+    "E702",
+    "E703",
+    "E711",
+    "E713",
+    "E714",
+    "E721",
+    "E731",
+    "W",
+    "F",
+    "PLE",
+    "PLR1722",
+    "PLW",
+    "RUF",
+    "TRY",
+]
+ignore = [
+    # These are disabled because it feels like code is more readable without them
+    "RET505", # Branch after return
+    "RET506", # Branch after raise
+    "RET507", # Branch after continue
+    "RET508", # Branch after break
+    "PLW1641", # Implement __eq__ without __hash__
+    "SIM102", # Use single if instead of nested if
+    "SIM114", # if with same arms.
+
+    # We use Greek letters in lattice terminology.
+    "RUF001",
+    "RUF002",
+    "RUF003",
+]
+
+[tool.pytest]
+addopts = [
+    "--cov=quadrupole",
+    "--cov-report=term-missing",
+    "--cov-branch",
+    "--random-order",
+]
+testpaths = ["tests"]
+strict_xfail = true

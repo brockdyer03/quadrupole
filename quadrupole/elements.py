@@ -1,5 +1,5 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 
 
 @dataclass(frozen=True)
@@ -12,7 +12,8 @@ class ElementData:
 
 class Element(ElementData, Enum):
     """Enumeration of all elements on the periodic table.
-    All element data here was taken from the 
+
+    All element data here was taken from the
     International Union of Pure and Applied Chemistry (IUPAC) [1]_.
 
     Notes
@@ -37,12 +38,12 @@ class Element(ElementData, Enum):
     number (as ``int``).
 
     >>> Element.Hydrogen is Element.H is Element("H") is Element(1)
-    True 
+    True
 
     Element access by string is case-insensitive:
 
     >>> Element.Ruthenium is Element("Ru") is Element("ru") is Element("rU") is Element("RU")
-    True 
+    True
 
     You can use dot access to get an element's data:
 
@@ -60,7 +61,7 @@ class Element(ElementData, Enum):
     A "zero" element is available as a placeholder:
 
     >>> Element.Unknown is Element.Xx is Element("Xx") is Element(0)
-    True 
+    True
     >>> Element.Xx.name
     'Unknown'
     >>> Element.Xx.symbol
@@ -76,7 +77,7 @@ class Element(ElementData, Enum):
     >>> str(hydrogen)
     'H'
     >>> print(hydrogen)
-    H 
+    H
 
     Since the ``ElementData`` dataclass is marked as frozen, you can
     create unordered sets of elements:
@@ -87,22 +88,22 @@ class Element(ElementData, Enum):
     3
     >>> for e in elem_set:
     ...     print(e)
-    C 
-    H 
-    N 
+    C
+    H
+    N
 
     You can also iterate through all of the elements in order of their
     atomic number:
 
     >>> for elem in Element:
     ...     print(elem)
-    Xx 
-    H 
-    He 
-    Li 
-    Be 
-    B 
-    C 
+    Xx
+    H
+    He
+    Li
+    Be
+    B
+    C
     ...
     """
     def __new__(cls, symbol: str, number: int, mass: float):
@@ -115,7 +116,7 @@ class Element(ElementData, Enum):
 
     def __str__(self):
         return self.symbol
-    
+
     @classmethod
     def _missing_(cls, value: str):
         if value.title() in cls.__members__:
