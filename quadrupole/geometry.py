@@ -193,11 +193,11 @@ class Geometry:
         gamma = np.float64(cell_params[5])
 
         # region LatticeCheck
-        right_angles = {
+        right_angles = (
             1, 2, 3, -3,          # Cubic
             6, 7,                 # Tetragonal
             8, 9, -9, 91, 10, 11, # Orthorhombic
-        }
+        )
 
         # Check cell parameters to make sure they match the lattice type
         # First all cells where α = β = γ = 90°
