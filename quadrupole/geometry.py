@@ -425,7 +425,7 @@ class Geometry:
         -----
         Quantum ESPRESSO format is as follows:
 
-        .. code-block::
+        .. code-block:: python
 
             cell_params = (a, b/a, c/a, cos(α), cos(β), cos(γ))
 

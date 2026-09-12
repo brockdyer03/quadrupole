@@ -30,19 +30,6 @@ class Quadrupole:
     units : {"au", "buckingham", "cm2", "esu"}
         Units of the quadrupole matrix (case insensitive).
 
-    Methods
-    -------
-    as_unit(units)
-        Represent the quadrupole in a given unit.
-    from_orca(output_path)
-        Read all quadrupoles from an ORCA output.
-    inertialize(geometry)
-        Rotate a quadrupole into a molecule's inertial frame.
-    detrace()
-        Apply a detracing operator to a quadrupole
-    compare(expt)
-        Statistically compare two quadrupoles and return the best match.
-
     Notes
     -----
     The attributes specify that there are 6 independent elements of a

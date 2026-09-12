@@ -3,6 +3,8 @@
 Geometry
 ========
 
+.. currentmodule:: quadrupole.geometry
+
 .. autoclass:: quadrupole.geometry.Atom
    :members:
    :show-inheritance:
