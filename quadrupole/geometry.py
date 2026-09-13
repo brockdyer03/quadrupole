@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Generator, Iterable
 from os import PathLike
 from pathlib import Path
 from types import MappingProxyType
@@ -74,14 +75,15 @@ class Atom:
     Parameters
     ----------
     element : ElementLike
-        A member of the `Element` enum, or the atomic symbol/number.
+        A member of the :class:`Element` enum, or the atomic
+        symbol/number.
     xyz : ArrayLike of float with length 3
         The x-, y-, and z-coordinates of the atom in Ångstrom.
 
     Attributes
     ----------
     element : Element
-        A member of the `Element` enum.
+        A member of the :class:`Element` enum.
     xyz : NDArray of float with size 3
         The x-, y-, and z-coordinates of the atom in Ångstrom.
     """
@@ -89,14 +91,14 @@ class Atom:
     def __init__(
         self,
         element: ElementLike,
-        xyz: npt.ArrayLike,
+        xyz: npt.ArrayLike[np.floating],
     ):
         self.element = Element(element)
         self.xyz = np.array(xyz, dtype=np.float64)
 
     def __repr__(self):
         xyz = "[{:e}, {:e}, {:e}]".format(*self.xyz)
-        return f"{type(self).__name__}(element='{self.element:qn}', xyz={xyz})"
+        return f"{type(self).__name__}(element={self.element:qn}, xyz={xyz})"
 
     def __str__(self):
         return (
@@ -109,21 +111,20 @@ class Atom:
 
 
 class Geometry:
-    """Class storing the geometric parameters of a molecular geometry or
-    crystal structure.
+    """Class storing the geometric parameters of a molecular geometry or crystal structure.
 
     All quantities should be in Ångstrom.
 
     Parameters
     ----------
-    atoms : list[Atom]
+    atoms : Iterable of Atom
         The atoms in the geometry.
     lat_vec : ArrayLike of float with shape (3,3), optional
         The lattice vectors of the geometry.
 
     Attributes
     ----------
-    atoms : list[Atom]
+    atoms : list of Atom
         The atoms in the geometry.
     lat_vec : NDArray of float with shape (3,3), optional
         The primitive lattice vectors of the geometry,
@@ -131,19 +132,24 @@ class Geometry:
 
     bohr_to_angstrom = 0.529177210544
 
+    atoms: list[Atom]
+    lat_vec: npt.NDArray[np.float64]
+
     def __init__(
         self,
-        atoms: list[Atom],
-        lat_vec: npt.NDArray[np.float64] | None = None,
+        atoms: Iterable[Atom],
+        lat_vec: npt.ArrayLike[np.floating] | None = None,
     ):
-        self.atoms   = atoms
-        self.lat_vec = np.asarray(lat_vec, dtype=float) if lat_vec is not None else None
+        self.atoms   = list(atoms)
+        self.lat_vec = np.asarray(lat_vec, dtype=np.float64) if lat_vec is not None else None
 
 
     @property
-    def coordinates(self) -> npt.NDArray:
-        """Get an array of the coordinates with shape (``N``,3) where
-        ``N`` is the number of atoms (``len(self)``).
+    def coordinates(self) -> npt.NDArray[np.float64]:
+        """Get an array of the atomic coordinates.
+
+        The resulting array has shape ``(N, 3)`` where ``N`` is the
+        number of atoms (``len(self)``).
 
         Examples
         --------
@@ -161,7 +167,7 @@ class Geometry:
         return np.asarray([i.xyz for i in self.atoms])
 
     @coordinates.setter
-    def coordinates(self, value: npt.ArrayLike) -> None:
+    def coordinates(self, value: npt.ArrayLike[np.floating]) -> None:
         value = np.asarray(value, dtype=np.float64)
         if value.shape == (len(self), 3):
             pass
@@ -205,11 +211,9 @@ class Geometry:
     @staticmethod
     def _gen_prim_lattice(
         bravais_index: int,
-        cell_params: npt.ArrayLike,
+        cell_params: npt.ArrayLike[np.floating],
     ) -> npt.NDArray:
-        """Generate a primitive unit cell. FOR INTERNAL USE ONLY, USERS
-        SHOULD USE ``generate_lattice()``!!
-        """
+        """Generate a primitive unit cell."""
         a = np.float64(cell_params[0])
         b = np.float64(cell_params[1])
         c = np.float64(cell_params[2])
@@ -422,13 +426,12 @@ class Geometry:
     @staticmethod
     def generate_lattice(
         bravais_index: int,
-        cell_params: npt.ArrayLike,
+        cell_params: npt.ArrayLike[np.floating],
         *,
         primitive: bool = False,
         espresso_like: bool = False,
     ) -> npt.NDArray[np.float64]:
-        """Generate a 3x3 unit cell matrix from a Bravais lattice index
-        and a set of cell parameters.
+        """Generate a 3x3 unit cell matrix from a Bravais lattice index and cell parameters.
 
         Parameters
         ----------
@@ -671,8 +674,9 @@ class Geometry:
         xyzs: npt.ArrayLike,
         lat_vec: npt.ArrayLike | None = None,
     ) -> Self:
-        """Create a :class:`Geometry` from a list of elements and an
-        array of coordinates. Coordinates should be in Ångstrom.
+        """Create a :class:`Geometry` from a list of elements and an array of coordinates.
+
+        Coordinates should be in Ångstrom.
 
         Parameters
         ----------
@@ -1003,28 +1007,24 @@ class Geometry:
 
             self_str += f"{"Lattice":12}{"X":11}{"Y":11}{"Z":11}\n{"Vectors":11}\n"
             for i in range(3):
-                self_str += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format(
-                    "", self.lat_vec[i][0], self.lat_vec[i][1], self.lat_vec[i][2]
-                )
+                self_str += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format("", *self.lat_vec[i])
             self_str += "\n"
 
         self_str += f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n\n"
         for at in self.atoms:
-            self_str += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format(
-                at.element, at.xyz[0], at.xyz[1], at.xyz[2]
-            )
+            self_str += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format(at.element, *at.xyz)
         return self_str
 
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[Atom]:
         yield from self.atoms
 
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.atoms)
 
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> Atom:
         return self.atoms[index]
 
 
@@ -1035,4 +1035,7 @@ class Geometry:
         ):
             return False
         else:
-            return all(a == b for a, b in zip(self, other, strict=True))
+            for self_atom, other_atom in zip(self, other, strict=True):
+                if self_atom != other_atom:
+                    return False
+        return True

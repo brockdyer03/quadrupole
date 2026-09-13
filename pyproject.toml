@@ -58,7 +58,7 @@ indent-width = 4
 docstring-code-format = false
 
 [tool.ruff.lint]
-select = [
+extend-select = [
     "YTT",
     "BLE001",
     "FBT",
@@ -101,12 +101,8 @@ ignore = [
     "PLW1641", # Implement __eq__ without __hash__
     "SIM102", # Use single if instead of nested if
     "SIM114", # if with same arms.
-
-    # We use Greek letters in lattice terminology.
-    "RUF001",
-    "RUF002",
-    "RUF003",
 ]
+allowed-confusables = ["α", "β", "γ"]
 
 [tool.pytest]
 addopts = [

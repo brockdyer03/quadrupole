@@ -74,7 +74,7 @@ def test_atom():
     )
     assert(str(atom) == atom_str)
 
-    atom_repr = "Atom(element='Element.Hydrogen', xyz=[3.140000e+00, 4.200000e+01, 1.370000e+02])"
+    atom_repr = "Atom(element=Element.Hydrogen, xyz=[3.140000e+00, 4.200000e+01, 1.370000e+02])"
     assert(repr(atom) == atom_repr)
 
 
@@ -1279,13 +1279,12 @@ def test_str():
 
 
 def test_repr():
-    # ruff: disable[E501]
     ref_repr = (
         "Geometry(\n"
         "    atoms = [\n"
-        "        Atom(element='Element.Hydrogen', xyz=[1.000000e+00, 2.000000e+00, 3.000000e+00]),\n"
-        "        Atom(element='Element.Ruthenium', xyz=[4.000000e+00, 5.000000e+00, 6.000000e+00]),\n"
-        "        Atom(element='Element.Bromine', xyz=[7.000000e+00, 8.000000e+00, 9.000000e+00]),\n"
+        "        Atom(element=Element.Hydrogen, xyz=[1.000000e+00, 2.000000e+00, 3.000000e+00]),\n"
+        "        Atom(element=Element.Ruthenium, xyz=[4.000000e+00, 5.000000e+00, 6.000000e+00]),\n"
+        "        Atom(element=Element.Bromine, xyz=[7.000000e+00, 8.000000e+00, 9.000000e+00]),\n"
         "    ],\n"
         "    lat_vec = None,\n"
         ")"
@@ -1294,9 +1293,9 @@ def test_repr():
     ref_repr_crystal = (
         "Geometry(\n"
         "    atoms = [\n"
-        "        Atom(element='Element.Hydrogen', xyz=[1.000000e+00, 2.000000e+00, 3.000000e+00]),\n"
-        "        Atom(element='Element.Ruthenium', xyz=[4.000000e+00, 5.000000e+00, 6.000000e+00]),\n"
-        "        Atom(element='Element.Bromine', xyz=[7.000000e+00, 8.000000e+00, 9.000000e+00]),\n"
+        "        Atom(element=Element.Hydrogen, xyz=[1.000000e+00, 2.000000e+00, 3.000000e+00]),\n"
+        "        Atom(element=Element.Ruthenium, xyz=[4.000000e+00, 5.000000e+00, 6.000000e+00]),\n"
+        "        Atom(element=Element.Bromine, xyz=[7.000000e+00, 8.000000e+00, 9.000000e+00]),\n"
         "    ],\n"
         "    lat_vec = [\n"
         "        [1.000000e+01, 0.000000e+00, 0.000000e+00],\n"
@@ -1305,7 +1304,6 @@ def test_repr():
         "    ],\n"
         ")"
     )
-    # ruff: enable[E501]
     atoms = [
         Atom(Element.Hydrogen, [1.0, 2.0, 3.0]),
         Atom(Element.Ruthenium, [4.0, 5.0, 6.0]),
