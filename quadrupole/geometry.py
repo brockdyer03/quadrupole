@@ -643,7 +643,7 @@ class Geometry:
             except ValueError:
                 msg = (
                     f"File {Path(file).resolve()} is improperly formatted at line 1,\n"
-                    f"expected number of atoms, got '{num_atoms}' instead!"
+                    f"expected number of atoms, got '{num_atoms.strip()}' instead!"
                 )
                 raise FileFormatError(msg) from None
 

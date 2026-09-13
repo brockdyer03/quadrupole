@@ -108,7 +108,7 @@ def test_xyz_too_many_atoms(tmp_path):
     xyz_path.write_text(xyz, encoding="utf-8")
     with pytest.raises(
         FileFormatError,
-        match=f"File {xyz_path} contains less atoms than expected!",
+        match=re.escape(f"File {xyz_path} contains less atoms than expected!"),
     ):
         Geometry.from_xyz(xyz_path)
 
@@ -129,9 +129,9 @@ def test_xyz_not_a_number(tmp_path):
     xyz_path.write_text(xyz, encoding="utf-8")
     with pytest.raises(
         FileFormatError,
-        match=(
+        match=re.escape(
             f"File {xyz_path} is improperly formatted at line 1,\n"
-            "expected number of atoms, got 'bean\\n' instead!"
+            "expected number of atoms, got 'bean' instead!"
         ),
     ):
         Geometry.from_xyz(xyz_path)
@@ -154,7 +154,7 @@ def test_xyz_improper_format(tmp_path):
     xyz_path.write_text(xyz, encoding="utf-8")
     with pytest.raises(
         FileFormatError,
-        match=f"File {xyz_path} is improperly formatted!",
+        match=re.escape(f"File {xyz_path} is improperly formatted!"),
     ):
         Geometry.from_xyz(xyz_path)
 
@@ -197,7 +197,7 @@ def test_orca_no_input_block(tmp_path):
     orca_path.write_text(fake_orca, encoding="utf-8")
     with pytest.raises(
         FileFormatError,
-        match=f"Error reading file '{orca_path}', did not find end of input!",
+        match=re.escape(f"Error reading file '{orca_path}', did not find end of input!"),
     ):
         Geometry.from_orca(orca_path)
 
@@ -210,7 +210,7 @@ def test_orca_no_calc_type():
 
     with pytest.raises(
         FileFormatError,
-        match=f"Error reading file '{orca_output_path}' at line 14592!",
+        match=re.escape(f"Error reading file '{orca_output_path}' at line 14592!"),
     ):
         Geometry.from_orca(orca_output_path)
 
@@ -223,7 +223,7 @@ def test_orca_no_final_geom():
 
     with pytest.raises(
         FileFormatError,
-        match=f"Error reading file '{orca_output_path}', can not find final geometry",
+        match=re.escape(f"Error reading file '{orca_output_path}', can not find final geometry"),
     ):
         Geometry.from_orca(orca_output_path)
 
@@ -416,6 +416,6 @@ def test_quadrupole_from_orca_no_quadrupole():
 
     with pytest.raises(
         FileFormatError,
-        match=f"Could not locate a quadrupole moment in output {orca_output_path}",
+        match=re.escape(f"Could not locate a quadrupole moment in output {orca_output_path}"),
     ):
         Quadrupole.from_orca(orca_output_path)
