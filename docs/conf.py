@@ -8,14 +8,17 @@
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path("..").resolve()))
 
 from intersphinx_registry import get_intersphinx_mapping
 
+import quadrupole
+
 project = 'quadrupole'
-copyright = '2026, Brock Dyer'
+copyright = '2026, Brock Dyer'  # noqa: A001
 author = 'Brock Dyer'
-release = '0.4.0'
+release = quadrupole.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
