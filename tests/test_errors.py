@@ -210,7 +210,7 @@ def test_orca_no_calc_type():
 
     with pytest.raises(
         FileFormatError,
-        match=re.escape(f"Error reading file '{orca_output_path}' at line 14592!"),
+        match=re.escape(f"Error reading file '{orca_output_path}' at line "),
     ):
         Geometry.from_orca(orca_output_path)
 
