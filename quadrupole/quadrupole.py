@@ -372,7 +372,21 @@ class Quadrupole:
         return Quadrupole(best_quad, expt.units)
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        q = self.quadrupole
+        return (
+            f"{type(self).__name__}(\n"
+            "    quadrupole = [\n"
+            f"        [{q[0,0]:e}, {q[0,1]:e}, {q[0,2]:e}],\n"
+            f"        [{q[1,0]:e}, {q[1,1]:e}, {q[1,2]:e}],\n"
+            f"        [{q[2,0]:e}, {q[2,1]:e}, {q[2,2]:e}],\n"
+            "    ],\n"
+            f"    units = '{self.units}',\n"
+            ")"
+        )
+
+
+    def __str__(self):
         q = self.quadrupole
         self_str  = ""
         if self.units in {"buckingham", "au"}: # Regular float formatting

@@ -1,11 +1,14 @@
-import pytest
+import re
 from pathlib import Path
+
 import numpy as np
+import pytest
+
 from quadrupole import (
+    Atom,
     Element,
     Geometry,
     Quadrupole,
-    Atom,
 )
 from quadrupole.geometry import FileFormatError, LatticeError
 
@@ -16,6 +19,14 @@ from quadrupole.geometry import FileFormatError, LatticeError
 )
 def test_invalid_symbol():
     Element("bean")
+
+
+def test_invalid_format():
+    with pytest.raises(
+        ValueError,
+        match="Invalid format specifier 'bean' for object of type 'Element'",
+    ):
+        format(Element.Hydrogen, "bean")
 
 
 @pytest.mark.xfail(
@@ -327,7 +338,12 @@ def test_cjson_unknown_version():
         __file__ + "/../files/wrong_version.cjson"
     ).resolve()
 
-    with pytest.warns(UserWarning):
+    with pytest.warns(
+        UserWarning,
+        match=re.escape(
+            f"This file ({cjson_path}) is CJSON version 8675309 however we only guarantee support for version 1."  # noqa: E501
+        ),
+    ):
         Geometry.from_cjson(cjson_path)
 
 

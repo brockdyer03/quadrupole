@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import json
-import operator
-from itertools import starmap
 from os import PathLike
 from pathlib import Path
 from types import MappingProxyType
@@ -97,9 +95,13 @@ class Atom:
         self.xyz = np.array(xyz, dtype=np.float64)
 
     def __repr__(self):
+        xyz = "[{:e}, {:e}, {:e}]".format(*self.xyz)
+        return f"{type(self).__name__}(element='{self.element:qn}', xyz={xyz})"
+
+    def __str__(self):
         return (
             f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n"
-            f"{self.element:9}{self.xyz[0]:11.6f}{self.xyz[1]:11.6f}{self.xyz[2]:11.6f}\n"
+            f"{self.element:9s}{self.xyz[0]:11.6f}{self.xyz[1]:11.6f}{self.xyz[2]:11.6f}\n"
         )
 
     def __eq__(self, other: Atom):
@@ -135,19 +137,32 @@ class Geometry:
         lat_vec: npt.NDArray[np.float64] | None = None,
     ):
         self.atoms   = atoms
-        self.lat_vec = np.array(lat_vec, dtype=float) if lat_vec is not None else None
+        self.lat_vec = np.asarray(lat_vec, dtype=float) if lat_vec is not None else None
 
 
     @property
     def coordinates(self) -> npt.NDArray:
         """Get an array of the coordinates with shape (``N``,3) where
-        `N` is the number of atoms (``len(self)``).
+        ``N`` is the number of atoms (``len(self)``).
+
+        Examples
+        --------
+        >>> geom = Geometry.from_list(["H", "B", "I"], np.zeros((3,3)))
+        >>> geom.coordinates
+        array([[0., 0., 0.],
+               [0., 0., 0.],
+               [0., 0., 0.]])
+        >>> geom.coordinates = np.ones((3,3))
+        >>> geom.coordinates
+        array([[1., 1., 1.],
+               [1., 1., 1.],
+               [1., 1., 1.]])
         """
-        return np.array([i.xyz for i in self.atoms])
+        return np.asarray([i.xyz for i in self.atoms])
 
     @coordinates.setter
     def coordinates(self, value: npt.ArrayLike) -> None:
-        value = np.array(value, dtype=np.float64)
+        value = np.asarray(value, dtype=np.float64)
         if value.shape == (len(self), 3):
             pass
         elif value.shape == (len(self)*3,):
@@ -164,7 +179,17 @@ class Geometry:
 
     @property
     def elements(self) -> list[Element]:
-        """Get a list of each element in ``self``."""
+        """Get a list of each element in ``self``.
+
+        Examples
+        --------
+        >>> geom = Geometry.from_list(["H", "B", "I"], np.zeros((3,3)))
+        >>> print([e.name for e in geom.elements])
+        ['Hydrogen', 'Boron', 'Iodine']
+        >>> geom.elements = ["Ca", "Po", "Hg"]
+        >>> print([e.name for e in geom.elements])
+        ['Calcium', 'Polonium', 'Mercury']
+        """
         return [i.element for i in self.atoms]
 
     @elements.setter
@@ -646,31 +671,26 @@ class Geometry:
         xyzs: npt.ArrayLike,
         lat_vec: npt.ArrayLike | None = None,
     ) -> Self:
-        """Create a ``Geometry`` from a list of elements and an array
-        of coordinates. Coordinates should be in Ångstrom.
+        """Create a :class:`Geometry` from a list of elements and an
+        array of coordinates. Coordinates should be in Ångstrom.
 
         Parameters
         ----------
         elements : list of ElementLike
-            A list of either ``Element`` members, atomic symbols, or
-            atomic numbers.
+            A list of either :class:`Element` members, atomic symbols,
+            or atomic numbers.
         xyzs : ArrayLike of floats with shape (N,3)
             An `N`-length sequence of [x, y, z] coordinates.
 
         Examples
         --------
-
-        >>> elements = [
-        ...     Element.Hydrogen,
-        ...     Element.Ruthenium,
-        ...     Element.Bromine,
-        ... ]
-        >>> xyzs = np.array([
+        >>> elements = ["H", "Ru", "Br"]
+        >>> xyzs = [
         ...     [1.0, 2.0, 3.0],
         ...     [4.0, 5.0, 6.0],
         ...     [7.0, 8.0, 9.0],
-        ... ], dtype=np.float64)
-        >>> geom = Geometry.from_list()
+        ... ]
+        >>> geom = Geometry.from_list(elements, xyzs)
         >>> print(geom)
         Element     X          Y          Z
         <BLANKLINE>
@@ -954,22 +974,46 @@ class Geometry:
 
 
     def __repr__(self):
-        self_repr = ""
+        self_repr = (
+            "Geometry(\n"
+            "    atoms = [\n"
+        )
+        for atom in self.atoms:
+            self_repr += f"{'':8}{atom!r},\n"
+        self_repr += "    ],\n"
+        self_repr += "    lat_vec = "
+        if self.lat_vec is not None:
+            lv = self.lat_vec
+            self_repr += (
+                "[\n"
+                f"{'':8}[{lv[0,0]:e}, {lv[0,1]:e}, {lv[0,2]:e}],\n"
+                f"{'':8}[{lv[1,0]:e}, {lv[1,1]:e}, {lv[1,2]:e}],\n"
+                f"{'':8}[{lv[2,0]:e}, {lv[2,1]:e}, {lv[2,2]:e}],\n"
+                "    ],\n"
+            )
+        else:
+            self_repr += "None,\n"
+        self_repr += ")"
+        return self_repr
+
+
+    def __str__(self):
+        self_str = ""
         if self.lat_vec is not None:
 
-            self_repr += f"{"Lattice":12}{"X":11}{"Y":11}{"Z":11}\n{"Vectors":11}\n"
+            self_str += f"{"Lattice":12}{"X":11}{"Y":11}{"Z":11}\n{"Vectors":11}\n"
             for i in range(3):
-                self_repr += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format(
+                self_str += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format(
                     "", self.lat_vec[i][0], self.lat_vec[i][1], self.lat_vec[i][2]
                 )
-            self_repr += "\n"
+            self_str += "\n"
 
-        self_repr += f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n\n"
+        self_str += f"{"Element":12}{"X":11}{"Y":11}{"Z":11}\n\n"
         for at in self.atoms:
-            self_repr += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format(
+            self_str += "{:9}{:11.6f}{:11.6f}{:11.6f}\n".format(
                 at.element, at.xyz[0], at.xyz[1], at.xyz[2]
             )
-        return self_repr
+        return self_str
 
 
     def __iter__(self):
@@ -985,7 +1029,10 @@ class Geometry:
 
 
     def __eq__(self, other: Geometry):
-        if not np.array_equal(self.lat_vec, other.lat_vec):
+        if (
+            not np.array_equal(self.lat_vec, other.lat_vec)
+            or len(self) != len(other)
+        ):
             return False
         else:
-            return all(starmap(operator.eq, zip(self, other, strict=True)))
+            return all(a == b for a, b in zip(self, other, strict=True))
