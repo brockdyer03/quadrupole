@@ -13,12 +13,12 @@ from quadrupole import (
 from quadrupole.geometry import FileFormatError, LatticeError
 
 
-@pytest.mark.xfail(
-    reason="Invalid Element Symbol",
-    raises=ValueError,
-)
 def test_invalid_symbol():
-    Element("bean")
+    with pytest.raises(
+        ValueError,
+        match="'bean' is not a valid Element",
+    ):
+        Element("bean")
 
 
 def test_invalid_format():
@@ -29,10 +29,6 @@ def test_invalid_format():
         format(Element.Hydrogen, "bean")
 
 
-@pytest.mark.xfail(
-    reason="Too many elements in the new element list",
-    raises=ValueError,
-)
 def test_geometry_element_setter_too_many_elements():
     initial_elements = [
         Element.Hydrogen,
@@ -57,14 +53,13 @@ def test_geometry_element_setter_too_many_elements():
         Element.Francium,
         Element.Francium,
     ]
+    with pytest.raises(
+        ValueError,
+        match="Can not use list of length 4 for a geometry of 3 atoms!",
+    ):
+        geometry.elements = new_elements
 
-    geometry.elements = new_elements
 
-
-@pytest.mark.xfail(
-    reason="Too many coordinates in the new coordinate array",
-    raises=ValueError,
-)
 def test_geometry_coordinate_setter_too_many_coordinates():
     elements = [
         Element.Hydrogen,
@@ -90,13 +85,13 @@ def test_geometry_coordinate_setter_too_many_coordinates():
         [19.0, 20.0, 21.0],
     ], dtype=np.float64)
 
-    geometry.coordinates = new_xyzs
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Can not set coordinates with shape (4, 3) for geometry with 3 atoms!"),
+    ):
+        geometry.coordinates = new_xyzs
 
 
-@pytest.mark.xfail(
-    reason="Too many atoms specified at top of file",
-    raises=FileFormatError,
-)
 def test_xyz_too_many_atoms(tmp_path):
     xyz = (
         "10\n"
@@ -111,14 +106,13 @@ def test_xyz_too_many_atoms(tmp_path):
 
     xyz_path = temp_dir / Path("test.xyz")
     xyz_path.write_text(xyz, encoding="utf-8")
+    with pytest.raises(
+        FileFormatError,
+        match=f"File {xyz_path} contains less atoms than expected!",
+    ):
+        Geometry.from_xyz(xyz_path)
 
-    Geometry.from_xyz(xyz_path)
 
-
-@pytest.mark.xfail(
-    reason="Did not get integer for number of atoms",
-    raises=FileFormatError,
-)
 def test_xyz_not_a_number(tmp_path):
     xyz = (
         "bean\n"
@@ -133,14 +127,16 @@ def test_xyz_not_a_number(tmp_path):
 
     xyz_path = temp_dir / Path("test.xyz")
     xyz_path.write_text(xyz, encoding="utf-8")
+    with pytest.raises(
+        FileFormatError,
+        match=(
+            f"File {xyz_path} is improperly formatted at line 1,\n"
+            "expected number of atoms, got 'bean\\n' instead!"
+        ),
+    ):
+        Geometry.from_xyz(xyz_path)
 
-    Geometry.from_xyz(xyz_path)
 
-
-@pytest.mark.xfail(
-    reason="Erroneous newline in file",
-    raises=FileFormatError,
-)
 def test_xyz_improper_format(tmp_path):
     xyz = (
         "3\n"
@@ -156,14 +152,13 @@ def test_xyz_improper_format(tmp_path):
 
     xyz_path = temp_dir / Path("test.xyz")
     xyz_path.write_text(xyz, encoding="utf-8")
+    with pytest.raises(
+        FileFormatError,
+        match=f"File {xyz_path} is improperly formatted!",
+    ):
+        Geometry.from_xyz(xyz_path)
 
-    Geometry.from_xyz(xyz_path)
 
-
-@pytest.mark.xfail(
-    reason="List of elements is not the same length as the list of coordinates",
-    raises=ValueError,
-)
 def test_list_length_mismatch():
     elements = [
         Element.Hydrogen,
@@ -175,14 +170,17 @@ def test_list_length_mismatch():
         [4.0, 5.0, 6.0],
         [7.0, 8.0, 9.0],
     ], dtype=np.float64)
+    with pytest.raises(
+        ValueError,
+        match=(
+            "The list of elements and coordinates must be of the same size!\n"
+            "Number of elements:    2\n"
+            "Number of coordinates: 3"
+        ),
+    ):
+        Geometry.from_list(elements, xyzs)
 
-    Geometry.from_list(elements, xyzs)
 
-
-@pytest.mark.xfail(
-    reason="No input block in ORCA file",
-    raises=FileFormatError,
-)
 def test_orca_no_input_block(tmp_path):
     fake_orca = (
         "bean\n"
@@ -197,140 +195,174 @@ def test_orca_no_input_block(tmp_path):
 
     orca_path = temp_dir / Path("test.out")
     orca_path.write_text(fake_orca, encoding="utf-8")
+    with pytest.raises(
+        FileFormatError,
+        match=f"Error reading file '{orca_path}', did not find end of input!",
+    ):
+        Geometry.from_orca(orca_path)
 
-    Geometry.from_orca(orca_path)
 
-
-@pytest.mark.xfail(
-    reason="No specification of calculation type in ORCA output",
-    raises=FileFormatError,
-)
 def test_orca_no_calc_type():
 
     orca_output_path = Path(
         __file__ + "/../files/water_scf_improper.out"
     ).resolve()
 
-    Geometry.from_orca(orca_output_path)
+    with pytest.raises(
+        FileFormatError,
+        match=f"Error reading file '{orca_output_path}' at line 14592!",
+    ):
+        Geometry.from_orca(orca_output_path)
 
 
-@pytest.mark.xfail(
-    reason="No final geometry in ORCA output",
-    raises=FileFormatError,
-)
 def test_orca_no_final_geom():
 
     orca_output_path = Path(
         __file__ + "/../files/water_opt_improper.out"
     ).resolve()
 
-    Geometry.from_orca(orca_output_path)
+    with pytest.raises(
+        FileFormatError,
+        match=f"Error reading file '{orca_output_path}', can not find final geometry",
+    ):
+        Geometry.from_orca(orca_output_path)
 
 
-@pytest.mark.xfail(
-    reason="Bravais lattice index outside of supported values",
-    raises=ValueError,
-)
 def test_invalid_bravais_index():
     cell_params = np.zeros(6)
-    Geometry.generate_lattice(42, cell_params)
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "Bravais lattice index 42 not supported!\n"
+            "Please select from a supported index!"
+        ),
+    ):
+        Geometry.generate_lattice(42, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request simple cubic lattice with non-simple cubic values",
-    raises=LatticeError,
-)
 def test_lattice_mismatch_cubic():
     cell_params = np.array([42, 42, 20, np.pi/2, np.pi/2, np.pi/2])
-    Geometry.generate_lattice(1, cell_params)
+
+    with pytest.raises(
+        LatticeError,
+        match=re.escape(
+            "Can not generate Simple Cubic lattice with\n"
+            "a=42.00000 b=42.00000 c=20.00000 α=1.57080 β=1.57080 γ=1.57080"
+        ),
+    ):
+        Geometry.generate_lattice(1, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request tetragonal lattice with non-tetragonal values",
-    raises=LatticeError,
-)
 def test_lattice_mismatch_tetragonal():
     cell_params = np.array([42, 20, 42, np.pi/2, np.pi/2, np.pi/2])
-    Geometry.generate_lattice(6, cell_params)
+
+    with pytest.raises(
+        LatticeError,
+        match=re.escape(
+            "Can not generate Simple Tetragonal lattice with\n"
+            "a=42.00000 b=20.00000 c=42.00000 α=1.57080 β=1.57080 γ=1.57080"
+        ),
+    ):
+        Geometry.generate_lattice(6, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request orthorhombic lattice with non-orthorhombic values",
-    raises=LatticeError,
-)
 def test_lattice_mismatch_orthorhombic():
     cell_params = np.array([42, 20, 12, np.pi/3, np.pi/2, np.pi/2])
-    Geometry.generate_lattice(10, cell_params)
+
+    with pytest.raises(
+        LatticeError,
+        match=re.escape(
+            "Can not generate Face-Centered Orthorhombic lattice with\n"
+            "a=42.00000 b=20.00000 c=12.00000 α=1.04720 β=1.57080 γ=1.57080"
+        ),
+    ):
+        Geometry.generate_lattice(10, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request rhombohedral lattice with non-rhombohedral values",
-    raises=LatticeError,
-)
 def test_lattice_mismatch_rhombohedral():
     cell_params = np.array([42, 42, 20, np.pi/2, np.pi/2, np.pi/2])
-    Geometry.generate_lattice(5, cell_params)
+    with pytest.raises(
+        LatticeError,
+        match=re.escape(
+            "Can not generate Rhombohedral lattice with\n"
+            "a=42.00000 b=42.00000 c=20.00000 α=1.57080 β=1.57080 γ=1.57080"
+        ),
+    ):
+        Geometry.generate_lattice(5, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request hexagonal lattice with non-hexagonal values",
-    raises=LatticeError,
-)
 def test_lattice_mismatch_hexagonal():
     cell_params = np.array([42, 42, 20, np.pi/15, np.pi/2, 2*np.pi/3])
-    Geometry.generate_lattice(4, cell_params)
+    with pytest.raises(
+        LatticeError,
+        match=re.escape(
+            "Can not generate Simple Hexagonal lattice with\n"
+            "a=42.00000 b=42.00000 c=20.00000 α=0.20944 β=1.57080 γ=2.09440"
+        ),
+    ):
+        Geometry.generate_lattice(4, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request monoclinic lattice with non-monoclinic values",
-    raises=LatticeError,
-)
 def test_lattice_mismatch_monoclinic_alpha_gamma():
     cell_params = np.array([42, 12, 20, np.pi/3, np.pi/2, np.pi/2])
-    Geometry.generate_lattice(-13, cell_params)
+    with pytest.raises(
+        LatticeError,
+        match=re.escape(
+            "Can not generate Base-Centered Monoclinic (Unique axis b) lattice with\n"
+            "a=42.00000 b=12.00000 c=20.00000 α=1.04720 β=1.57080 γ=1.57080"
+        ),
+    ):
+        Geometry.generate_lattice(-13, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request monoclinic lattice with non-monoclinic values",
-    raises=LatticeError,
-)
 def test_lattice_mismatch_monoclinic_beta_gamma():
     cell_params = np.array([42, 12, 20, np.pi/2, np.pi/3, np.pi/2])
-    Geometry.generate_lattice(13, cell_params)
+    with pytest.raises(
+        LatticeError,
+        match=re.escape(
+            "Can not generate Base-Centered Monoclinic lattice with\n"
+            "a=42.00000 b=12.00000 c=20.00000 α=1.57080 β=1.04720 γ=1.57080"
+        ),
+    ):
+        Geometry.generate_lattice(13, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request lattice with invalid bravais index",
-    raises=ValueError,
-)
 def test_prim_lattice_invalid_bravais_index():
-    """This shouldn't actually be accessible by users, but
-    I want 100% test coverage.
-    """
+    # This shouldn't actually be accessible by users, but I want 100% test coverage.
     cell_params = np.array([42, 12, 20, np.pi/2, np.pi/3, np.pi/2])
-    Geometry._gen_prim_lattice(42, cell_params)
+
+    with pytest.raises(
+        ValueError,
+        match="Invalid lattice type: 42",
+    ):
+        Geometry._gen_prim_lattice(42, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="Request non-primitive lattice",
-    raises=ValueError,
-)
 def test_request_non_primitive_lattice():
     cell_params = np.array([20, 20, 20, np.pi/2, np.pi/2, np.pi/2])
-    Geometry.generate_lattice(1, cell_params)
+
+    with pytest.raises(
+        NotImplementedError,
+        match="Only primitive cells are currently supported!",
+    ):
+        Geometry.generate_lattice(1, cell_params)
 
 
-@pytest.mark.xfail(
-    reason="No atoms in CJSON",
-    raises=FileFormatError,
-)
 def test_cjson_no_atoms():
 
     cjson_path = Path(
         __file__ + "/../files/missing_atoms.cjson"
     ).resolve()
 
-    Geometry.from_cjson(cjson_path)
+    with pytest.raises(
+        FileFormatError,
+        match=re.escape(
+            "Expected 'atoms' field in CJSON file, but did not find any!\n"
+            f"({cjson_path})"
+        ),
+    ):
+        Geometry.from_cjson(cjson_path)
 
 
 def test_cjson_unknown_version():
@@ -347,39 +379,43 @@ def test_cjson_unknown_version():
         Geometry.from_cjson(cjson_path)
 
 
-@pytest.mark.xfail(
-    reason="Can't convert array of incorrect shape to Quadrupole object",
-    raises=ValueError,
-)
 def test_invalid_quadrupole_shape():
-    Quadrupole([1.0, 2.0, 3.0, 4.0])
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "Cannot cast array of shape (4,) to a quadrupole!\n"
+            "Supply either shape (3, 3) or (3,) or (6,)!"
+        ),
+    ):
+        Quadrupole([1.0, 2.0, 3.0, 4.0])
 
 
-@pytest.mark.xfail(
-    reason="Incorrect units specified",
-    raises=ValueError,
-)
 def test_invalid_quadrupole_units():
-    Quadrupole([1.0, 2.0, 3.0], units="bananas")
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Invalid units, please select from ( 'au', 'buckingham', 'cm2', 'esu' )"),
+    ):
+        Quadrupole([1.0, 2.0, 3.0], units="bananas")
 
 
-@pytest.mark.xfail(
-    reason="Invalid unit conversion request",
-    raises=ValueError,
-)
 def test_invalid_quadrupole_as_unit():
     quadrupole = Quadrupole([1.0, 2.0, 3.0], units="buckingham")
-    quadrupole.as_unit("bananas")
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "Unit bananas not recognized, please pick from ('au', 'buckingham', 'cm2', 'esu')"
+        ),
+    ):
+        quadrupole.as_unit("bananas")
 
 
-@pytest.mark.xfail(
-    reason="Try to read a quadrupole from an ORCA output that has no quadrupole.",
-    raises=FileFormatError,
-)
 def test_quadrupole_from_orca_no_quadrupole():
-
     orca_output_path = Path(
         __file__ + "/../files/water_scf_improper.out"
     ).resolve()
 
-    Quadrupole.from_orca(orca_output_path)
+    with pytest.raises(
+        FileFormatError,
+        match=f"Could not locate a quadrupole moment in output {orca_output_path}",
+    ):
+        Quadrupole.from_orca(orca_output_path)

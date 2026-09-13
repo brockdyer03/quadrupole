@@ -63,9 +63,9 @@ class LatticeError(Exception):
         beta  = self.cell_params[4]
         gamma = self.cell_params[5]
         return (
-            f"Can not generate {self.lattice_names[self.bravais_index]} with\n"
-            f"a={a:8.5f} b={b:8.5f} c={c:8.5f}"
-            f"α={alpha:8.5f} β={beta:8.5f} γ={gamma:8.5f}"
+            f"Can not generate {self.lattice_names[self.bravais_index]} lattice with\n"
+            f"a={a:<.5f} b={b:<.5f} c={c:<.5f} "
+            f"α={alpha:<.5f} β={beta:<.5f} γ={gamma:<.5f}"
         )
 
 
@@ -176,7 +176,7 @@ class Geometry:
         else:
             msg = (
                 f"Can not set coordinates with shape {value.shape} "
-                "for geometry with {len(self)} atoms!"
+                f"for geometry with {len(self)} atoms!"
             )
             raise ValueError(msg)
 
@@ -527,7 +527,7 @@ class Geometry:
                 return lattice
             else:
                 msg = "Only primitive cells are currently supported!"
-                raise ValueError(msg)
+                raise NotImplementedError(msg)
 
         # If we are reading a QE output then we need to translate the parameters
         # to match the typical a, b, c, α, β, γ
@@ -905,7 +905,7 @@ class Geometry:
         atoms = cjson.get("atoms", None)
         if atoms is None:
             msg = (
-                'Expected "atoms" field in CJSON file, but did not find any!\n'
+                "Expected 'atoms' field in CJSON file, but did not find any!\n"
                f"({file})"
             )
             raise FileFormatError(msg)
