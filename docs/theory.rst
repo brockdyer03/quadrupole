@@ -169,7 +169,7 @@ Inertia Tensor and Eigenvectors
 
 A common phrase in the preceding sections was "in the inertial frame of the molecule." When I refer to the inertial frame of a molecule, I mean a frame in which the eigenvectors of the inertia tensor are aligned on the principle coordinate axes, making the inertia tensor diagonal. Often, the inclusion of this condition in literature is implicit, rather than explicit, but I have tried to be very deliberate about where I include it in this documentation. The properties which are affected by this are those that deal with defining which components of the quadrupole tensor are zero (see :ref:`Symmetry Dependence <quadrupole-symmetry>`).
 
-Most computational chemistry calculations are done on molecules that are not aligned with the principle coordinate axes; as such, I have included functions in this program that can take a quadrupole moment from being in an arbitrary frame and rotate it into the inertial frame of a molecule (see :py:meth:`Quadrupole.inertialize()`).
+Most computational chemistry calculations are done on molecules that are not aligned with the principle coordinate axes; as such, I have included functions in this program that can take a quadrupole moment from being in an arbitrary frame and rotate it into the inertial frame of a molecule (see :py:meth:`.Quadrupole.inertialize()`).
 
 The inertia tensor :math:`\textbf{I}` of a molecule with its center of mass at the origin is given as
 
@@ -181,7 +181,7 @@ The inertia tensor :math:`\textbf{I}` of a molecule with its center of mass at t
         -m_j z_j x_j                   & -m_j z_j y_j                   & m_j \left( x^2_j+y^2_j \right)
     \end{bmatrix}
 
-with the index :math:`j` running over all atoms and :math:`m` being their mass. For samples with standard isotopic distributions the masses are the average atomic masses and can be accessed through the :py:class:`Element` class. Due to the transposition symmetry of the inertia tensor (:math:`\textbf{I}_{\alpha\beta} = \textbf{I}_{\beta\alpha}`), one need only calculate the upper right (or lower left) triangular portion of the tensor, simplifying the calculations to
+with the index :math:`j` running over all atoms and :math:`m` being their mass. For samples with standard isotopic distributions the masses are the average atomic masses and can be accessed through the :py:class:`.Element` class. Due to the transposition symmetry of the inertia tensor (:math:`\textbf{I}_{\alpha\beta} = \textbf{I}_{\beta\alpha}`), one need only calculate the upper right (or lower left) triangular portion of the tensor, simplifying the calculations to
 
 .. math::
 
@@ -222,7 +222,7 @@ we see that the quadrupole tensor is (at the ωB97M-V/def2-QZVPPD level of theor
     Quadrupole (au):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)
               Total:   -4.53597   -5.02123   -4.27393   -0.09199    0.86709    0.80776
 
-which is in stark contrast to the expected tensor for a molecule with :math:`C_{2v}` symmetry (recall that molecules with :math:`C_{2v}` symmetry will have only diagonal components in the quadrupole tensor). The reason for this discrepancy is due to the alignment of the water molecule with respect to the principle unit coordinate axes. Using the function :py:meth:`Quadrupole.inertialize()`, we can rotate the quadrupole tensor into the inertial frame of the molecule, which then yields a quadrupole tensor of
+which is in stark contrast to the expected tensor for a molecule with :math:`C_{2v}` symmetry (recall that molecules with :math:`C_{2v}` symmetry will have only diagonal components in the quadrupole tensor). The reason for this discrepancy is due to the alignment of the water molecule with respect to the principle unit coordinate axes. Using the function :py:meth:`.Quadrupole.inertialize()`, we can rotate the quadrupole tensor into the inertial frame of the molecule, which then yields a quadrupole tensor of
 
 .. code-block::
 
@@ -244,4 +244,3 @@ References
 .. [Buck59] Buckingham, A. D. Molecular Quadrupole Moments. Q. Rev. Chem. Soc. 1959, 13 (3), 183-214. https://doi.org/10.1039/QR9591300183.
 
 .. [Raab75] Raab, R. E. Magnetic Multipole Moments. Molecular Physics 1975, 29 (5), 1323-1331. https://doi.org/10.1080/00268977500101151.
-

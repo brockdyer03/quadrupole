@@ -1,5 +1,6 @@
-from enum import Enum
+import string
 from dataclasses import dataclass
+from enum import Enum
 
 
 @dataclass(frozen=True)
@@ -12,14 +13,15 @@ class ElementData:
 
 class Element(ElementData, Enum):
     """Enumeration of all elements on the periodic table.
-    All element data here was taken from the 
+
+    All element data here was taken from the
     International Union of Pure and Applied Chemistry (IUPAC) [1]_.
 
     Notes
     -----
-    If you are going to use the ``Element`` enumeration in your own
-    project be aware that, as it inherits from ``Enum``, its members
-    are singletons [2]_. This means that performing comparisons
+    If you are going to use the :class:`Element` enumeration in your own
+    project be aware that, as it inherits from :class:`~enum.Enum`, its
+    members are singletons [2]_. This means that performing comparisons
     between elements should be done using ``is`` and not ``==``. The
     comparison with ``==`` invokes the ``__eq__`` method of the object
     which can take nearly twice as long as the identity comparison
@@ -33,16 +35,16 @@ class Element(ElementData, Enum):
     Examples
     --------
     Directly accessing an element can be done by name or symbol.
-    Programmatic access can be done by symbol (as ``str``) or
-    number (as ``int``).
+    Programmatic access can be done by symbol (as :class:`str`) or
+    number (as :class:`int`).
 
     >>> Element.Hydrogen is Element.H is Element("H") is Element(1)
-    True 
+    True
 
     Element access by string is case-insensitive:
 
     >>> Element.Ruthenium is Element("Ru") is Element("ru") is Element("rU") is Element("RU")
-    True 
+    True
 
     You can use dot access to get an element's data:
 
@@ -60,7 +62,7 @@ class Element(ElementData, Enum):
     A "zero" element is available as a placeholder:
 
     >>> Element.Unknown is Element.Xx is Element("Xx") is Element(0)
-    True 
+    True
     >>> Element.Xx.name
     'Unknown'
     >>> Element.Xx.symbol
@@ -70,16 +72,8 @@ class Element(ElementData, Enum):
     >>> Element.Xx.mass
     0.0
 
-    Printing an element directly calls its `__str__()` method, which
-    returns the atomic symbol.
-
-    >>> str(hydrogen)
-    'H'
-    >>> print(hydrogen)
-    H 
-
-    Since the ``ElementData`` dataclass is marked as frozen, you can
-    create unordered sets of elements:
+    Since the :class:`ElementData` dataclass is marked as frozen, you
+    can create unordered sets of elements:
 
     >>> elem = [Element.H, Element.H, Element.C, Element.C, Element.N]
     >>> elem_set = set(elem)
@@ -87,24 +81,56 @@ class Element(ElementData, Enum):
     3
     >>> for e in elem_set:
     ...     print(e)
-    C 
-    H 
-    N 
+    C
+    H
+    N
 
     You can also iterate through all of the elements in order of their
     atomic number:
 
     >>> for elem in Element:
     ...     print(elem)
-    Xx 
-    H 
-    He 
-    Li 
-    Be 
-    B 
-    C 
+    Xx
+    H
+    He
+    Li
+    Be
+    B
+    C
     ...
+
+    Printing an element just prints its atomic symbol.
+
+    >>> str(hydrogen)
+    'H'
+    >>> print(hydrogen)
+    H
+
+    You can also use the special format specifiers ``'n'``, ``'s'``,
+    ``'qn'``, and ``'qs'`` to print the name, symbol, or the 'qualified'
+    name/symbol.
+
+    >>> f"{Element.H:n}"
+    'Hydrogen'
+    >>> f"{Element.H:s}"
+    'H'
+    >>> f"{Element.H:qn}"
+    'Element.Hydrogen'
+    >>> f"{Element.H:qs}"
+    'Element.H'
+
+    All of the other format specifiers will work too.
+
+    >>> f"{Element.H:5s}"
+    'H    '
+    >>> f"{Element.H:>5s}"
+    '    H'
+    >>> f"{Element.H:^5s}"
+    '  H  '
+    >>> f"{Element.H:_^5s}"
+    '__H__'
     """
+
     def __new__(cls, symbol: str, number: int, mass: float):
         element = ElementData.__new__(cls)
         element._value_ = ElementData(symbol, number, mass)
@@ -115,7 +141,28 @@ class Element(ElementData, Enum):
 
     def __str__(self):
         return self.symbol
-    
+
+    def __format__(self, format_spec: str) -> str:
+        if not format_spec:
+            return str(self)
+        all_letters = tuple(string.ascii_letters)
+        if format_spec.endswith("qn") and not format_spec[:-2].endswith(all_letters):
+            return format(f"Element.{self.name}", format_spec[:-2])
+        elif format_spec.endswith("qs") and not format_spec[:-2].endswith(all_letters):
+            return format(f"Element.{self.symbol}", format_spec[:-2])
+        elif format_spec.endswith("n") and not format_spec[:-1].endswith(all_letters):
+            return format(self.name, format_spec[:-1])
+        elif format_spec.endswith("s") and not format_spec[:-1].endswith(all_letters):
+            return format(self.symbol, format_spec[:-1])
+        elif not format_spec.endswith(tuple(string.digits)):
+            msg = (
+                f"Invalid format specifier '{format_spec}' "
+                f"for object of type '{type(self).__name__}'"
+                )
+            raise ValueError(msg)
+        else:
+            return format(str(self), format_spec)
+
     @classmethod
     def _missing_(cls, value: str):
         if value.title() in cls.__members__:

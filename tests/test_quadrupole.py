@@ -1,7 +1,8 @@
-import pytest
 from pathlib import Path
+
 import numpy as np
-from quadrupole import Quadrupole, Geometry
+
+from quadrupole import Geometry, Quadrupole
 
 
 def test_create():
@@ -27,7 +28,7 @@ def test_create():
     assert(quad_6x1[0,0] == arr_6x1[0])
     assert(quad_6x1[1,1] == arr_6x1[1])
     assert(quad_6x1[2,2] == arr_6x1[2])
-    
+
     assert(quad_6x1[0,1] == arr_6x1[3])
     assert(quad_6x1[0,2] == arr_6x1[4])
     assert(quad_6x1[1,2] == arr_6x1[5])
@@ -339,7 +340,7 @@ def test_unit_cycle():
         units="buckingham"
     )
 
-    for i in range(5000):
+    for _ in range(5000):
         quadrupole = quadrupole.as_unit("cm2")
         quadrupole = quadrupole.as_unit("au")
         quadrupole = quadrupole.as_unit("esu")
@@ -483,22 +484,104 @@ def test_compare_mismatched_signs():
     np.testing.assert_allclose(diff.quadrupole, ref_diff, atol=tol)
 
 
-def test_repr():
-    buck_repr = (
+def test_str():
+    # ruff: disable[E501]
+    buck_str = (
         "Quadrupole (buckingham):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      \n"
         "                  Total:    1.00000    2.00000    3.00000    0.00000    0.00000    0.00000\n"
     )
-    au_repr = (
+    au_str = (
         "Quadrupole (au):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      \n"
         "          Total:    0.74348    1.48695    2.23043    0.00000    0.00000    0.00000\n"
     )
-    cm2_repr = (
+    cm2_str = (
         "Quadrupole (cm2):      (xx)          (yy)          (zz)          (xy)          (xz)          (yz)         \n"
         "           Total:   3.33564e-40   6.67128e-40   1.00069e-39   0.00000e+00   0.00000e+00   0.00000e+00\n"
     )
-    esu_repr = (
+    esu_str = (
         "Quadrupole (esu):      (xx)          (yy)          (zz)          (xy)          (xz)          (yz)         \n"
         "           Total:   1.00000e-26   2.00000e-26   3.00000e-26   0.00000e+00   0.00000e+00   0.00000e+00\n"
+    )
+    # ruff: enable[E501]
+    quad_buckingham = Quadrupole(
+        np.array([
+            [1.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.0, 0.0, 3.0],
+        ], dtype=np.float64),
+        units="buckingham"
+    )
+    quad_au = Quadrupole(
+        np.array([
+            [0.74347545954, 0.00000000000, 0.00000000000],
+            [0.00000000000, 1.48695091909, 0.00000000000],
+            [0.00000000000, 0.00000000000, 2.23042637863],
+        ], dtype=np.float64),
+        units="au"
+    )
+    quad_cm2 = Quadrupole(
+        np.array([
+            [3.33564095198e-40, 0.00000000000e+00, 0.00000000000e+00],
+            [0.00000000000e+00, 6.67128190396e-40, 0.00000000000e+00],
+            [0.00000000000e+00, 0.00000000000e+00, 1.00069228559e-39],
+        ], dtype=np.float64),
+        units="cm2"
+    )
+    quad_esu = Quadrupole(
+        np.array([
+            [1.0e-26, 0.0e+00, 0.0e+00],
+            [0.0e+00, 2.0e-26, 0.0e+00],
+            [0.0e+00, 0.0e+00, 3.0e-26],
+        ], dtype=np.float64),
+        units="esu"
+    )
+
+    assert(str(quad_buckingham) == buck_str)
+    assert(str(quad_au) == au_str)
+    assert(str(quad_cm2) == cm2_str)
+    assert(str(quad_esu) == esu_str)
+
+
+def test_repr():
+    buck_repr = (
+        "Quadrupole(\n"
+        "    quadrupole = [\n"
+        "        [1.000000e+00, 0.000000e+00, 0.000000e+00],\n"
+        "        [0.000000e+00, 2.000000e+00, 0.000000e+00],\n"
+        "        [0.000000e+00, 0.000000e+00, 3.000000e+00],\n"
+        "    ],\n"
+        "    units = 'buckingham',\n"
+        ")"
+    )
+    au_repr = (
+        "Quadrupole(\n"
+        "    quadrupole = [\n"
+        "        [7.434755e-01, 0.000000e+00, 0.000000e+00],\n"
+        "        [0.000000e+00, 1.486951e+00, 0.000000e+00],\n"
+        "        [0.000000e+00, 0.000000e+00, 2.230426e+00],\n"
+        "    ],\n"
+        "    units = 'au',\n"
+        ")"
+    )
+    cm2_repr = (
+        "Quadrupole(\n"
+        "    quadrupole = [\n"
+        "        [3.335641e-40, 0.000000e+00, 0.000000e+00],\n"
+        "        [0.000000e+00, 6.671282e-40, 0.000000e+00],\n"
+        "        [0.000000e+00, 0.000000e+00, 1.000692e-39],\n"
+        "    ],\n"
+        "    units = 'cm2',\n"
+        ")"
+    )
+    esu_repr = (
+        "Quadrupole(\n"
+        "    quadrupole = [\n"
+        "        [1.000000e-26, 0.000000e+00, 0.000000e+00],\n"
+        "        [0.000000e+00, 2.000000e-26, 0.000000e+00],\n"
+        "        [0.000000e+00, 0.000000e+00, 3.000000e-26],\n"
+        "    ],\n"
+        "    units = 'esu',\n"
+        ")"
     )
 
     quad_buckingham = Quadrupole(
@@ -534,7 +617,26 @@ def test_repr():
         units="esu"
     )
 
-    assert(quad_buckingham.__repr__() == buck_repr)
-    assert(quad_au.__repr__() == au_repr)
-    assert(quad_cm2.__repr__() == cm2_repr)
-    assert(quad_esu.__repr__() == esu_repr)
+    assert(repr(quad_buckingham) == buck_repr)
+    assert(repr(quad_au) == au_repr)
+    assert(repr(quad_cm2) == cm2_repr)
+    assert(repr(quad_esu) == esu_repr)
+
+
+def test_repr_roundtrip():
+    quad = Quadrupole(
+        np.array([
+            [0.74347545954, 0.00000000000, 0.00000000000],
+            [0.00000000000, 1.48695091909, 0.00000000000],
+            [0.00000000000, 0.00000000000, 2.23042637863],
+        ], dtype=np.float64),
+        units="au"
+    )
+    quad_roundtrip = eval(repr(quad))
+
+    assert(quad_roundtrip.units == quad.units)
+    np.testing.assert_allclose(
+        quad_roundtrip.quadrupole,
+        quad.quadrupole,
+        rtol=1e-6,
+    )

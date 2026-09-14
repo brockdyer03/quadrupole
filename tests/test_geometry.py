@@ -1,7 +1,8 @@
-import pytest
 from pathlib import Path
+
 import numpy as np
-from quadrupole import Element, Atom, Geometry
+
+from quadrupole import Atom, Element, Geometry
 
 
 def test_element():
@@ -15,6 +16,15 @@ def test_element():
     assert(hydrogen.number == 1)
     assert(hydrogen.mass == 1.0080)
     assert(str(hydrogen) == "H")
+    assert(format(hydrogen) == "H")
+    assert(format(hydrogen, "n") == "Hydrogen")
+    assert(format(hydrogen, "s") == "H")
+    assert(format(hydrogen, "qn") == "Element.Hydrogen")
+    assert(format(hydrogen, "qs") == "Element.H")
+    assert(f"{hydrogen:3}" == "H  ")
+    assert(f"{hydrogen:^3}" == " H ")
+    assert(f"{hydrogen:>3}" == "  H")
+    assert(f"{hydrogen:!>3}" == "!!H")
 
     ruthenium = Element.Ruthenium
     assert(ruthenium is Element.Ru)
@@ -28,6 +38,15 @@ def test_element():
     assert(ruthenium.number == 44)
     assert(ruthenium.mass == 101.07)
     assert(str(ruthenium) == "Ru")
+    assert(format(ruthenium) == "Ru")
+    assert(format(ruthenium, "n") == "Ruthenium")
+    assert(format(ruthenium, "s") == "Ru")
+    assert(format(ruthenium, "qn") == "Element.Ruthenium")
+    assert(format(ruthenium, "qs") == "Element.Ru")
+    assert(f"{ruthenium:4}" == "Ru  ")
+    assert(f"{ruthenium:^4}" == " Ru ")
+    assert(f"{ruthenium:>4}" == "  Ru")
+    assert(f"{ruthenium:!>4}" == "!!Ru")
 
 
 def test_atom():
@@ -49,12 +68,14 @@ def test_atom():
 
     np.testing.assert_array_equal(atom.xyz, np.array([3.14, 42.0, 137.0], dtype=np.float64))
 
-    atom_repr = (
+    atom_str = (
         "Element     X          Y          Z          \n"
         "H           3.140000  42.000000 137.000000\n"
     )
+    assert(str(atom) == atom_str)
 
-    assert(atom.__repr__() == atom_repr)
+    atom_repr = "Atom(element=Element.Hydrogen, xyz=[3.140000e+00, 4.200000e+01, 1.370000e+02])"
+    assert(repr(atom) == atom_repr)
 
 
 def test_inertia():
@@ -70,7 +91,7 @@ def test_inertia():
         [7.0, 8.0, 9.0],
     ], dtype=np.float64)
 
-    atoms = [Atom(element, xyz) for element, xyz in zip(elements, xyzs)]
+    atoms = [Atom(element, xyz) for element, xyz in zip(elements, xyzs, strict=True)]
 
     geometry = Geometry(
         atoms=atoms,
@@ -104,7 +125,7 @@ def test_inertia():
 
     # Turns out the eigenvectors and eigenvalues will not necessarily be
     # consistent across platforms, so instead of comparing them directly,
-    # we are going to diagonalize the inertia matrix of the system and 
+    # we are going to diagonalize the inertia matrix of the system and
     # ensure that it is properly diagonalized to within tolerance.
     inertia_matrix = np.array([
         [ 840.73742361, -420.36871181, -420.36871181],
@@ -1065,7 +1086,7 @@ def test_from_qe_pp_ibrav(tmp_path):
         [ 0.00000000, 25.52042192,  0.00000000],
         [ 0.00000000,  0.00000000, 25.52042192],
     ], dtype=np.float64)
-
+    # ruff: disable[E501]
     ibrav_pp = (
         "                                                                           \n"
         "     320     320     320     320     320     320       3       2\n"
@@ -1082,7 +1103,7 @@ def test_from_qe_pp_ibrav(tmp_path):
         " -1.857340482E-07  1.293451047E-07  7.212858794E-08 -1.506511456E-07 -6.644561901E-08\n"
         "  7.335879733E-08  7.680247865E-08 -3.131195191E-08 -5.796952834E-09 -2.667106558E-08\n"
     )
-
+    # ruff: enable[E501]
     temp_dir = tmp_path / Path("test_files")
     temp_dir.mkdir(exist_ok=True)
 
@@ -1116,7 +1137,7 @@ def test_from_qe_pp_cell(tmp_path):
         [ 0.00000000, 25.52042192,  0.00000000],
         [ 0.00000000,  0.00000000, 25.52042192],
     ], dtype=np.float64)
-
+    # ruff: disable[E501]
     cell_pp = (
         "                                                                           \n"
         "     320     320     320     320     320     320       3       2\n"
@@ -1136,7 +1157,7 @@ def test_from_qe_pp_cell(tmp_path):
         " -1.857340482E-07  1.293451047E-07  7.212858794E-08 -1.506511456E-07 -6.644561900E-08\n"
         "  7.335879733E-08  7.680247866E-08 -3.131195191E-08 -5.796952831E-09 -2.667106558E-08\n"
     )
-
+    # ruff: enable[E501]
     temp_dir = tmp_path / Path("test_files")
     temp_dir.mkdir(exist_ok=True)
 
@@ -1213,8 +1234,8 @@ def test_from_cjson_no_cell():
 
 # endregion ClassMethods
 
-def test_repr():
-    ref_repr = (
+def test_str():
+    ref_str = (
         "Element     X          Y          Z          \n"
         "\n"
         "H           1.000000   2.000000   3.000000\n"
@@ -1222,7 +1243,7 @@ def test_repr():
         "Br          7.000000   8.000000   9.000000\n"
     )
 
-    ref_repr_crystal = (
+    ref_str_crystal = (
         "Lattice     X          Y          Z          \n"
         "Vectors    \n"
         "           10.000000   0.000000   0.000000\n"
@@ -1249,12 +1270,59 @@ def test_repr():
     ], dtype=np.float64)
 
     geometry = Geometry(atoms)
-    
-    assert(geometry.__repr__() == ref_repr)
+
+    assert(str(geometry) == ref_str)
 
     geometry.lat_vec = lat_vec
 
-    assert(geometry.__repr__() == ref_repr_crystal)
+    assert(str(geometry) == ref_str_crystal)
+
+
+def test_repr():
+    ref_repr = (
+        "Geometry(\n"
+        "    atoms = [\n"
+        "        Atom(element=Element.Hydrogen, xyz=[1.000000e+00, 2.000000e+00, 3.000000e+00]),\n"
+        "        Atom(element=Element.Ruthenium, xyz=[4.000000e+00, 5.000000e+00, 6.000000e+00]),\n"
+        "        Atom(element=Element.Bromine, xyz=[7.000000e+00, 8.000000e+00, 9.000000e+00]),\n"
+        "    ],\n"
+        "    lat_vec = None,\n"
+        ")"
+    )
+
+    ref_repr_crystal = (
+        "Geometry(\n"
+        "    atoms = [\n"
+        "        Atom(element=Element.Hydrogen, xyz=[1.000000e+00, 2.000000e+00, 3.000000e+00]),\n"
+        "        Atom(element=Element.Ruthenium, xyz=[4.000000e+00, 5.000000e+00, 6.000000e+00]),\n"
+        "        Atom(element=Element.Bromine, xyz=[7.000000e+00, 8.000000e+00, 9.000000e+00]),\n"
+        "    ],\n"
+        "    lat_vec = [\n"
+        "        [1.000000e+01, 0.000000e+00, 0.000000e+00],\n"
+        "        [0.000000e+00, 2.000000e+01, 0.000000e+00],\n"
+        "        [0.000000e+00, 0.000000e+00, 3.000000e+01],\n"
+        "    ],\n"
+        ")"
+    )
+    atoms = [
+        Atom(Element.Hydrogen, [1.0, 2.0, 3.0]),
+        Atom(Element.Ruthenium, [4.0, 5.0, 6.0]),
+        Atom(Element.Bromine, [7.0, 8.0, 9.0]),
+    ]
+
+    lat_vec = np.array([
+        [10.0,  0.0,  0.0],
+        [ 0.0, 20.0,  0.0],
+        [ 0.0,  0.0, 30.0],
+    ], dtype=np.float64)
+
+    geometry = Geometry(atoms)
+
+    assert(repr(geometry) == ref_repr)
+
+    geometry.lat_vec = lat_vec
+
+    assert(repr(geometry) == ref_repr_crystal)
 
 
 def test_eq():

@@ -1,18 +1,21 @@
 from __future__ import annotations
+
 from os import PathLike
 from pathlib import Path
+from typing import Literal, Self
+
 import numpy as np
 import numpy.typing as npt
-from .geometry import Geometry, FileFormatError
+
+from .geometry import FileFormatError, Geometry
 
 
 class Quadrupole:
-    """Class containing data and functions required for analyzing a
-    quadrupole moment.
+    """Class containing data and functions required for analyzing a quadrupole moment.
 
     Parameters
     ----------
-    quadrupole : ArrayLike
+    quadrupole : ArrayLike of float
         Sequence containing the 3x3 quadrupole matrix, the diagonal
         components of the quadrupole (shape 3x1, ``[aa, bb, cc]``),
         or the 6 independent elements of the quadrupole
@@ -22,23 +25,10 @@ class Quadrupole:
 
     Attributes
     ----------
-    quadrupole : NDArray
+    quadrupole : NDArray of float
         3x3 array of floats.
     units : {"au", "buckingham", "cm2", "esu"}
         Units of the quadrupole matrix (case insensitive).
-
-    Methods
-    -------
-    as_unit(units)
-        Represent the quadrupole in a given unit.
-    from_orca(output_path)
-        Read all quadrupoles from an ORCA output.
-    inertialize(geometry)
-        Rotate a quadrupole into a molecule's inertial frame.
-    detrace()
-        Apply a detracing operator to a quadrupole
-    compare(expt)
-        Statistically compare two quadrupoles and return the best match.
 
     Notes
     -----
@@ -48,23 +38,25 @@ class Quadrupole:
     traceless quadrupole moment only has 5 independent elements as being
     traceless dictates that one of the diagonal components must be equal
     to the negative sum of the remaining two, i.e. it is required that
-    :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore 
-    :math:`Q_{cc}` depends on :math:`Q_{aa}`
-    and :math:`Q_{bb}`.
+    :math:`Q_{aa} + Q_{bb} = -2Q_{cc}`, therefore :math:`Q_{cc}` depends
+    on :math:`Q_{aa}` and :math:`Q_{bb}`.
     """
 
-    au_to_cm2_conversion   = 4.4865515185e-40
-    cm2_to_esu_conversion  = 2.99792458e13
+    au_to_cm2_conversion = 4.4865515185e-40
+    cm2_to_esu_conversion = 2.99792458e13
     esu_to_buck_conversion = 1e-26
 
-    def __init__(self, quadrupole: npt.ArrayLike, units: str = "buckingham"):
-        quadrupole = np.array(quadrupole, dtype=float)
+    quadrupole: npt.NDArray[np.float64]
+    units: Literal["au", "buckingham", "cm2", "esu"]
+
+    def __init__(self, quadrupole: npt.ArrayLike[np.floating], units: str = "buckingham"):
+        quadrupole = np.asarray(quadrupole, dtype=np.float64)
         if quadrupole.shape == (3, 3):
             self.quadrupole = quadrupole
         elif quadrupole.shape == (3,):
             self.quadrupole = np.diag(quadrupole)
         elif quadrupole.shape == (6,):
-            self.quadrupole = np.array(
+            self.quadrupole = np.asarray(
                 [
                     [quadrupole[0], quadrupole[3], quadrupole[4]],
                     [quadrupole[3], quadrupole[1], quadrupole[5]],
@@ -72,19 +64,21 @@ class Quadrupole:
                 ]
             )
         else:
-            raise ValueError(
-                f"Cannot cast array of shape {quadrupole.shape} to a quadrupole, supply either shape (3, 3) or (3,) or (6,)!"
+            msg = (
+                f"Cannot cast array of shape {quadrupole.shape} to a quadrupole!\n"
+                "Supply either shape (3, 3) or (3,) or (6,)!"
             )
+            raise ValueError(msg)
 
         units = units.lower()
-        if units not in ["au", "buckingham", "cm2", "esu"]:
-            raise ValueError(
-                "Invalid units, please select from ( 'au', 'buckingham', 'cm2', 'esu' )"
-            )
+        if units not in {"au", "buckingham", "cm2", "esu"}:
+            msg = "Invalid units, please select from ( 'au', 'buckingham', 'cm2', 'esu' )"
+            raise ValueError(msg)
         else:
             self.units = units
 
-
+    # fmt: off
+    # ruff: disable[PLR2044]
     #-----------------------------------------------------------#
     def au_to_cm2(self) -> Quadrupole:                          #
         """Convert from Hartree atomic units to Coulomb•m²"""   #
@@ -158,10 +152,11 @@ class Quadrupole:
         q = q.esu_to_cm2()                                      #
         return q.cm2_to_au()                                    #
     #-----------------------------------------------------------#
-
+    # ruff: enable[PLR2044]
+    # fmt: on
     def as_unit(self, units: str) -> Quadrupole:
         """Return quadrupole as a specified unit.
-        
+
         Parameters
         ----------
         units : {"au", "buckingham", "cm2", "esu"}
@@ -190,10 +185,11 @@ class Quadrupole:
         """
         self_units = self.units
         new_units = units.lower()
-        if new_units not in ["au", "buckingham", "cm2", "esu"]:
-            raise ValueError(
+        if new_units not in {"au", "buckingham", "cm2", "esu"}:
+            msg = (
                 f"Unit {units} not recognized, please pick from ('au', 'buckingham', 'cm2', 'esu')"
             )
+            raise ValueError(msg)
 
         if self_units == new_units:
             return self
@@ -223,16 +219,17 @@ class Quadrupole:
                 return self.cm2_to_au()
             case ("cm2", "esu"):
                 return self.cm2_to_esu()
-
+            case _:  # pragma: no cover
+                raise RuntimeError("Unreachable!")
 
     @classmethod
-    def from_orca(cls, file: PathLike):
+    def from_orca(cls, file: PathLike) -> tuple[Self, ...]:
         """Read an ORCA output and pull out the quadrupole moment(s).
 
         Returns
         -------
-        quad_matrices : tuple[Quadrupole]
-            Tuple containing quadrupoles. See Notes for explanation of 
+        quad_matrices : tuple of Quadrupole
+            Tuple containing quadrupoles. See Notes for explanation of
             why this can return multiple matrices instead of just one.
 
         Notes
@@ -252,10 +249,8 @@ class Quadrupole:
                     quadrupoles.append(line.strip().split()[:-1])
 
         if len(quadrupoles) == 0:
-            raise FileFormatError(
-                "Could not locate a quadrupole moment in output "
-               f"{Path(file).resolve()}"
-            )
+            msg = f"Could not locate a quadrupole moment in output {Path(file).resolve()}"
+            raise FileFormatError(msg)
 
         quad_matrices = []
         # This list slice is a neat trick to only grab every other element.
@@ -265,27 +260,18 @@ class Quadrupole:
                     [quad[0], quad[3], quad[4]],
                     [quad[3], quad[1], quad[5]],
                     [quad[4], quad[5], quad[2]],
-                ], dtype=np.float64
+                ],
+                dtype=np.float64,
             )
             quad_matrices.append(quad_matrix)
 
-        quads = tuple(
-            cls(quad, units="Buckingham") for quad in quad_matrices
-        )
-
-        return quads
-
+        return tuple(cls(quad, units="Buckingham") for quad in quad_matrices)
 
     def inertialize(self, geometry: Geometry) -> Quadrupole:
-        """Rotate the quadrupole into the inertial frame of the given
-        molecular geometry.
-        """
-        eigenvalues, eigenvectors = geometry.calc_principal_moments()
-        q = np.real_if_close(
-            np.linalg.inv(eigenvectors) @ self.quadrupole @ eigenvectors, tol=1e-8
-        )
+        """Rotate the quadrupole into the inertial frame of the given molecular geometry."""
+        _eigenvalues, eigenvectors = geometry.calc_principal_moments()
+        q = np.real_if_close(np.linalg.inv(eigenvectors) @ self.quadrupole @ eigenvectors, tol=1e-8)
         return Quadrupole(q, units=self.units)
-
 
     def detrace(self) -> Quadrupole:
         """Apply detracing operation to a quadrupole.
@@ -310,28 +296,19 @@ class Quadrupole:
 
         References
         ----------
-        .. [1] Buckingham, A. D. Molecular Quadrupole Moments. 
-           Q. Rev. Chem. Soc. 1959, 13 (3), 183-214. 
+        .. [1] Buckingham, A. D. Molecular Quadrupole Moments.
+           Q. Rev. Chem. Soc. 1959, 13 (3), 183-214.
            https://doi.org/10.1039/QR9591300183.
 
         .. [2] Raab, R. E. Magnetic Multipole Moments.
            Molecular Physics 1975, 29 (5), 1323-1331.
            https://doi.org/10.1080/00268977500101151.
-
         """
-        q = (
-            (3 / 2)
-            * (
-                self.quadrupole
-                - (np.eye(3,3) * (np.trace(self.quadrupole) / 3))
-            )
-        )
+        q = (3 / 2) * (self.quadrupole - (np.eye(3, 3) * (np.trace(self.quadrupole) / 3)))
         return Quadrupole(q, units=self.units)
 
-
-    def compare(self, expt: Quadrupole):
-        """Attempt to align a diagonal calculated quadrupole moment with
-        an experimental quadrupole moment.
+    def compare(self, expt: Quadrupole | npt.ArrayLike[np.floating]) -> Quadrupole:
+        """Attempt to align a calculated quadrupole moment with an experimental quadrupole moment.
 
         Notes
         -----
@@ -345,7 +322,7 @@ class Quadrupole:
         """
         if not isinstance(expt, Quadrupole):
             expt = Quadrupole(expt, units=self.units)
-        
+
         calc_quad = np.diag(self.as_unit(expt.units).quadrupole)
         expt_quad = np.diag(expt.quadrupole)
 
@@ -355,58 +332,74 @@ class Quadrupole:
         invert_sign = False
         if expt_signs.sum() != calc_signs.sum():
             invert_sign = True
-            calc_quad = calc_quad * np.array([-1., -1., -1.])
+            calc_quad = calc_quad * np.array([-1.0, -1.0, -1.0])
 
         permutations = [
-            np.array([calc_quad[0], calc_quad[1], calc_quad[2]]), # abc
-            np.array([calc_quad[0], calc_quad[2], calc_quad[1]]), # acb
-            np.array([calc_quad[2], calc_quad[1], calc_quad[0]]), # cba
-            np.array([calc_quad[2], calc_quad[0], calc_quad[1]]), # cab
-            np.array([calc_quad[1], calc_quad[0], calc_quad[2]]), # bac
-            np.array([calc_quad[1], calc_quad[2], calc_quad[0]]), # bca
+            np.array([calc_quad[0], calc_quad[1], calc_quad[2]]),  # abc
+            np.array([calc_quad[0], calc_quad[2], calc_quad[1]]),  # acb
+            np.array([calc_quad[2], calc_quad[1], calc_quad[0]]),  # cba
+            np.array([calc_quad[2], calc_quad[0], calc_quad[1]]),  # cab
+            np.array([calc_quad[1], calc_quad[0], calc_quad[2]]),  # bac
+            np.array([calc_quad[1], calc_quad[2], calc_quad[0]]),  # bca
         ]
 
         diffs = []
         for perm in permutations:
-            diffs.append([perm, perm - np.array(expt_quad)])
+            diffs.append([perm, perm - expt_quad])
 
         diffs.sort(key=lambda x: np.std(x[1]))
 
         best_match = min(diffs, key=lambda x: np.sum(np.abs(x[1])))
 
-        if invert_sign:
-            best_quad = -best_match[0]
-        else:
-            best_quad = best_match[0]
+        best_quad = -best_match[0] if invert_sign else best_match[0]
 
         return Quadrupole(best_quad, expt.units)
 
+    def __repr__(self) -> str:
+        q = self.quadrupole
+        return (
+            f"{type(self).__name__}(\n"
+            "    quadrupole = [\n"
+            f"        [{q[0, 0]:e}, {q[0, 1]:e}, {q[0, 2]:e}],\n"
+            f"        [{q[1, 0]:e}, {q[1, 1]:e}, {q[1, 2]:e}],\n"
+            f"        [{q[2, 0]:e}, {q[2, 1]:e}, {q[2, 2]:e}],\n"
+            "    ],\n"
+            f"    units = '{self.units}',\n"
+            ")"
+        )
 
-    def __repr__(self):
-        quad = self.quadrupole
-        self_str  = ""
-        if self.units in ["buckingham", "au"]:
-            self_str += f"{"Quadrupole":11}({self.units}):      {"(xx)":10} {"(yy)":10} {"(zz)":10} {"(xy)":10} {"(xz)":10} {"(yz)":10}\n"
-            self_str += f"{"":8}{" "*len(self.units)}Total: {quad[0,0]:10.5f} {quad[1,1]:10.5f} {quad[2,2]:10.5f} {quad[0,1]:10.5f} {quad[0,2]:10.5f} {quad[1,2]:10.5f}\n"
-        else:
-            self_str += f"{"Quadrupole":11}({self.units}):      {"(xx)":13} {"(yy)":13} {"(zz)":13} {"(xy)":13} {"(xz)":13} {"(yz)":13}\n"
-            self_str += f"{"":8}{" "*len(self.units)}Total: {quad[0,0]:13.5e} {quad[1,1]:13.5e} {quad[2,2]:13.5e} {quad[0,1]:13.5e} {quad[0,2]:13.5e} {quad[1,2]:13.5e}\n"
+    def __str__(self) -> str:
+        q = self.quadrupole
+        self_str = ""
+        if self.units in {"buckingham", "au"}:  # Regular float formatting
+            spacing = "10"
+            fmt = spacing + ".5f"
+        else:  # Exponential formatting
+            spacing = "13"
+            fmt = spacing + ".5e"
+        # fmt: off
+        self_str += "{:11}({}):      {:{f}} {:{f}} {:{f}} {:{f}} {:{f}} {:{f}}\n".format(
+            "Quadrupole", self.units, "(xx)", "(yy)", "(zz)", "(xy)", "(xz)", "(yz)",
+            f=spacing
+        )
+        self_str += "{:8}{}Total: {:{f}} {:{f}} {:{f}} {:{f}} {:{f}} {:{f}}\n".format(
+            "", " "*len(self.units), q[0,0], q[1,1], q[2,2], q[0,1], q[0,2], q[1,2],
+            f=fmt,
+        )
+        # fmt: on
         return self_str
-
 
     def __add__(self, quad: Quadrupole) -> Quadrupole:
         q1 = self.quadrupole
         q2 = quad.as_unit(self.units)
         q2 = q2.quadrupole
-        return Quadrupole(quadrupole=q1+q2, units=self.units)
-
+        return Quadrupole(quadrupole=q1 + q2, units=self.units)
 
     def __sub__(self, quad: Quadrupole) -> Quadrupole:
         q1 = self.quadrupole
         q2 = quad.as_unit(self.units)
         q2 = q2.quadrupole
-        return Quadrupole(quadrupole=q1-q2, units=self.units)
+        return Quadrupole(quadrupole=q1 - q2, units=self.units)
 
-
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> np.float64:
         return self.quadrupole[index]

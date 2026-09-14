@@ -1,6 +1,6 @@
 [project]
 name = "quadrupole"
-version = "0.4.0"
+dynamic = ["version"]
 description = "Classes for reading and manipulating molecular quadrupole moments."
 readme = "PyPI_README.md"
 license = "BSD-3-Clause"
@@ -25,6 +25,9 @@ classifiers = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.version]
+path = "quadrupole/__init__.py"
+
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",
@@ -35,12 +38,78 @@ dev = [
 ]
 docs = [
     "sphinx>=9.1.0",
-    "pydata-sphinx-theme>=0.16.1, <0.17.0", # https://github.com/pydata/pydata-sphinx-theme/issues/2349
+    "pydata-sphinx-theme>=0.17.1",
     "numpydoc>=1.10.0",
     "sphinx-design>=0.7.0",
+    "intersphinx-registry>=0.2605.27",
+    "sphinx-copybutton>=0.5.2",
 ]
 
 [project.urls]
 source = "https://github.com/brockdyer03/quadrupole"
 docs = "https://quadrupole.readthedocs.io/en/latest/index.html"
 issues = "https://github.com/brockdyer03/quadrupole/issues"
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.format]
+docstring-code-format = false
+
+[tool.ruff.lint]
+extend-select = [
+    "YTT",
+    "BLE001",
+    "FBT",
+    "B",
+    "A",
+    "FA",
+    "ISC",
+    "I",
+    "PT",
+    "Q003",
+    "RET",
+    "SIM",
+    "ARG",
+    "NPY001",
+    "E101",
+    "E401",
+    "E501",
+    "E701",
+    "E702",
+    "E703",
+    "E711",
+    "E713",
+    "E714",
+    "E721",
+    "E731",
+    "W",
+    "F",
+    "PLE",
+    "PLR1722",
+    "PLW",
+    "RUF",
+    "TRY",
+]
+ignore = [
+    # These are disabled because it feels like code is more readable without them
+    "RET505", # Branch after return
+    "RET506", # Branch after raise
+    "RET507", # Branch after continue
+    "RET508", # Branch after break
+    "PLW1641", # Implement __eq__ without __hash__
+    "SIM102", # Use single if instead of nested if
+    "SIM114", # if with same arms.
+]
+allowed-confusables = ["α", "β", "γ"]
+
+[tool.pytest]
+addopts = [
+    "--cov=quadrupole",
+    "--cov-report=term-missing",
+    "--cov-branch",
+    "--random-order",
+]
+testpaths = ["tests"]
+strict_xfail = true

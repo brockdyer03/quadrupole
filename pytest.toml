@@ -1,4 +1,0 @@
-[pytest]
-addopts = ["--cov=quadrupole", "--cov-report=term-missing", "--random-order"]
-testpaths = ["tests"]
-xfail_strict = true

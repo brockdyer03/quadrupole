@@ -10,7 +10,7 @@ Installation
 
 This package can be installed with any package manager that has access to the `Python Package Index <https://pypi.org/>`__, such as ``pip``. Development of this package is done using `uv <https://docs.astral.sh/uv/>`__, and is recommended for most users. You can either install Quadrupole in a virtual environment:
 
-.. code-block:: bash
+.. code-block:: console
 
     > uv venv
     ...
@@ -19,7 +19,7 @@ This package can be installed with any package manager that has access to the `P
 
 or add it to a project:
 
-.. code-block:: bash
+.. code-block:: console
 
     > uv init
     ...
@@ -38,16 +38,16 @@ Once you have everything installed, you can start using Quadrupole!
 Geometry Creation and IO
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-The primary focus of this package is to enable the efficient manipulation and comparison of molecular quadrupole moments. Often, however, when you are working with molecular quadrupoles you will find yourself in need of the molecule's geometry, for operations such as rotating the quadrupole into the inertial frame of the molecule. We provide a number of methods in the :py:class:`Geometry` class to read in a range of file formats, including
+The primary focus of this package is to enable the efficient manipulation and comparison of molecular quadrupole moments. Often, however, when you are working with molecular quadrupoles you will find yourself in need of the molecule's geometry, for operations such as rotating the quadrupole into the inertial frame of the molecule. We provide a number of methods in the :py:class:`.Geometry` class to read in a range of file formats, including
 
-* XYZ (``.xyz``)
-* XCrySDen Structure File (``.xsf``)
-* Gaussian Cube (``.cube``)
-* Quantum ESPRESSO Post-Processing Format (``.pp``)
-* ORCA Outputs (``.out``)
-* Chemical JSON (``.cjson``)
+* `XYZ <https://openbabel.org/docs/FileFormats/XYZ_cartesian_coordinates_format.html>`__ -- ``.xyz``
+* `XCrySDen Structure File <http://www.xcrysden.org/doc/XSF.html>`__ -- ``.xsf``
+* `Gaussian Cube <https://paulbourke.net/dataformats/cube/>`__ -- ``.cube``
+* `Quantum ESPRESSO Post-Processing Format <https://www.quantum-espresso.org/Doc/INPUT_PP.html>`__ -- ``.pp``
+* `ORCA Outputs <https://www.faccts.de/docs/orca/6.1/manual/contents/essentialelements/output.html>`__ -- ``.out``
+* `Chemical JSON <https://github.com/openchemistry/chemicaljson>`__ -- ``.cjson``
 
-We additionally support creating :py:class:`Geometry` objects from a list of :ref:`elements <element>` and an array of coordinates. Here we will look at reading in a molecular geometry, both with and without a unit cell.
+We additionally support creating :py:class:`.Geometry` objects from a list of :ref:`elements <element>` and an array of coordinates. Here we will look at reading in a molecular geometry, both with and without a unit cell.
 
 The simplest file format that we support is the `XYZ format <https://openbabel.org/docs/FileFormats/XYZ_cartesian_coordinates_format.html>`__:
 
@@ -64,13 +64,13 @@ The simplest file format that we support is the `XYZ format <https://openbabel.o
     H           4.931827   3.412032   2.252440
     H           5.738252   3.930645   3.432457
 
-In the event that an XYZ file is improperly formatted, a :py:class:`FileFormatError` will be raised that prints the file path and in most cases a description of what the formatting error was.
+In the event that an XYZ file is improperly formatted, a :py:class:`.FileFormatError` will be raised that prints the file path and in most cases a description of what the formatting error was.
 
 .. note::
 
-    All file IO operations in the :py:class:`Geometry` class are designed to convert the units of the file to Ångstrom if their original format is not Ångstrom, however formats like the XYZ format are specified to always be in Ångstrom, so there are no conversions done. If your file is in another distance unit, you are responsible for ensuring the units are correct elsewhere!
+    All file IO operations in the :py:class:`.Geometry` class are designed to convert the units of the file to Ångstrom if their original format is not Ångstrom, however formats like the XYZ format are specified to always be in Ångstrom, so there are no conversions done. If your file is in another distance unit, you are responsible for ensuring the units are correct elsewhere!
 
-For file formats that contain unit cell information, such as ``.xsf`` files, the :py:class:`Geometry` class will store the lattice vectors in addition to the atomic coordinates. Additionally, the :py:meth:`Geometry.__repr__` function will print the lattice vectors if they exist:
+For file formats that contain unit cell information, such as ``.xsf`` files, the :py:class:`.Geometry` class will store the lattice vectors in addition to the atomic coordinates. Additionally, printing the geometry will also print the lattice vectors, if they exist:
 
 .. code-block:: python
 
@@ -98,7 +98,7 @@ Currently the functions for reading XSF files are limited to files with just one
 Quadrupole Creation and IO
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A new :py:class:`Quadrupole` can be created in two ways. The first, and most direct, is to provide the class with a matrix or vector that represents a quadrupole moment:
+A new :py:class:`.Quadrupole` can be created in two ways. The first, and most direct, is to provide the class with a matrix or vector that represents a quadrupole moment:
 
 .. code-block:: python
 
@@ -113,7 +113,7 @@ A new :py:class:`Quadrupole` can be created in two ways. The first, and most dir
      [0. 2. 0.]
      [0. 0. 3.]]
 
-Here you can see that by supplying a sequence with length 3 the :py:class:`Quadrupole` class has used it to populate the diagonal elements of the quadrupole tensor. You can also create a :py:class:`Quadrupole` by supplying the 6 independent elements of the matrix in the order that the class would print them:
+Here you can see that by supplying a sequence with length 3 the :py:class:`.Quadrupole` class has used it to populate the diagonal elements of the quadrupole tensor. You can also create a :py:class:`.Quadrupole` by supplying the 6 independent elements of the matrix in the order that the class would print them:
 
 .. code-block:: python
 
@@ -159,7 +159,7 @@ Though it is often redundant, for completeness you can also create a quadrupole 
 
     Supplying the full 3x3 matrix can leave you open to accidentally creating a quadrupole that does not have transposition symmetry. This is an unphysical result, and can be avoided by only providing the non-redundant components.
 
-In addition to directly supplying the components of the quadrupole matrix, we also offer support for reading in quadrupoles from `ORCA output files <https://orca-manual.mpi-muelheim.mpg.de/contents/spectroscopyproperties/electric.html>`__. These can be read in by providing a ``Path`` to an ORCA output, like so:
+In addition to directly supplying the components of the quadrupole matrix, we also offer support for reading in quadrupoles from `ORCA output files <https://orca-manual.mpi-muelheim.mpg.de/contents/spectroscopyproperties/electric.html>`__. These can be read in by providing a :py:class:`~pathlib.Path` to an ORCA output, like so:
 
 .. code-block:: python
 
@@ -171,7 +171,7 @@ In addition to directly supplying the components of the quadrupole matrix, we al
     Quadrupole (buckingham):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      
                       Total:   -4.54041   -6.36728   -7.87200    0.00696    0.00000    0.00000
 
-You may notice that we have accessed the item at index zero after reading the quadrupole moment from the ORCA output. This is because the function :py:meth:`Quadrupole.from_orca()` always has the return type ``tuple[Quadrupole]``, which was implemented for consistency as ORCA outputs can contain several quadrupole moments, each corresponding to a different level of theory.
+You may notice that we have accessed the item at index zero after reading the quadrupole moment from the ORCA output. This is because the function :py:meth:`.Quadrupole.from_orca()` always has the return type ``tuple[Quadrupole]``, which was implemented for consistency as ORCA outputs can contain several quadrupole moments, each corresponding to a different level of theory.
 
 .. note::
 
@@ -186,16 +186,16 @@ An important feature in the Quadrupole package is the ability to easily switch b
 * Coulomb-meters squared (:math:`\text{C}\times\text{m}^2`)
 * statCoulomb-centimeters squared (e.s.u., :math:`\text{statC}\times\text{cm}^2`)
 
-This is easily accomplished by calling the :py:meth:`Quadrupole.as_unit()` method, and providing a unit that you would like to switch to. The accepted names for each unit are
+This is easily accomplished by calling the :py:meth:`.Quadrupole.as_unit()` method, and providing a unit that you would like to switch to. The accepted names for each unit are
 
 * ``"au"``
 * ``"buckingham"``
 * ``"cm2"``
 * ``"esu"``
 
-The :py:meth:`Quadrupole.as_unit()` method will automatically determine the correct conversions to apply, no matter what your starting unit is, and return the quadrupole in the new units.
+The :py:meth:`.Quadrupole.as_unit()` method will automatically determine the correct conversions to apply, no matter what your starting unit is, and return the quadrupole in the new units.
 
-Due to the greatly disparate scales for some units, we provide two possible :py:meth:`Quadrupole.__repr__()` output formats for the quadrupole moment. If your units are buckingham or atomic units, we simply print the quadrupole moments as floats:
+Due to the greatly disparate scales for some units, we provide two possible output formats for the quadrupole moment. If your units are buckingham or atomic units, we simply print the quadrupole moments as floats:
 
 .. code-block:: python
 
@@ -224,7 +224,7 @@ For :math:`\text{C}\times\text{m}^2` and :math:`\text{statC}\times\text{cm}^2` (
 Quadrupole Analysis
 ^^^^^^^^^^^^^^^^^^^
 
-When analyzing calculated molecular quadrupole moments, there are several useful methods provided in the Quadrupole package. Perhaps the most useful of which is the ability to automatically transform the quadrupole matrix into the inertial frame of the molecule. This can be accomplished in three steps, first create or read in the quadrupole moment, then create or read in the corresponding geometry, and finally call :py:meth:`Quadrupole.inertialize()`.
+When analyzing calculated molecular quadrupole moments, there are several useful methods provided in the Quadrupole package. Perhaps the most useful of which is the ability to automatically transform the quadrupole matrix into the inertial frame of the molecule. This can be accomplished in three steps, first create or read in the quadrupole moment, then create or read in the corresponding geometry, and finally call :py:meth:`.Quadrupole.inertialize()`.
 
 .. code-block:: python
 
@@ -252,7 +252,7 @@ When analyzing calculated molecular quadrupole moments, there are several useful
 
 Perhaps the most important feature of transforming the quadrupole into the inertial frame of the molecule is that, for this molecule, the tensor became diagonal. This is due to the higher-than-average symmetry of water (point group :math:`\text{C}_\text{2v}`), and thus will not necessarily be observed for all molecules.
 
-This quadrupole moment is, however, not able to be compared directly to experimental values quite yet. For that, we need to detrace the quadrupole tensor. Again, we provide a simple method for this, :py:meth:`Quadrupole.detrace()`, which returns the traceless form of the quadrupole moment. Reusing the quadrupole from above,
+This quadrupole moment is, however, not able to be compared directly to experimental values quite yet. For that, we need to detrace the quadrupole tensor. Again, we provide a simple method for this, :py:meth:`.Quadrupole.detrace()`, which returns the traceless form of the quadrupole moment. Reusing the quadrupole from above,
 
 .. code-block:: python
 
@@ -305,7 +305,7 @@ Some of you may have noticed that while the quadrupoles indeed do provide incred
     Quadrupole (au):      (xx)       (yy)       (zz)       (xy)       (xz)       (yz)      
               Total:   -0.01783   -0.02930    0.04713    0.00000    0.00000    0.00000
 
-While this operation is trivial to recognize for a single molecule and a single quadrupole moment, if one wished to perform this operation for a dataset of even just a few dozen quadrupole moments the process could take hours. It is for this reason that we provide an alternate route through empirical statistical analysis. The function :py:meth:`Quadrupole.compare()` accepts one argument (other than ``self``), ``expt_quad``, and compares 6 permutations of the calculated quadrupole matrix to the experimental matrix, then selects the permutation with the both the lowest overall deviation from the experimental quadrupole and with the lowest standard deviation. Additionally, if the signs of the quadrupole moments differ (e.g. one has the signs [+,-,-] and the other is [+,+,-]), the function will temporarily negative the calculated quadrupole for the comparison, then return it to normal before returning the best match.
+While this operation is trivial to recognize for a single molecule and a single quadrupole moment, if one wished to perform this operation for a dataset of even just a few dozen quadrupole moments the process could take hours. It is for this reason that we provide an alternate route through empirical statistical analysis. The function :py:meth:`.Quadrupole.compare()` accepts one argument (other than ``self``), ``expt_quad``, and compares 6 permutations of the calculated quadrupole matrix to the experimental matrix, then selects the permutation with the both the lowest overall deviation from the experimental quadrupole and with the lowest standard deviation. Additionally, if the signs of the quadrupole moments differ (e.g. one has the signs [+,-,-] and the other is [+,+,-]), the function will temporarily negative the calculated quadrupole for the comparison, then return it to normal before returning the best match.
 
 .. note::
     
@@ -356,4 +356,4 @@ As expected, we get the same result as our by-hand comparison. In the case the t
 
 .. caution::
 
-    The :py:meth:`Quadrupole.compare()` function **does not** guarantee the correct permutation of the quadrupole matrix. It simply provides the form which an outside observer would most likely say matches the experimental quadrupole moment.
+    The :py:meth:`.Quadrupole.compare()` function **does not** guarantee the correct permutation of the quadrupole matrix. It simply provides the form which an outside observer would most likely say matches the experimental quadrupole moment.
